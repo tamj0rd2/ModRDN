@@ -8,8 +8,8 @@ class LuaConfig;
 class LuaRDNPlayerLib
 {
 public:
-	static void Initialize(LuaConfig*);
-	static void Shutdown(LuaConfig*);
+	static void Initialize(LuaConfig *);
+	static void Shutdown(LuaConfig *);
 };
 
 // defined in luaRDNworld.cpp
@@ -17,8 +17,8 @@ public:
 class LuaRDNWorldLib
 {
 public:
-	static void Initialize(LuaConfig*);
-	static void Shutdown(LuaConfig*);
+	static void Initialize(LuaConfig *);
+	static void Shutdown(LuaConfig *);
 };
 
 // defined in luaRDNdbg.cpp
@@ -26,20 +26,20 @@ public:
 class LuaRDNDebugLib
 {
 public:
-	static void Initialize(LuaConfig*);
-	static void Shutdown(LuaConfig*);
+	static void Initialize(LuaConfig *);
+	static void Shutdown(LuaConfig *);
 };
 
 class LuaModControllerLib
 {
 public:
-	static void Initialize(LuaConfig*);
-	static void Shutdown(LuaConfig*);
+	static void Initialize(LuaConfig *);
+	static void Shutdown(LuaConfig *);
 };
 
 class LuaCpuAILib
 {
 public:
-	static void Initialize(LuaConfig*);
-	static void Shutdown(LuaConfig*);
+	static void Initialize(LuaConfig *);
+	static void Shutdown(LuaConfig *);
 };

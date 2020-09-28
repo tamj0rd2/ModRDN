@@ -1,32 +1,35 @@
 /////////////////////////////////////////////////////////////////////
 // File    : HealthExtInfo.h
-// Desc    : 
+// Desc    :
 // Created : Monday, March 19, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
 #pragma once
 
-#include "ModStaticInfo.h" 
+#include "ModStaticInfo.h"
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // HealthExtInfo
 
 class HealthExtInfo : public ModStaticInfo::ExtInfo
 {
-// types
+	// types
 public:
-	enum { ExtensionID = ModStaticInfo::EXTINFOID_Health };
+	enum
+	{
+		ExtensionID = ModStaticInfo::EXTINFOID_Health
+	};
 
-// fields
+	// fields
 public:
-	float	health;
-	bool	fadeAndDeleteWhenDead;
-	bool	stayInPathfindingAfterDead;
+	float health;
+	bool fadeAndDeleteWhenDead;
+	bool stayInPathfindingAfterDead;
 
-// construction
+	// construction
 public:
-	HealthExtInfo( const ControllerBlueprint* cbp );
+	HealthExtInfo(const ControllerBlueprint *cbp);
 };

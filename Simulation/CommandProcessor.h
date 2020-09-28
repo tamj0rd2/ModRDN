@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : CommandProcessor.h
-// Desc    : 
+// Desc    :
 // Created : Monday, January 28, 2002
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2002 Relic Entertainment Inc.
 //
 #pragma once
@@ -13,7 +13,7 @@
 //#include "TagTypes.h"
 #include "AttackTypes.h"
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Forward Declarations
 
 class ModController;
@@ -21,88 +21,82 @@ class EntityCommand;
 class Entity;
 class EntityGroup;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // CommandProcessor
 
 class CommandProcessor
 {
-// construction
+	// construction
 public:
 	CommandProcessor();
 
 	~CommandProcessor();
 
-	void Init( ModController* pMC );
+	void Init(ModController *pMC);
 
-// interface
+	// interface
 public:
+	inline bool IsDead() const;
 
-	inline bool				IsDead() const;
-
-	void					MakeDead();
+	void MakeDead();
 
 	// call these functions to setup the default state
-	void					OnSpawnEntity();
-	void					OnDeSpawnEntity();
+	void OnSpawnEntity();
+	void OnDeSpawnEntity();
 
 	// commands issued to the entity controllers.
-	bool					CommandDoProcessNow( const EntityCommand* );
-	bool					CommandIsClearQueue( const EntityCommand* ) const;
+	bool CommandDoProcessNow(const EntityCommand *);
+	bool CommandIsClearQueue(const EntityCommand *) const;
 
-	bool					Update ( const EntityCommand* currentCommand );
+	bool Update(const EntityCommand *currentCommand);
 
-// Save and Load functions
+	// Save and Load functions
 public:
+	void Save(IFF &iff) const;
 
-	void					Save( IFF& iff ) const;
-
-	void					Load( IFF& iff );
+	void Load(IFF &iff);
 
 public:
+	//
+	static unsigned long GetDefaultEntityEntityCommand(const Entity *pMe, const Entity *pTe);
 
 	//
-	static unsigned long			GetDefaultEntityEntityCommand( const Entity* pMe, const Entity* pTe );
+	static bool CanDoCommand(const Entity *pMe, unsigned long command, unsigned long param);
+	static bool CanDoCommand(const Entity *pMe, const Entity *pTarget, unsigned long command, unsigned long param);
 
-	//
-	static bool						CanDoCommand( const Entity* pMe, unsigned long command, unsigned long param );
-	static bool						CanDoCommand( const Entity* pMe, const Entity* pTarget, unsigned long command, unsigned long param );
-
-// fields
+	// fields
 private:
+	bool m_bIsDead;
 
-	bool					m_bIsDead;
+	ModController *m_pMC;
 
-	ModController*			m_pMC;
-
-// Loader
+	// Loader
 private:
-
 	// Chunk Handlers for the Save Game code
-	static unsigned long			HandleCMDP( IFF&, ChunkNode*, void*, void* );
+	static unsigned long HandleCMDP(IFF &, ChunkNode *, void *, void *);
 
-// implementation
+	// implementation
 private:
+	bool HasState(unsigned char StateID);
 
-	bool							HasState( unsigned char StateID );
-	
-	void							SelfDestruct( );
+	void SelfDestruct();
 
-	bool							ProcessQueuedCommandNow ( const EntityCommand* );
-	
-	bool							EatUpdateCommand( const EntityCommand* );
+	bool ProcessQueuedCommandNow(const EntityCommand *);
 
-	bool							ValidateCommand( const EntityCommand* pEntCmd );
+	bool EatUpdateCommand(const EntityCommand *);
+
+	bool ValidateCommand(const EntityCommand *pEntCmd);
 
 	//
-	void							ToStateIdle				( );
-	void							ToStateMove				( const Vec3f&, const EntityGroup&, const EntityGroup&, unsigned long flags = 0 );
-	void							ToStateMove				( Entity*, unsigned long flags = 0 );
-	void							ToStateAttack			( Entity* );
-	void							ToStateAttackMove		( const Vec3f& );
-	void							ToStateAttackMove		( Entity* );
-	void							ToStatePause			( bool bIgnoreCmds );
+	void ToStateIdle();
+	void ToStateMove(const Vec3f &, const EntityGroup &, const EntityGroup &, unsigned long flags = 0);
+	void ToStateMove(Entity *, unsigned long flags = 0);
+	void ToStateAttack(Entity *);
+	void ToStateAttackMove(const Vec3f &);
+	void ToStateAttackMove(Entity *);
+	void ToStatePause(bool bIgnoreCmds);
 
-	void							LeaveStatePause			( );
+	void LeaveStatePause();
 };
 
 inline bool CommandProcessor::IsDead() const

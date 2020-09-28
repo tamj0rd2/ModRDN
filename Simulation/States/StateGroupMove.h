@@ -1,14 +1,13 @@
 /////////////////////////////////////////////////////////////////////
 // File    : StateGroupMove.h
-// Desc    : 
+// Desc    :
 // Created : Wednesday, May 1, 2002
 // Author  : dswinerd
-// 
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
 #pragma once
-
 
 #include "State.h"
 
@@ -24,54 +23,52 @@ class StateMove;
 //
 class StateGroupMove : public State
 {
-// types
+	// types
 public:
 	enum
 	{
 		StateID = SID_GroupMove,
 	};
 
-// functions
+	// functions
 public:
+	StateGroupMove(EntityDynamics *e_dynamics);
 
-	StateGroupMove( EntityDynamics *e_dynamics );
-	
 	// intialize the state
-	void	Init( StateMove* pMove );	
+	void Init(StateMove *pMove);
 
-	void	Enter( Entity* pEntity,			 float AP, unsigned long flags = 0 );
-	void	Enter( const Vec3f& destination, float AP, unsigned long flags = 0 );
+	void Enter(Entity *pEntity, float AP, unsigned long flags = 0);
+	void Enter(const Vec3f &destination, float AP, unsigned long flags = 0);
 
-	void	EnterGroup( const Vec3f& offset, float maxSpeed );
+	void EnterGroup(const Vec3f &offset, float maxSpeed);
 
-	bool	CanGroup() const;
+	bool CanGroup() const;
 
-	void	AddWayPoint( const Vec3f& point );
+	void AddWayPoint(const Vec3f &point);
 
-// inherited -- State
+	// inherited -- State
 public:
-	virtual bool				Update();			// Return values:
-													//	0 - still moving.
-													//	1 - stopped because reached its goal.
-													//	2 - can't find path to goal.
-	virtual void				RequestExit();
+	virtual bool Update(); // Return values:
+												 //	0 - still moving.
+												 //	1 - stopped because reached its goal.
+												 //	2 - can't find path to goal.
+	virtual void RequestExit();
 
-	virtual void				ReissueOrder() const;
+	virtual void ReissueOrder() const;
 
-	virtual void				ForceExit();
+	virtual void ForceExit();
 
 	// retrieve the ID of this state
-	virtual State::StateIDType	GetStateID( ) const;
+	virtual State::StateIDType GetStateID() const;
 
-	virtual State*				GetSubState( unsigned char stateid );
+	virtual State *GetSubState(unsigned char stateid);
 
 	// Save Load
-	virtual void				SaveState( BiFF& ) const;
-	virtual void				LoadState( IFF& );
+	virtual void SaveState(BiFF &) const;
+	virtual void LoadState(IFF &);
 
-// types
+	// types
 private:
-
 	enum SubState
 	{
 		SS_Invalid,
@@ -80,31 +77,29 @@ private:
 		SS_Solo,
 	};
 
-// functions
+	// functions
 private:
+	void DoInternalEnter();
 
-	void						DoInternalEnter();
+	void ExitGroup();
 
-	void						ExitGroup();
+	void ToGroup(const Vec3f &offset, float maxSpeed);
+	void ToSolo();
 
-	void						ToGroup( const Vec3f& offset, float maxSpeed );
-	void						ToSolo();
+	bool HandleWaitingForGroup();
+	bool HandleSolo();
+	bool HandleGroup();
 
-	bool						HandleWaitingForGroup();
-	bool						HandleSolo();
-	bool						HandleGroup();
-
-// data
+	// data
 private:
+	StateMove *m_pStateMove;
 
-	StateMove*		m_pStateMove;
+	Target m_target;
+	float m_AP;
 
-	Target			m_target;
-	float			m_AP;
+	unsigned long m_flags;
 
-	unsigned long	m_flags;
+	long m_enterTick;
 
-	long			m_enterTick;
-
-	SubState		m_subState;
+	SubState m_subState;
 };

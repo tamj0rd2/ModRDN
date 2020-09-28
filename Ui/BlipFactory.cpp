@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : BlipFactory.cpp
-// Desc    : 
+// Desc    :
 // Created : Monday, September 24, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -27,7 +27,7 @@ static ChunkHandlerFunc BF_HandleBLPL;
 static ChunkHandlerFunc BF_HandleBLIP;
 
 //------------------------------------------------------------------------------------------------
-// 
+//
 //------------------------------------------------------------------------------------------------
 
 namespace
@@ -36,16 +36,15 @@ namespace
 
 	const int BLIPTEMPID = 65535;
 
-	struct EqualBlipId :
-		public std::binary_function< const Blip*, int, bool >
+	struct EqualBlipId : public std::binary_function<const Blip *, int, bool>
 	{
-		bool operator()( const Blip* l, int r ) const
+		bool operator()(const Blip *l, int r) const
 		{
 			return l->GetID() == r;
 		}
 	};
 
-	const float BLIPPERIOD = 4.0f;		// total cycle duration in seconds
+	const float BLIPPERIOD = 4.0f; // total cycle duration in seconds
 
 	// compute blip radius
 	// ... the blip radius varies periodically as follows:
@@ -69,32 +68,31 @@ namespace
 
 	const float BlipMinRadius = 0.001f;
 	const float BlipMaxRadius = 0.015f;
-}
+} // namespace
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-static float UpdateBlipRadius( float timeBlip )
+static float UpdateBlipRadius(float timeBlip)
 {
 	// calculate t
 	float t = timeBlip / BLIPPERIOD;
 	t -= ((int)t);
-	dbAssert( t >= 0.0f && t <= 1.0f );
+	dbAssert(t >= 0.0f && t <= 1.0f);
 
 	float radius = 0;
 
 	// calculate radius
-	if( t >= t0 && t <= t1 )
+	if (t >= t0 && t <= t1)
 	{
-		const float tRamp = ( t - 0.0f ) / ( t1 - t0 );
-		radius = BlipMinRadius + ( tRamp * ( BlipMaxRadius - BlipMinRadius ) );
+		const float tRamp = (t - 0.0f) / (t1 - t0);
+		radius = BlipMinRadius + (tRamp * (BlipMaxRadius - BlipMinRadius));
 	}
-	else
-	if( t >= t1 && t <= t2 )
+	else if (t >= t1 && t <= t2)
 	{
 		radius = BlipMaxRadius;
 	}
-	if( t >= t2 && t <= t3 )
+	if (t >= t2 && t <= t3)
 	{
 		radius = 0.0f;
 	}
@@ -107,7 +105,7 @@ static float UpdateBlipRadius( float timeBlip )
 
 static unsigned long BF_HandleBLPL(IFF &iff, ChunkNode *, void *pContext1, void *)
 {
-	iff.AddParseHandler( BF_HandleBLIP, Type_NormalVers, 'BLIP', pContext1, NULL);
+	iff.AddParseHandler(BF_HandleBLIP, Type_NormalVers, 'BLIP', pContext1, NULL);
 	return iff.Parse();
 }
 
@@ -116,15 +114,15 @@ static unsigned long BF_HandleBLPL(IFF &iff, ChunkNode *, void *pContext1, void 
 
 static unsigned long BF_HandleBLIP(IFF &iff, ChunkNode *, void *pContext1, void *)
 {
-	BlipFactory* pBlipFac = static_cast<BlipFactory*>(pContext1);
+	BlipFactory *pBlipFac = static_cast<BlipFactory *>(pContext1);
 
 	int id;
-	IFFRead( iff, id );
+	IFFRead(iff, id);
 
-	Blip* pBlip = pBlipFac->CreateBlip(id);
+	Blip *pBlip = pBlipFac->CreateBlip(id);
 	if (pBlip)
 	{
-		pBlip->Load( iff );
+		pBlip->Load(iff);
 	}
 
 	return 0;
@@ -135,7 +133,7 @@ static unsigned long BF_HandleBLIP(IFF &iff, ChunkNode *, void *pContext1, void 
 //------------------------------------------------------------------------------------------------
 
 BlipFactory::BlipFactory()
-	: m_blipTemp( BLIPTEMPID )
+		: m_blipTemp(BLIPTEMPID)
 {
 }
 
@@ -144,77 +142,77 @@ BlipFactory::BlipFactory()
 
 BlipFactory::~BlipFactory()
 {
-	std::for_each( m_blips.begin(), m_blips.end(), DELETEITEM() );
+	std::for_each(m_blips.begin(), m_blips.end(), DELETEITEM());
 }
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-Blip* BlipFactory::CreateBlip( int id )
+Blip *BlipFactory::CreateBlip(int id)
 {
 	// validate id
-	if( id >= BLIPTEMPID )
+	if (id >= BLIPTEMPID)
 	{
 		dbPrintf("Invalid Blip number (%d)", id);
 		return NULL;
 	}
 
 	// check for duplicates
-	if( GetBlipFromId( id ) != 0 )
+	if (GetBlipFromId(id) != 0)
 	{
 		dbPrintf("Duplicated Blip number (%d)", id);
 		return NULL;
 	}
 
 	//
-	Blip* p = new Blip( id, false );
+	Blip *p = new Blip(id, false);
 	m_blips.push_back(p);
 
 	return p;
 }
 
-Blip* BlipFactory::CreateBlipTemp()
+Blip *BlipFactory::CreateBlipTemp()
 {
 	//
-	Blip* p = new Blip( m_blipTemp++, true );
+	Blip *p = new Blip(m_blipTemp++, true);
 	m_blips.push_back(p);
 
 	return p;
 }
 
-Blip* BlipFactory::GetBlipFromId( int id )
+Blip *BlipFactory::GetBlipFromId(int id)
 {
 	// linear search through list
-	BlipArray::iterator found = 
-		std::find_if( m_blips.begin(), m_blips.end(), std::bind2nd(EqualBlipId(), id) );
+	BlipArray::iterator found =
+			std::find_if(m_blips.begin(), m_blips.end(), std::bind2nd(EqualBlipId(), id));
 
 	// not found?
-	if( found == m_blips.end() )
+	if (found == m_blips.end())
 		return 0;
 
-	return *found;	
+	return *found;
 }
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-void BlipFactory::DeleteBlip( int id )
+void BlipFactory::DeleteBlip(int id)
 {
 	// linear search through list
-	BlipArray::iterator found = 
-		std::find_if( m_blips.begin(), m_blips.end(), std::bind2nd(EqualBlipId(), id) );
+	BlipArray::iterator found =
+			std::find_if(m_blips.begin(), m_blips.end(), std::bind2nd(EqualBlipId(), id));
 
-	if( found == m_blips.end() )
+	if (found == m_blips.end())
 		return;
 
 	// keep pointer
-	Blip* p = *found;
+	Blip *p = *found;
 
 	// remove from list
-	std::vector_eraseback( m_blips, found );
+	std::vector_eraseback(m_blips, found);
 
 	//
-	DELETEZERO( p );
+	DELETEZERO(p);
 
 	return;
 }
@@ -227,11 +225,11 @@ void BlipFactory::DeleteBlipDead()
 	// kill all dead blips
 	BlipArray::iterator i = m_blips.begin();
 
-	for( ; i != m_blips.end(); )
+	for (; i != m_blips.end();)
 	{
-		if( (*i)->IsDead() )
+		if ((*i)->IsDead())
 		{
-			i = std::vector_eraseback( m_blips, i );
+			i = std::vector_eraseback(m_blips, i);
 		}
 		else
 		{
@@ -245,79 +243,78 @@ void BlipFactory::DeleteBlipDead()
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-void BlipFactory::Load( IFF& iff )
+void BlipFactory::Load(IFF &iff)
 {
-	iff.AddParseHandler( BF_HandleBLPL, Type_Form, 'BLPL', (void*)this, NULL);
+	iff.AddParseHandler(BF_HandleBLPL, Type_Form, 'BLPL', (void *)this, NULL);
 }
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-void BlipFactory::Save( IFF& iff )
+void BlipFactory::Save(IFF &iff)
 {
-	iff.PushChunk( Type_Form, 'BLPL', 1000L);
+	iff.PushChunk(Type_Form, 'BLPL', 1000L);
 
-		size_t i = 0;
-		size_t e = GetBlipCount();
+	size_t i = 0;
+	size_t e = GetBlipCount();
 
-		for( ; i != e; ++i )
+	for (; i != e; ++i)
+	{
+		Blip *p = GetBlipAt(i);
+
+		if (!p->IsTemp())
 		{
-			Blip* p = GetBlipAt( i );
+			iff.PushChunk(Type_NormalVers, 'BLIP', IFFVERSION);
 
-			if( !p->IsTemp() )
-			{
-				iff.PushChunk( Type_NormalVers, 'BLIP', IFFVERSION );
+			IFFWrite(iff, p->GetID());
+			p->Save(iff);
 
-					IFFWrite( iff, p->GetID() );
-					p->Save( iff );
-
-				iff.PopChunk();
-			}
-		}		
+			iff.PopChunk();
+		}
+	}
 
 	iff.PopChunk();
 }
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Blip
 
-Blip::Blip( const int id, bool temp )
-	: m_id( id ),
-	  m_flags( temp? BF_TEMP : 0 ),
-	  m_pos( 0, 0, 0 ),
-	  m_timeBlip( 0),
-	  m_lifetime( BLIPPERIOD )
+Blip::Blip(const int id, bool temp)
+		: m_id(id),
+			m_flags(temp ? BF_TEMP : 0),
+			m_pos(0, 0, 0),
+			m_timeBlip(0),
+			m_lifetime(BLIPPERIOD)
 {
-	m_entity.SetFlag( EF_IsSpawned );
+	m_entity.SetFlag(EF_IsSpawned);
 
 	return;
 }
 
-void Blip::Load( IFF& iff )
+void Blip::Load(IFF &iff)
 {
-	if( iff.GetNormalVersion() < 1001L )
+	if (iff.GetNormalVersion() < 1001L)
 	{
 		m_flags = BF_ENTITY;
-		m_entity.LoadEmbedded( iff, ModObj::i()->GetEntityFactory() );
+		m_entity.LoadEmbedded(iff, ModObj::i()->GetEntityFactory());
 	}
 	else
 	{
 		// read flags
-		IFFRead( iff, m_flags );
+		IFFRead(iff, m_flags);
 
 		//
-		if( m_flags & BF_ENTITY )
+		if (m_flags & BF_ENTITY)
 		{
-			m_entity.LoadEmbedded( iff, ModObj::i()->GetEntityFactory() );
+			m_entity.LoadEmbedded(iff, ModObj::i()->GetEntityFactory());
 			if (!m_entity.empty())
 			{
 				m_pos = m_entity.front()->GetPosition();
 			}
 		}
-		else
-		if( m_flags & BF_POS )
+		else if (m_flags & BF_POS)
 		{
-			IFFRead( iff, m_pos );
+			IFFRead(iff, m_pos);
 		}
 		else
 		{
@@ -329,23 +326,22 @@ void Blip::Load( IFF& iff )
 	return;
 }
 
-void Blip::Save( IFF& iff )
+void Blip::Save(IFF &iff)
 {
 	// validate object state
-	dbAssert( !IsTemp() );
+	dbAssert(!IsTemp());
 
 	// save flags
-	IFFWrite( iff, m_flags );
+	IFFWrite(iff, m_flags);
 
 	//
-	if( m_flags & BF_ENTITY )
+	if (m_flags & BF_ENTITY)
 	{
-		m_entity.SaveEmbedded( iff );
+		m_entity.SaveEmbedded(iff);
 	}
-	else
-	if( m_flags & BF_POS )
+	else if (m_flags & BF_POS)
 	{
-		IFFWrite( iff, m_pos );
+		IFFWrite(iff, m_pos);
 	}
 
 	return;
@@ -354,7 +350,7 @@ void Blip::Save( IFF& iff )
 void Blip::Reset()
 {
 	m_entity.clear();
-	m_pos = Vec3f( 0, 0, 0 );
+	m_pos = Vec3f(0, 0, 0);
 
 	m_flags &= ~BF_POS;
 	m_flags &= ~BF_ENTITY;
@@ -362,15 +358,15 @@ void Blip::Reset()
 	return;
 }
 
-void Blip::SetEntity( const Entity* e )
+void Blip::SetEntity(const Entity *e)
 {
 	//
 	Reset();
 
 	//
-	if( e )
+	if (e)
 	{
-		m_entity.push_back( const_cast<Entity*>(e) );
+		m_entity.push_back(const_cast<Entity *>(e));
 		m_pos = e->GetPosition();
 		m_flags |= BF_ENTITY;
 	}
@@ -378,38 +374,37 @@ void Blip::SetEntity( const Entity* e )
 	return;
 }
 
-void Blip::SetPosition( const Vec3f& pos )
+void Blip::SetPosition(const Vec3f &pos)
 {
 	//
 	Reset();
-	
+
 	//
 	m_pos = pos;
 	m_flags |= BF_POS;
 
-	return;	
+	return;
 }
 
-void Blip::SetLifeTime( float lifetime )
+void Blip::SetLifeTime(float lifetime)
 {
 	// lifetime only applies to temp blips
-	if ( m_flags & BF_TEMP )
+	if (m_flags & BF_TEMP)
 	{
 		m_lifetime = lifetime;
 	}
 }
 
-
-bool Blip::Update( float elapsedSeconds )
+bool Blip::Update(float elapsedSeconds)
 {
 	m_timeBlip += elapsedSeconds;
 
 	// update entity position
-	if( m_flags & BF_ENTITY )
+	if (m_flags & BF_ENTITY)
 	{
 		if (m_entity.empty())
 		{
-			if( m_flags & BF_TEMP )
+			if (m_flags & BF_TEMP)
 			{
 				m_flags = BF_POS | BF_TEMP;
 			}
@@ -424,18 +419,18 @@ bool Blip::Update( float elapsedSeconds )
 		}
 	}
 
-	if( m_flags & BF_TEMP )
+	if (m_flags & BF_TEMP)
 	{
-		if( m_timeBlip >= m_lifetime )
+		if (m_timeBlip >= m_lifetime)
 			m_flags = 0;
 	}
-	
+
 	// validate
-	if( IsDead() )
+	if (IsDead())
 		return false;
 
 	// update radius
-	m_radius = UpdateBlipRadius( m_timeBlip );
+	m_radius = UpdateBlipRadius(m_timeBlip);
 
 	return true;
 }

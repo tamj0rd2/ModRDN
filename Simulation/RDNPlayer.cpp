@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNPlayer.cpp
-// Desc    : 
+// Desc    :
 // Created : Thursday, February 22, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -17,7 +17,7 @@
 #include "GameEventDefs.h"
 #include "CommandTypes.h"
 #include "RDNQuery.h"
-#include "RDNTuning.h" 
+#include "RDNTuning.h"
 #include "PlayerFOW.h"
 #include "RDNEBPs.h"
 
@@ -57,58 +57,58 @@ namespace
 	class FindAnyGuy : public FindClosestFilter
 	{
 	public:
-		FindAnyGuy( const RDNPlayer* pPlayer )
-		:	m_pPlayer( pPlayer ),
-			m_bFound( false )
+		FindAnyGuy(const RDNPlayer *pPlayer)
+				: m_pPlayer(pPlayer),
+					m_bFound(false)
 		{
 		}
 
 	private:
-		virtual bool Check( const Entity* pEntity )
+		virtual bool Check(const Entity *pEntity)
 		{
 			//	Quick abort if we have found at least one
-			if ( m_bFound )
+			if (m_bFound)
 				return false;
 
 			//	Only check against this player
-			if ( pEntity->GetOwner() != m_pPlayer )
+			if (pEntity->GetOwner() != m_pPlayer)
 				return false;
 
 			//	Only check for 'Guys'
-			if ( pEntity->GetControllerBP()->GetControllerType() != Guy_EC )
+			if (pEntity->GetControllerBP()->GetControllerType() != Guy_EC)
 				return false;
 
 			m_bFound = true;
 			return true;
 		}
-		
-		const RDNPlayer*	m_pPlayer;
-		bool				m_bFound;
+
+		const RDNPlayer *m_pPlayer;
+		bool m_bFound;
 	};
-};
+}; // namespace
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-RDNPlayer::RDNPlayer( WorldFOW* pWorldFOW )
+RDNPlayer::RDNPlayer(WorldFOW *pWorldFOW)
 {
 	//
 	m_population = 0;
-	
+
 	m_cashPerTick = 0.0f;
 
-	for(int i=0;i<MAX_EC;++i)
+	for (int i = 0; i < MAX_EC; ++i)
 	{
-		m_groupController[i].ClearFlag( EF_IsSpawned );
+		m_groupController[i].ClearFlag(EF_IsSpawned);
 	}
 
-	m_pFOW = new PlayerFOW( pWorldFOW );
+	m_pFOW = new PlayerFOW(pWorldFOW);
 
 	// initialize lab position incase there never is a lab
-	m_hqPosition = Vec3f(0,0,0);
+	m_hqPosition = Vec3f(0, 0, 0);
 
 	m_resourceCash = RDNTuning::Instance()->GetPlayerInfo().startingCash;
 
@@ -116,156 +116,156 @@ RDNPlayer::RDNPlayer( WorldFOW* pWorldFOW )
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
 RDNPlayer::~RDNPlayer()
 {
-	DELETEZERO( m_pFOW );
+	DELETEZERO(m_pFOW);
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-void RDNPlayer::SetName( const wchar_t* name )
+void RDNPlayer::SetName(const wchar_t *name)
 {
 	// delegate
-	Player::SetName( name );
+	Player::SetName(name);
 
 	// generate event
-	GameEventSys::Instance()->PublishEvent( GameEvent_PlayerNameChanged( this ) );
+	GameEventSys::Instance()->PublishEvent(GameEvent_PlayerNameChanged(this));
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
 void RDNPlayer::AddEntity(Entity *e)
 {
 	// inherited
-	Player::AddEntity( e );
+	Player::AddEntity(e);
 
 	int ctype = e->GetControllerBP()->GetControllerType();
 
 	// add this entity to this controller group
-	if ( ctype < MAX_EC )
-		m_groupController[ctype].push_back( e );
+	if (ctype < MAX_EC)
+		m_groupController[ctype].push_back(e);
 
 	// observers
 	PlayerObserverList::iterator oi = m_observers.begin();
-	PlayerObserverList::iterator oe = m_observers.end  ();
+	PlayerObserverList::iterator oe = m_observers.end();
 
-	for( ; oi != oe; ++oi )
+	for (; oi != oe; ++oi)
 	{
-		( *oi )->OnAddEntity( this, e );
+		(*oi)->OnAddEntity(this, e);
 	}
 
-	switch ( ctype )
+	switch (ctype)
 	{
-		case HQ_EC :
-			// save starting position
-			m_hqPosition = e->GetPosition();
-			break;
+	case HQ_EC:
+		// save starting position
+		m_hqPosition = e->GetPosition();
+		break;
 
-		case Guy_EC :
-			++m_population;
-			break;
+	case Guy_EC:
+		++m_population;
+		break;
 	}
 
 	return;
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
 void RDNPlayer::RemoveEntity(Entity *e)
 {
-	// 
+	//
 	int ctype = e->GetControllerBP()->GetControllerType();
-	if ( ctype < MAX_EC )
-		m_groupController[ ctype ].remove( e );
+	if (ctype < MAX_EC)
+		m_groupController[ctype].remove(e);
 
-	switch ( ctype )
+	switch (ctype)
 	{
-		case Guy_EC :
-			--m_population;
-			break;
+	case Guy_EC:
+		--m_population;
+		break;
 	}
 
 	// observers
 	PlayerObserverList::iterator oi = m_observers.begin();
-	PlayerObserverList::iterator oe = m_observers.end  ();
+	PlayerObserverList::iterator oe = m_observers.end();
 
-	for( ; oi != oe; ++oi )
+	for (; oi != oe; ++oi)
 	{
-		( *oi )->OnRemoveEntity( this, e );
+		(*oi)->OnRemoveEntity(this, e);
 	}
 
 	// remove this entity from my FOW
-	m_pFOW->RemoveFromFOW( e );
-	
+	m_pFOW->RemoveFromFOW(e);
+
 	// inherited
-		// NOTE: this must be called last
-	Player::RemoveEntity( e );
+	// NOTE: this must be called last
+	Player::RemoveEntity(e);
 
 	return;
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-size_t RDNPlayer::GetNumEntity( int type ) const
+size_t RDNPlayer::GetNumEntity(int type) const
 {
-	dbAssert (type >= 0 && type < MAX_EC);
-	return m_groupController[ type ].size();
+	dbAssert(type >= 0 && type < MAX_EC);
+	return m_groupController[type].size();
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-size_t RDNPlayer::GetNumEntityTotal( int type ) const
+size_t RDNPlayer::GetNumEntityTotal(int type) const
 {
-	dbAssert (type >= 0 && type < MAX_EC);
-	return m_groupController[ type ].size();
+	dbAssert(type >= 0 && type < MAX_EC);
+	return m_groupController[type].size();
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-size_t RDNPlayer::GetNumLiveEntity( int type ) const
+size_t RDNPlayer::GetNumLiveEntity(int type) const
 {
-	dbAssert (type >= 0 && type < MAX_EC);
-	size_t count = m_groupController[ type ].size();
+	dbAssert(type >= 0 && type < MAX_EC);
+	size_t count = m_groupController[type].size();
 
-	if ( count > 0 )
+	if (count > 0)
 	{
-		EntityGroup::const_iterator ei = m_groupController[ type ].begin();
-		EntityGroup::const_iterator ee = m_groupController[ type ].end();
+		EntityGroup::const_iterator ei = m_groupController[type].begin();
+		EntityGroup::const_iterator ee = m_groupController[type].end();
 
 		// ignore entities that are dead or have zero health
 		for (; ei != ee; ei++)
 		{
-			const HealthExt* healthExt = QIExt< HealthExt >( *ei );
-			if ( !healthExt || (healthExt->GetHealth() <= 0.0f) )
+			const HealthExt *healthExt = QIExt<HealthExt>(*ei);
+			if (!healthExt || (healthExt->GetHealth() <= 0.0f))
 			{
 				count--;
 			}
@@ -275,66 +275,66 @@ size_t RDNPlayer::GetNumLiveEntity( int type ) const
 	return count;
 }
 
-
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-bool RDNPlayer::CanControlEntity( const Entity *pEntity ) const
+bool RDNPlayer::CanControlEntity(const Entity *pEntity) const
 {
-	if( pEntity == 0 )
+	if (pEntity == 0)
 		return false;
 
 	return pEntity->GetOwner() == this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//	Desc.	: This tests to see if we can build this blueprint 
+//	Desc.	: This tests to see if we can build this blueprint
 //			  based on many factors ( resources, pop limit, research, ...)
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-RDNPlayer::BuildResult RDNPlayer::BlueprintCanBuild( const ControllerBlueprint* cbp ) const
+RDNPlayer::BuildResult RDNPlayer::BlueprintCanBuild(const ControllerBlueprint *cbp) const
 {
 	// validate parm
-	if( cbp == 0 )
+	if (cbp == 0)
 	{
-		dbBreak(); return BR_Never;
+		dbBreak();
+		return BR_Never;
 	}
 
 	// check cost
-		// NOTE: cost should be checked LAST
-	const ECStaticInfo* si = 
-		ModObj::i()->GetWorld()->GetEntityFactory()->GetECStaticInfo( cbp );
+	// NOTE: cost should be checked LAST
+	const ECStaticInfo *si =
+			ModObj::i()->GetWorld()->GetEntityFactory()->GetECStaticInfo(cbp);
 
-	const CostExtInfo* cost = QIExtInfo<CostExtInfo>( si );
+	const CostExtInfo *cost = QIExtInfo<CostExtInfo>(si);
 
-	if( cost != 0 )
+	if (cost != 0)
 	{
-		if( GetResourceCash() < (cost->costCash*GetRaceBonusCost(cbp)) )
+		if (GetResourceCash() < (cost->costCash * GetRaceBonusCost(cbp)))
 			return BR_NeedResourceCash;
 	}
 
 	return BR_AllowBuild;
 }
 
-const EntityGroup& RDNPlayer::GetEntityGroup( int type ) const
+const EntityGroup &RDNPlayer::GetEntityGroup(int type) const
 {
-	dbAssert (type >= 0 && type < MAX_EC);
-	
-	return m_groupController[ type ];
+	dbAssert(type >= 0 && type < MAX_EC);
+
+	return m_groupController[type];
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-void RDNPlayer::PreFirstSimulate( )
+void RDNPlayer::PreFirstSimulate()
 {
 	// inherited
 	Player::PreFirstSimulate();
@@ -347,68 +347,41 @@ void RDNPlayer::PreFirstSimulate( )
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	:
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-float RDNPlayer::GetResourceCash() const 
-{ 
+float RDNPlayer::GetResourceCash() const
+{
 	return m_resourceCash;
 }
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	:
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-float RDNPlayer::DecResourceCash( float amount ) 
-{ 
+float RDNPlayer::DecResourceCash(float amount)
+{
 	// validate parm
-	dbAssert( amount >= 0 );
+	dbAssert(amount >= 0);
 
 	// clip
-	if( amount > m_resourceCash )
+	if (amount > m_resourceCash)
 		amount = m_resourceCash;
 
 	//
 	m_resourceCash -= amount;
-		dbAssert( m_resourceCash >= 0 );
+	dbAssert(m_resourceCash >= 0);
 
 	// observers
 	PlayerObserverList::iterator oi = m_observers.begin();
-	PlayerObserverList::iterator oe = m_observers.end  ();
+	PlayerObserverList::iterator oe = m_observers.end();
 
-	for( ; oi != oe; ++oi )
+	for (; oi != oe; ++oi)
 	{
-		( *oi )->OnDecResourceCash( this, amount );
-	}
-
-	return m_resourceCash; 
-}
-
-/////////////////////////////////////////////////////////////////////
-//	Desc.	:
-//	Result	: 
-//	Param.	: 
-//	Author	: 
-//
-float RDNPlayer::IncResourceCash( float amount, ResourceIncreased reason )
-{
-	// validate parm
-	dbAssert( amount >= 0 && amount < 100000.0f );
-
-	//
-	m_resourceCash += amount;
-		dbAssert( m_resourceCash >= 0 );
-
-	// observers
-	PlayerObserverList::iterator oi = m_observers.begin();
-	PlayerObserverList::iterator oe = m_observers.end  ();
-
-	for( ; oi != oe; ++oi )
-	{
-		( *oi )->OnIncResourceCash( this, amount, reason );
+		(*oi)->OnDecResourceCash(this, amount);
 	}
 
 	return m_resourceCash;
@@ -416,9 +389,36 @@ float RDNPlayer::IncResourceCash( float amount, ResourceIncreased reason )
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	:
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Result	:
+//	Param.	:
+//	Author	:
+//
+float RDNPlayer::IncResourceCash(float amount, ResourceIncreased reason)
+{
+	// validate parm
+	dbAssert(amount >= 0 && amount < 100000.0f);
+
+	//
+	m_resourceCash += amount;
+	dbAssert(m_resourceCash >= 0);
+
+	// observers
+	PlayerObserverList::iterator oi = m_observers.begin();
+	PlayerObserverList::iterator oe = m_observers.end();
+
+	for (; oi != oe; ++oi)
+	{
+		(*oi)->OnIncResourceCash(this, amount, reason);
+	}
+
+	return m_resourceCash;
+}
+
+/////////////////////////////////////////////////////////////////////
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
 float RDNPlayer::GetResourceCashRatePerTick() const
 {
@@ -426,35 +426,35 @@ float RDNPlayer::GetResourceCashRatePerTick() const
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-void RDNPlayer::SetRace( size_t race )
+void RDNPlayer::SetRace(size_t race)
 {
 	m_race = race;
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
 size_t RDNPlayer::GetRace() const
 {
 	return m_race;
 }
 
-float RDNPlayer::GetRaceBonusCost( const ControllerBlueprint* pCBP ) const
+float RDNPlayer::GetRaceBonusCost(const ControllerBlueprint *pCBP) const
 {
 	float cost = 1.0f;
 
-	if ( pCBP->GetControllerType() == Guy_EC )
+	if (pCBP->GetControllerType() == Guy_EC)
 	{
-		const RDNTuning::RaceInfo& raceInfo = RDNTuning::Instance()->GetRaceInfo();
-		switch ( m_race )
+		const RDNTuning::RaceInfo &raceInfo = RDNTuning::Instance()->GetRaceInfo();
+		switch (m_race)
 		{
 		case RACE_Faster:
 			cost *= raceInfo.faster.costMultiplier;
@@ -470,45 +470,45 @@ float RDNPlayer::GetRaceBonusCost( const ControllerBlueprint* pCBP ) const
 			break;
 		}
 	}
-	
+
 	return cost;
 }
 
-float RDNPlayer::GetRaceBonusHealthMax( const ControllerBlueprint* pCBP ) const
+float RDNPlayer::GetRaceBonusHealthMax(const ControllerBlueprint *pCBP) const
 {
 	float health = 1.0f;
 
-	if ( pCBP->GetControllerType() == Guy_EC )
+	if (pCBP->GetControllerType() == Guy_EC)
 	{
-		const RDNTuning::RaceInfo& raceInfo = RDNTuning::Instance()->GetRaceInfo();
-		switch ( m_race )
+		const RDNTuning::RaceInfo &raceInfo = RDNTuning::Instance()->GetRaceInfo();
+		switch (m_race)
 		{
-			case RACE_Faster:
-				health *= raceInfo.faster.healthMultiplier;
-				break;
-			case RACE_Stronger:
-				health *= raceInfo.stronger.healthMultiplier;
-				break;
-			case RACE_Cheaper:
-				health *= raceInfo.cheaper.healthMultiplier;
-				break;
-			default:
-				dbBreak();
-				break;
+		case RACE_Faster:
+			health *= raceInfo.faster.healthMultiplier;
+			break;
+		case RACE_Stronger:
+			health *= raceInfo.stronger.healthMultiplier;
+			break;
+		case RACE_Cheaper:
+			health *= raceInfo.cheaper.healthMultiplier;
+			break;
+		default:
+			dbBreak();
+			break;
 		}
 	}
 
 	return health;
 }
 
-float RDNPlayer::GetRaceBonusSpeed( const ControllerBlueprint* pCBP ) const
+float RDNPlayer::GetRaceBonusSpeed(const ControllerBlueprint *pCBP) const
 {
 	float speed = 1.0f;
 
-	if ( pCBP->GetControllerType() == Guy_EC )
+	if (pCBP->GetControllerType() == Guy_EC)
 	{
-		const RDNTuning::RaceInfo& raceInfo = RDNTuning::Instance()->GetRaceInfo();
-		switch ( m_race )
+		const RDNTuning::RaceInfo &raceInfo = RDNTuning::Instance()->GetRaceInfo();
+		switch (m_race)
 		{
 		case RACE_Faster:
 			speed *= raceInfo.faster.speedMultiplier;
@@ -524,36 +524,36 @@ float RDNPlayer::GetRaceBonusSpeed( const ControllerBlueprint* pCBP ) const
 			break;
 		}
 	}
-	
+
 	return speed;
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-const Entity* RDNPlayer::GetHQEntity() const
+const Entity *RDNPlayer::GetHQEntity() const
 {
-	return const_cast< RDNPlayer* >( this )->GetHQEntity();
+	return const_cast<RDNPlayer *>(this)->GetHQEntity();
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-Entity* RDNPlayer::GetHQEntity()
+Entity *RDNPlayer::GetHQEntity()
 {
-	if( m_groupController[ HQ_EC ].size() == 0 )
+	if (m_groupController[HQ_EC].size() == 0)
 		return 0;
 
-	return *m_groupController[ HQ_EC ].begin();
+	return *m_groupController[HQ_EC].begin();
 }
 
-const Vec3f& RDNPlayer::GetStartingPosition() const
+const Vec3f &RDNPlayer::GetStartingPosition() const
 {
 	// if the lab is dead return the position of where it was
 	if (GetHQEntity() == NULL)
@@ -563,179 +563,175 @@ const Vec3f& RDNPlayer::GetStartingPosition() const
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-bool RDNPlayer::FoWIsVisible( const Entity* entity ) const
+bool RDNPlayer::FoWIsVisible(const Entity *entity) const
 {
-	return RDNQuery::CanBeSeen( entity, this );
+	return RDNQuery::CanBeSeen(entity, this);
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-bool RDNPlayer::FoWIsVisible( const Player* player, const ControllerBlueprint* pCBP, const Matrix43f& transform ) const
+bool RDNPlayer::FoWIsVisible(const Player *player, const ControllerBlueprint *pCBP, const Matrix43f &transform) const
 {
-	if ( player == this )
+	if (player == this)
 		return false;
 
-	const PlayerFOW* pFoW = GetFogOfWar();
+	const PlayerFOW *pFoW = GetFogOfWar();
 
-	return pFoW->IsVisible( pCBP, transform );
+	return pFoW->IsVisible(pCBP, transform);
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-void RDNPlayer::FoWUpdate( const RDNWorld* )
+void RDNPlayer::FoWUpdate(const RDNWorld *)
 {
 	// update fogmap
-	if( !IsPlayerDead() )
+	if (!IsPlayerDead())
 	{
-		GetFogOfWar()->Update( GetEntities() );
+		GetFogOfWar()->Update(GetEntities());
 	}
 
 	return;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void RDNPlayer::CommandDoProcess
-	(
-	const unsigned int		cmd, 
-	const unsigned long		param,
-	const unsigned int		flags, 
-	Player*					sender
-	)
+void RDNPlayer::CommandDoProcess(
+		const unsigned int cmd,
+		const unsigned long param,
+		const unsigned int flags,
+		Player *sender)
 {
-	UNREF_P( flags );
+	UNREF_P(flags);
 
-	switch ( cmd )
+	switch (cmd)
 	{
-		case PCMD_CheatCash:
-			CmdCheatCash( sender, param );
-			break;
-		
-		case PCMD_CheatKillSelf:
-			CmdCheatKillSelf( sender );
-			break;
+	case PCMD_CheatCash:
+		CmdCheatCash(sender, param);
+		break;
+
+	case PCMD_CheatKillSelf:
+		CmdCheatKillSelf(sender);
+		break;
 	}
 
 	return;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void RDNPlayer::CommandDoProcess
-	(
-	const unsigned int		cmd, 
-	const unsigned long		param,
-	const unsigned int		flags, 
-	Player*					sender,
-	const EntityGroup&		entities,
-	const Vec3f*			pos,
-	const size_t			posCount
-	)
+void RDNPlayer::CommandDoProcess(
+		const unsigned int cmd,
+		const unsigned long param,
+		const unsigned int flags,
+		Player *sender,
+		const EntityGroup &entities,
+		const Vec3f *pos,
+		const size_t posCount)
 {
 	// no commands
-	UNREF_P( cmd );
-	UNREF_P( param );
-	UNREF_P( flags );
-	UNREF_P( sender );
-	UNREF_P( entities );
-	UNREF_P( pos );
-	UNREF_P( posCount );
+	UNREF_P(cmd);
+	UNREF_P(param);
+	UNREF_P(flags);
+	UNREF_P(sender);
+	UNREF_P(entities);
+	UNREF_P(pos);
+	UNREF_P(posCount);
 
 	return;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void RDNPlayer::Save( IFF& iff ) const
+void RDNPlayer::Save(IFF &iff) const
 {
 	// Call the Base Class First
-	Player::Save( iff );
+	Player::Save(iff);
 
 	//
-	iff.PushChunk( Type_Form, 'SPFC', 1 );
+	iff.PushChunk(Type_Form, 'SPFC', 1);
 
-		iff.PushChunk( Type_NormalVers, 'SPDT', 1 );
+	iff.PushChunk(Type_NormalVers, 'SPDT', 1);
 
-			IFFWrite( iff, m_resourceCash );
-			IFFWrite( iff, m_hqPosition );
+	IFFWrite(iff, m_resourceCash);
+	IFFWrite(iff, m_hqPosition);
 
-		iff.PopChunk( );
+	iff.PopChunk();
 
-		GetFogOfWar()->Save( iff );
+	GetFogOfWar()->Save(iff);
 
-	iff.PopChunk( );
+	iff.PopChunk();
 
 	return;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void RDNPlayer::Load( IFF& iff )
+void RDNPlayer::Load(IFF &iff)
 {
 	// Call the Base Class First
-	Player::Load( iff );
+	Player::Load(iff);
 
-	iff.AddParseHandler( HandleSPFC, Type_Form, 'SPFC', this, NULL );
+	iff.AddParseHandler(HandleSPFC, Type_Form, 'SPFC', this, NULL);
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-unsigned long RDNPlayer::HandleSPFC( IFF& iff, ChunkNode*, void* pContext1, void* pContext2 )
+unsigned long RDNPlayer::HandleSPFC(IFF &iff, ChunkNode *, void *pContext1, void *pContext2)
 {
-	RDNPlayer* pPlayer = static_cast< RDNPlayer* >( pContext1 );
-	
-	iff.AddParseHandler( HandleSPDT, Type_NormalVers, 'SPDT', pContext1, pContext2 );
+	RDNPlayer *pPlayer = static_cast<RDNPlayer *>(pContext1);
 
-	pPlayer->GetFogOfWar()->Load( iff );
+	iff.AddParseHandler(HandleSPDT, Type_NormalVers, 'SPDT', pContext1, pContext2);
 
-	return iff.Parse( );
+	pPlayer->GetFogOfWar()->Load(iff);
+
+	return iff.Parse();
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-unsigned long RDNPlayer::HandleSPDT( IFF& iff, ChunkNode*, void* pContext1, void* )
+unsigned long RDNPlayer::HandleSPDT(IFF &iff, ChunkNode *, void *pContext1, void *)
 {
-	RDNPlayer* pPlayer = static_cast< RDNPlayer* >( pContext1 );
+	RDNPlayer *pPlayer = static_cast<RDNPlayer *>(pContext1);
 
-	IFFRead( iff, pPlayer->m_resourceCash );
-	IFFRead( iff, pPlayer->m_hqPosition );
+	IFFRead(iff, pPlayer->m_resourceCash);
+	IFFRead(iff, pPlayer->m_hqPosition);
 
 	return 0;
 }
@@ -746,58 +742,58 @@ unsigned long RDNPlayer::HandleSPDT( IFF& iff, ChunkNode*, void* pContext1, void
 //	Param.	: cbp - the ControllerBlueprint of the building
 //	Author	: dswinerd
 //
-int RDNPlayer::GetStructureBudget( const ControllerBlueprint* cbp ) const
+int RDNPlayer::GetStructureBudget(const ControllerBlueprint *cbp) const
 {
 	//
-	const ECStaticInfo* si = ModObj::i()->GetEntityFactory()->GetECStaticInfo( cbp );
+	const ECStaticInfo *si = ModObj::i()->GetEntityFactory()->GetECStaticInfo(cbp);
 
-	const CostExtInfo* cost = QIExtInfo<CostExtInfo>( si );
+	const CostExtInfo *cost = QIExtInfo<CostExtInfo>(si);
 
-	if( cost == 0 )
+	if (cost == 0)
 	{
 		return 0;
 	}
 
 	// determines how many segments we can afford
-	int budget	= INT_MAX;
+	int budget = INT_MAX;
 
 	if (cost->costCash > 0)
 	{
-		budget = (int)(GetResourceCash() / (cost->costCash*GetRaceBonusCost(cbp)) );
+		budget = (int)(GetResourceCash() / (cost->costCash * GetRaceBonusCost(cbp)));
 	}
 
 	return budget;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
 int RDNPlayer::PopulationCurrent() const
 {
 	return m_population;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
 int RDNPlayer::PopulationMax() const
 {
 	return RDNDllSetup::Instance()->GetUnitCap();
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-int	RDNPlayer::PopulationTotal() const
+int RDNPlayer::PopulationTotal() const
 {
 	// count unit in construction
 	EntityGroup::const_iterator i = GetEntities().begin();
@@ -805,13 +801,13 @@ int	RDNPlayer::PopulationTotal() const
 
 	int popInConstruction = 0;
 
-	for( ; i != e; ++i )
+	for (; i != e; ++i)
 	{
-		const UnitSpawnerExt* spawn = QIExt<UnitSpawnerExt>( *i );
+		const UnitSpawnerExt *spawn = QIExt<UnitSpawnerExt>(*i);
 
-		if( spawn )
+		if (spawn)
 		{
-			if( spawn->UnitInProgress().second > 0.0f )
+			if (spawn->UnitInProgress().second > 0.0f)
 				popInConstruction++;
 		}
 	}
@@ -819,99 +815,99 @@ int	RDNPlayer::PopulationTotal() const
 	return PopulationCurrent() + popInConstruction;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void RDNPlayer::SpawnEntity( Entity* pEntity )
+void RDNPlayer::SpawnEntity(Entity *pEntity)
 {
-	UNREF_P( pEntity );
+	UNREF_P(pEntity);
 
 	// observers
 	PlayerObserverList::iterator oi = m_observers.begin();
-	PlayerObserverList::iterator oe = m_observers.end  ();
+	PlayerObserverList::iterator oe = m_observers.end();
 
-	for( ; oi != oe; ++oi )
+	for (; oi != oe; ++oi)
 	{
-		( *oi )->OnReSpawnEntity( this, pEntity );
+		(*oi)->OnReSpawnEntity(this, pEntity);
 	}
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void RDNPlayer::DeSpawnEntity( Entity* pEntity )
+void RDNPlayer::DeSpawnEntity(Entity *pEntity)
 {
-	m_pFOW->RemoveFromFOW( pEntity );
+	m_pFOW->RemoveFromFOW(pEntity);
 
 	// observers
 	PlayerObserverList::iterator oi = m_observers.begin();
-	PlayerObserverList::iterator oe = m_observers.end  ();
+	PlayerObserverList::iterator oe = m_observers.end();
 
-	for( ; oi != oe; ++oi )
+	for (; oi != oe; ++oi)
 	{
-		( *oi )->OnDeSpawnEntity( this, pEntity );
+		(*oi)->OnDeSpawnEntity(this, pEntity);
 	}
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-PlayerFOW* RDNPlayer::GetFogOfWar( )
+PlayerFOW *RDNPlayer::GetFogOfWar()
 {
 	return m_pFOW;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void RDNPlayer::KillPlayer( int reason )
+void RDNPlayer::KillPlayer(int reason)
 {
 	// validate parm
-	dbAssert( reason >= 0 && reason < KPR_COUNT );
+	dbAssert(reason >= 0 && reason < KPR_COUNT);
 
 	// debug spew
-	if( reason != KPR_UnusedPlayer )
+	if (reason != KPR_UnusedPlayer)
 	{
-		const RDNWorld* w = 
-			ModObj::i()->GetWorld();
+		const RDNWorld *w =
+				ModObj::i()->GetWorld();
 
-		dbTracef( "MOD -- Player %S has been killed (frame %d)", GetName(), w->GetGameTicks() );
+		dbTracef("MOD -- Player %S has been killed (frame %d)", GetName(), w->GetGameTicks());
 	}
 
 	// inherited
-	Player::KillPlayer( reason );
+	Player::KillPlayer(reason);
 
 	// game event
-	if( reason != KPR_UnusedPlayer )
+	if (reason != KPR_UnusedPlayer)
 	{
-		GameEventSys::Instance()->PublishEvent( GameEvent_PlayerKilled(this, reason) );
+		GameEventSys::Instance()->PublishEvent(GameEvent_PlayerKilled(this, reason));
 	}
 
 	return;
 }
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Desc.     : called when we have successfully tagged an enemy creature.
 //				Used to update FoW
 // Result    : e added to m_taggedCreatures
 // Param.    : e - the tagged enemy
 // Author    : dswinerd
 //
-void RDNPlayer::AddTaggedEntity( Entity *e )
+void RDNPlayer::AddTaggedEntity(Entity *e)
 {
-	GetFogOfWar()->AddTaggedEntity( e );
+	GetFogOfWar()->AddTaggedEntity(e);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -920,75 +916,73 @@ void RDNPlayer::AddTaggedEntity( Entity *e )
 //	Param.	: e - the untagged enemy
 //	Author	: dswinerd
 //
-void RDNPlayer::RemoveTaggedEntity( Entity* e )
+void RDNPlayer::RemoveTaggedEntity(Entity *e)
 {
-	GetFogOfWar()->RemTaggedEntity( e );
+	GetFogOfWar()->RemTaggedEntity(e);
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-void RDNPlayer::CmdCheatCash( Player* sender, unsigned long n )
+void RDNPlayer::CmdCheatCash(Player *sender, unsigned long n)
 {
-	UNREF_P( sender );
+	UNREF_P(sender);
 
 	// validate cheat
-	if( RDNDllSetup::Instance()->GetCheats() != RDNDllSetup::CHT_Yes )
+	if (RDNDllSetup::Instance()->GetCheats() != RDNDllSetup::CHT_Yes)
 		return;
 
 	// validate parm
-	if( n <= 0 || n > 65535 )
+	if (n <= 0 || n > 65535)
 		return;
 
 	// apply cheat
-	IncResourceCash( float(n) );
+	IncResourceCash(float(n));
 
 	// debug spew
-	dbTracef( "MOD -- (CHEAT) player %d added %d cash", GetID(), n );
+	dbTracef("MOD -- (CHEAT) player %d added %d cash", GetID(), n);
 
-	// 
-	GameEventSys::Instance()->PublishEvent( GameEvent_PlayerCheat(this) );
+	//
+	GameEventSys::Instance()->PublishEvent(GameEvent_PlayerCheat(this));
 
 	return;
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-void RDNPlayer::CmdCheatKillSelf( Player* sender )
+void RDNPlayer::CmdCheatKillSelf(Player *sender)
 {
-	dbAssert( sender == this );
+	dbAssert(sender == this);
 
 	// validate cheat
-	if( RDNDllSetup::Instance()->GetCheats() != RDNDllSetup::CHT_Yes )
+	if (RDNDllSetup::Instance()->GetCheats() != RDNDllSetup::CHT_Yes)
 		return;
 
 	//
-	dbTracef( "MOD -- (CHEAT) player %d killed itself", GetID() );
+	dbTracef("MOD -- (CHEAT) player %d killed itself", GetID());
 
-	// 
-	GameEventSys::Instance()->PublishEvent( GameEvent_PlayerCheat(this) );
+	//
+	GameEventSys::Instance()->PublishEvent(GameEvent_PlayerCheat(this));
 
 	// send a self-destroy command to everybody
 	EntityGroup g;
-	g.SetFlag( EF_IsSpawned );
+	g.SetFlag(EF_IsSpawned);
 	g = GetEntities();
 
-	WorldDoCommandEntity
-		(
-		ModObj::i()->GetWorld(),
-		CMD_Destroy,
-		0,
-		0,
-		GetID(),
-		g
-		);
+	WorldDoCommandEntity(
+			ModObj::i()->GetWorld(),
+			CMD_Destroy,
+			0,
+			0,
+			GetID(),
+			g);
 
 	return;
 }
@@ -996,17 +990,17 @@ void RDNPlayer::CmdCheatKillSelf( Player* sender )
 /////////////////////////////////////////////////////////////////////
 //	Name	:
 //	Desc.	:
-//	Result	: 
-//	Param.	: 
-//	Author	: 
-void RDNPlayer::AddObserver( Observer* p ) const
+//	Result	:
+//	Param.	:
+//	Author	:
+void RDNPlayer::AddObserver(Observer *p) const
 {
 	// validate parm
-	dbAssert( p != NULL );
-	dbAssert( m_observers.find( p ) == m_observers.end() );
+	dbAssert(p != NULL);
+	dbAssert(m_observers.find(p) == m_observers.end());
 
 	// add
-	m_observers.insert( p );
+	m_observers.insert(p);
 
 	return;
 }
@@ -1014,19 +1008,19 @@ void RDNPlayer::AddObserver( Observer* p ) const
 /////////////////////////////////////////////////////////////////////
 //	Name	:
 //	Desc.	:
-//	Result	: 
-//	Param.	: 
+//	Result	:
+//	Param.	:
 //	Author	:
-void RDNPlayer::RemoveObserver( Observer* p ) const
+void RDNPlayer::RemoveObserver(Observer *p) const
 {
 	// validate parm
-	dbAssert( p != NULL );
+	dbAssert(p != NULL);
 
 	// erase
-	PlayerObserverList::iterator found = m_observers.find( p );
-		dbAssert( found != m_observers.end() );
+	PlayerObserverList::iterator found = m_observers.find(p);
+	dbAssert(found != m_observers.end());
 
-	m_observers.erase( found );
+	m_observers.erase(found);
 
 	return;
 }
@@ -1034,59 +1028,58 @@ void RDNPlayer::RemoveObserver( Observer* p ) const
 /////////////////////////////////////////////////////////////////////
 //	Name	:
 //	Desc.	:
-//	Result	: 
-//	Param.	: 
+//	Result	:
+//	Param.	:
 //	Author	:
-void RDNPlayer::Update( )
+void RDNPlayer::Update()
 {
 	m_cashPerTick = CalcRateForAllCashPilePerTick();
-	
-	IncResourceCash( m_cashPerTick, RES_Resourcing );
+
+	IncResourceCash(m_cashPerTick, RES_Resourcing);
 }
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	:
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Result	:
+//	Param.	:
+//	Author	:
 //
 float RDNPlayer::CalcRateForAllCashPilePerTick() const
 {
 	// count the number of cashpiles near our units
-	const EntityGroup& cashGroup = ModObj::i()->GetWorld()->GetCashPileList();
+	const EntityGroup &cashGroup = ModObj::i()->GetWorld()->GetCashPileList();
 	if (cashGroup.empty())
 		return 0.0f;
-	
+
 	int cashCount(0);
-	
+
 	EntityGroup::const_iterator bi = cashGroup.begin();
 	EntityGroup::const_iterator ei = cashGroup.end();
-	
-	FindAnyGuy anyGuy( this );
-	ThreatPrioritizerAll noThreats( this );
-	
+
+	FindAnyGuy anyGuy(this);
+	ThreatPrioritizerAll noThreats(this);
+
 	const float radius = RDNTuning::Instance()->GetCashPileInfo().cashRadius;
 	for (; bi != ei; ++bi)
 	{
-		const Entity* pCashPile = *bi;
+		const Entity *pCashPile = *bi;
 
 		//	Check if any of my entities are near this guy
-		const Entity* pGuy = RDNQuery::FindClosestPrioritize( pCashPile, 
-				radius, 
-				anyGuy, 
-				noThreats );
-		
-		if ( pGuy != NULL )
+		const Entity *pGuy = RDNQuery::FindClosestPrioritize(pCashPile,
+																												 radius,
+																												 anyGuy,
+																												 noThreats);
+
+		if (pGuy != NULL)
 		{
 			++cashCount;
 		}
 	}
 
 	// if no finished cashs return 0
-	if (cashCount==0)
+	if (cashCount == 0)
 		return 0.0f;
 
 	// rate per second which is the same for every cash
 	return cashCount * RDNTuning::Instance()->GetCashPileInfo().cashRate;
 }
-

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNEntityFilter.h
-// Desc    : 
+// Desc    :
 // Created : Tuesday, July 03, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -15,45 +15,45 @@
 
 class RDNPlayer;
 
-class RDNEntityFilter: public EntityFilter
+class RDNEntityFilter : public EntityFilter
 {
 public:
 	// singleton interface
-	static bool					Initialize( void );
-	static void					Shutdown( void );
+	static bool Initialize(void);
+	static void Shutdown(void);
 
-	static RDNEntityFilter*	Instance(void); 
+	static RDNEntityFilter *Instance(void);
 
 public:
 	// inherited from EntityFilter
-	virtual void		SetMode( FilterMode );
-	virtual void		ClearMode();
+	virtual void SetMode(FilterMode);
+	virtual void ClearMode();
 
-	virtual bool		QueryFilter( const Entity* ) const;
-	virtual int			QueryPriority( const Entity* ) const;
-	virtual void		FilterGroup( EntityGroup& ) const;
+	virtual bool QueryFilter(const Entity *) const;
+	virtual int QueryPriority(const Entity *) const;
+	virtual void FilterGroup(EntityGroup &) const;
 
-	virtual void		SetContextGroup( const EntityGroup& );
-	virtual void		ClearContextGroup();
+	virtual void SetContextGroup(const EntityGroup &);
+	virtual void ClearContextGroup();
 
-	virtual void		SetExclusionGroup( const EntityGroup& );
-	virtual void		ClearExclusionGroup();
+	virtual void SetExclusionGroup(const EntityGroup &);
+	virtual void ClearExclusionGroup();
 
 public:
 	// extensions
-	void SetLocalPlayer( const RDNPlayer *localPlayer );
+	void SetLocalPlayer(const RDNPlayer *localPlayer);
 
 private:
 	RDNEntityFilter();
 
-	bool			IsLocalPlayerUnit( const Entity* ) const;
-	bool			IsSingleSelect( const Entity* ) const;
+	bool IsLocalPlayerUnit(const Entity *) const;
+	bool IsSingleSelect(const Entity *) const;
 
 private:
-	const RDNPlayer*	m_pLocalPlayer;	// weak pointer
+	const RDNPlayer *m_pLocalPlayer; // weak pointer
 	EntityFilter::FilterMode
-						m_filterMode;
-	bool				m_bContext_Enabled;
-	bool				m_bContext_PickLocal;
-	EntityGroup			m_exclusionGroup;
+			m_filterMode;
+	bool m_bContext_Enabled;
+	bool m_bContext_PickLocal;
+	EntityGroup m_exclusionGroup;
 };

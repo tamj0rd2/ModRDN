@@ -32,14 +32,13 @@ namespace ModTriggerTypes
 	//----------------------------------------
 	// objective state
 	// order is VERY IMPORTANT
-	enum ObjectiveState 
+	enum ObjectiveState
 	{
-		OS_Off, 
-		OS_Incomplete, 
-		OS_Complete, 
-		OS_Failed, 
-		
+		OS_Off,
+		OS_Incomplete,
+		OS_Complete,
+		OS_Failed,
+
 		OS_NumStates
 	};
-}
-
+} // namespace ModTriggerTypes

@@ -1,29 +1,32 @@
 /////////////////////////////////////////////////////////////////////
 // File    : MovingExtInfo.h
-// Desc    : 
+// Desc    :
 // Created : Monday, March 19, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
 #pragma once
 
-#include "ModStaticInfo.h" 
+#include "ModStaticInfo.h"
 
 #include <SimEngine/Pathfinding/PathTypes.h>
 
 class EntityDynamics;
 class SimEntity;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // MovingExtInfo
 
 class MovingExtInfo : public ModStaticInfo::ExtInfo
 {
-// types
+	// types
 public:
-	enum { ExtensionID = ModStaticInfo::EXTINFOID_Moving };
+	enum
+	{
+		ExtensionID = ModStaticInfo::EXTINFOID_Moving
+	};
 
 	enum MovingType
 	{
@@ -33,36 +36,35 @@ public:
 		MOV_AMPHIBIOUS,
 	};
 
-// statics
+	// statics
 public:
-	static MovingType GetMovingType( const ControllerBlueprint* cbp );
+	static MovingType GetMovingType(const ControllerBlueprint *cbp);
 
-// functions
+	// functions
 public:
-	inline bool		IsFlyer() const;
-	inline bool		IsGround() const;
-	inline bool		IsSwimmer() const;
+	inline bool IsFlyer() const;
+	inline bool IsGround() const;
+	inline bool IsSwimmer() const;
 
-// fields
+	// fields
 public:
-	MovingType	movingType;
-	
-	bool		bCannotBeSlowed;
+	MovingType movingType;
 
-	float		speed;
-	float		airSpeed;
-	float		waterSpeed;
+	bool bCannotBeSlowed;
 
-	float		entityMoveAP;
+	float speed;
+	float airSpeed;
+	float waterSpeed;
 
-// methods
+	float entityMoveAP;
+
+	// methods
 public:
 	TCMask GetMovementMask() const;
 
-// construction
+	// construction
 public:
-	MovingExtInfo( const ControllerBlueprint* cbp );
-
+	MovingExtInfo(const ControllerBlueprint *cbp);
 };
 
 //
@@ -83,7 +85,7 @@ inline bool MovingExtInfo::IsSwimmer() const
 	return movingType == MOV_SWIMMER || movingType == MOV_AMPHIBIOUS;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
-EntityDynamics* CreateDynamics( SimEntity* pEntity, const MovingExtInfo* moving );
+EntityDynamics *CreateDynamics(SimEntity *pEntity, const MovingExtInfo *moving);

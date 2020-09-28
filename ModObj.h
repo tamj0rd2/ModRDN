@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////
 //	File	: Interface for MOD's
-//	Desc.	: 
+//	Desc.	:
 //		17.Nov.00 (c) Relic Entertainment Inc.
 //
 #pragma once
@@ -33,72 +33,70 @@ class ModSimVis;
 
 class ModObj
 {
-// construction -- singleton
+	// construction -- singleton
 private:
-	 ModObj();
+	ModObj();
 	~ModObj();
 
 public:
 	static ModObj *i();
 
-	static void	Initialize( SimEngineInterface* );
-	static void	Shutdown();
+	static void Initialize(SimEngineInterface *);
+	static void Shutdown();
 
-// interface
+	// interface
 public:
+	RDNWorld *GetWorld();
 
-	RDNWorld*			GetWorld();
+	EntityFactory *GetEntityFactory();
 
-	EntityFactory*		GetEntityFactory( );
+	TriggerFactory *GetTriggerFactory();
 
-	TriggerFactory*		GetTriggerFactory( );
+	SoundInterface *GetSoundInterface();
 
-	SoundInterface*		GetSoundInterface( );
+	FXInterface *GetFxInterface();
 
-	FXInterface*		GetFxInterface( );
+	GhostInterface *GetGhostInterface();
 
-	GhostInterface*		GetGhostInterface( );
+	DecalInterface *GetDecalInterface();
 
-	DecalInterface*		GetDecalInterface( );
+	TerrainOverlayInterface *
+	GetTerrainOverlayInterface();
 
-	TerrainOverlayInterface*		
-						GetTerrainOverlayInterface( );
+	CharacterMap *GetCharacterMap();
 
-	CharacterMap*		GetCharacterMap( );
+	SelectionInterface *GetSelectionInterface();
 
-	SelectionInterface*	GetSelectionInterface( );
+	CameraInterface *GetCameraInterface();
 
-	CameraInterface*	GetCameraInterface( );
-
-	UIInterface*		GetUIInterface( );
+	UIInterface *GetUIInterface();
 
 	//
-	void				SetSelectionInterface( SelectionInterface* );
+	void SetSelectionInterface(SelectionInterface *);
 
-	void				SetCameraInterface( CameraInterface* );
+	void SetCameraInterface(CameraInterface *);
 
-	void				SetSoundInterface( SoundInterface* );
+	void SetSoundInterface(SoundInterface *);
 
-	void				SetFxInterface( FXInterface* );
+	void SetFxInterface(FXInterface *);
 
-	void				SetGhostInterface( GhostInterface* );
+	void SetGhostInterface(GhostInterface *);
 
-	void				SetDecalInterface( DecalInterface* );
-	
-	void				SetTerrainOverlayInterface( TerrainOverlayInterface* );
+	void SetDecalInterface(DecalInterface *);
 
-	void				SetUIInterface( UIInterface* );
+	void SetTerrainOverlayInterface(TerrainOverlayInterface *);
+
+	void SetUIInterface(UIInterface *);
 
 public:
-	void				CreateWorld( bool bMissionEd );
+	void CreateWorld(bool bMissionEd);
 
-	ObjectiveFactory*	GetObjectiveFactory( );
+	ObjectiveFactory *GetObjectiveFactory();
 
-	BlipFactory*		GetBlipFactory( );
+	BlipFactory *GetBlipFactory();
 
-
-// fields
+	// fields
 private:
 	class Data;
-	Data* m_pimpl;
+	Data *m_pimpl;
 };

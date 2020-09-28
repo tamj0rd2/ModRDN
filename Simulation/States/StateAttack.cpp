@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : StateAttack.cpp
-// Desc    : 
+// Desc    :
 // Created : Saturday, September 15, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -15,7 +15,7 @@
 #include "../RDNWorld.h"
 #include "../RDNPlayer.h"
 #include "../PlayerFOW.h"
-#include "../RDNQuery.h" 
+#include "../RDNQuery.h"
 #include "../RDNTuning.h"
 #include "../CommandTypes.h"
 #include "../AttackPackage.h"
@@ -54,33 +54,31 @@
 // Attack
 //////////////////////////////////////////////////////////////////////////////////////
 
-
-
-StateAttack::StateAttack( EntityDynamics *e_dynamics )
-:	State( e_dynamics ),
-	m_CurState  ( AS_Null ),
-	m_pStateMove( NULL ),
-	m_pAttack   ( NULL ),
-	m_pAttackInf( 0 ),
-	m_pAttackCurrent( 0 ),
-	m_exitState( AES_Invalid ),
-	m_AttackCount( 0 )
+StateAttack::StateAttack(EntityDynamics *e_dynamics)
+		: State(e_dynamics),
+			m_CurState(AS_Null),
+			m_pStateMove(NULL),
+			m_pAttack(NULL),
+			m_pAttackInf(0),
+			m_pAttackCurrent(0),
+			m_exitState(AES_Invalid),
+			m_AttackCount(0)
 {
 	return;
 }
 
-void StateAttack::Init( StateMove* pMove, AttackExt* pAttack, const AttackInfoPackage* pAttackInf )
+void StateAttack::Init(StateMove *pMove, AttackExt *pAttack, const AttackInfoPackage *pAttackInf)
 {
 	// validate parm
-	dbAssert( pMove );
-	dbAssert( pAttack );
-	dbAssert( pAttackInf );
+	dbAssert(pMove);
+	dbAssert(pAttack);
+	dbAssert(pAttackInf);
 
 	// check for duplicate initialization
-	dbAssert( m_pStateMove == 0 );
-	dbAssert( m_pAttack    == 0 );
-	dbAssert( m_pAttackInf == 0 );
-	dbAssert( m_pAttackCurrent  == 0 );
+	dbAssert(m_pStateMove == 0);
+	dbAssert(m_pAttack == 0);
+	dbAssert(m_pAttackInf == 0);
+	dbAssert(m_pAttackCurrent == 0);
 
 	// init fields
 	m_pStateMove = pMove;
@@ -94,7 +92,7 @@ void StateAttack::Init( StateMove* pMove, AttackExt* pAttack, const AttackInfoPa
 /////////////////////////////////////////////////////////////////////
 //	Result	: returns the EntityGroup of target(s)
 //
-const Entity* StateAttack::GetTargetEntity() const
+const Entity *StateAttack::GetTargetEntity() const
 {
 	return m_Target.front();
 }
@@ -103,9 +101,9 @@ const Entity* StateAttack::GetTargetEntity() const
 //	Desc.	: returns the reason for the move state exiting
 //	Result	: returns MoveExitState
 //
-StateAttack::AttackExitState StateAttack::GetExitState( )
+StateAttack::AttackExitState StateAttack::GetExitState()
 {
-//	dbAssert( m_exitState != AES_Invalid );
+	//	dbAssert( m_exitState != AES_Invalid );
 
 	return m_exitState;
 }
@@ -114,7 +112,7 @@ StateAttack::AttackExitState StateAttack::GetExitState( )
 //	Desc.	: Enter the Attack state
 //	Param.	: pTarget - the Entity to attack
 //
-void StateAttack::Enter( Entity* pTarget )
+void StateAttack::Enter(Entity *pTarget)
 {
 	// clear previous targets
 	m_Target.clear();
@@ -122,49 +120,49 @@ void StateAttack::Enter( Entity* pTarget )
 	m_exitState = AES_Invalid;
 
 	//
-	if( pTarget == 0 )
+	if (pTarget == 0)
 	{
 		// oops!
 		dbBreak();
-		SetExitStatus( true );
+		SetExitStatus(true);
 		m_CurState = AS_TargetDead;
 
 		return;
 	}
-	else if ( !pTarget->GetEntityFlag( EF_CanCollide ) )
+	else if (!pTarget->GetEntityFlag(EF_CanCollide))
 	{
 		m_CurState = AS_TargetDead;
-		SetExitStatus( true );
+		SetExitStatus(true);
 
 		return;
 	}
-	else if( m_pAttackInf && m_pAttackInf->hasAttack )
+	else if (m_pAttackInf && m_pAttackInf->hasAttack)
 	{
-		m_Target.push_back( pTarget );
+		m_Target.push_back(pTarget);
 	}
 
 	// move to target if need be
 	m_bNoMove = false;
 
-	if ( !GetTarget() )
+	if (!GetTarget())
 	{
-		SetExitStatus( true );
+		SetExitStatus(true);
 		m_CurState = AS_TargetDead;
 		return;
 	}
 	else
 	{
-		Entity* pEntity = GetEntity();
-		if ( pEntity->GetAnimator() )
+		Entity *pEntity = GetEntity();
+		if (pEntity->GetAnimator())
 		{
-			pEntity->GetAnimator()->SetTargetLook( pTarget );
+			pEntity->GetAnimator()->SetTargetLook(pTarget);
 		}
 	}
 
 	m_FinishTime = ModObj::i()->GetWorld()->GetGameTicks() + (unsigned long)(4 * ModObj::i()->GetWorld()->GetRand());
 	m_CurState = AS_RandomWait;
 
-	SetExitStatus( false );
+	SetExitStatus(false);
 	m_lastDistSqr = 0.0f;
 
 	m_AttackCount = 0;
@@ -176,14 +174,13 @@ void StateAttack::Enter( Entity* pTarget )
 //	Desc.	: Enter the Attack state without the Entity moving
 //	Param.	: pTarget - the Entity to attack
 //
-void StateAttack::EnterNoMove( Entity* pTarget )
+void StateAttack::EnterNoMove(Entity *pTarget)
 {
-	Enter( pTarget );
+	Enter(pTarget);
 
 	// over ride the no move flag
 	m_bNoMove = true;
 }
-
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: The state update function
@@ -191,14 +188,14 @@ void StateAttack::EnterNoMove( Entity* pTarget )
 //
 bool StateAttack::Update()
 {
-	if ( UpdateInternal() )
+	if (UpdateInternal())
 	{
 		m_CurState = AS_Null;
 
-		Entity* pEntity = GetEntity();
-		if ( pEntity->GetAnimator() )
+		Entity *pEntity = GetEntity();
+		if (pEntity->GetAnimator())
 		{
-			pEntity->GetAnimator()->SetTargetLook( NULL );
+			pEntity->GetAnimator()->SetTargetLook(NULL);
 		}
 
 		return true;
@@ -207,31 +204,29 @@ bool StateAttack::Update()
 	return false;
 }
 
-
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: does the common RequestExit work
 //
 void StateAttack::ProcessRequestExit()
 {
-	SetExitStatus( true );
+	SetExitStatus(true);
 
-	switch ( m_CurState )
+	switch (m_CurState)
 	{
-		case AS_TransitionToChasingTarget:
-		case AS_MovingTo_Target:
-		case AS_Chasing_Target:
-		case AS_Reaquire:
-		case AS_CoolPeriod:
-			m_pStateMove->RequestExit();
+	case AS_TransitionToChasingTarget:
+	case AS_MovingTo_Target:
+	case AS_Chasing_Target:
+	case AS_Reaquire:
+	case AS_CoolPeriod:
+		m_pStateMove->RequestExit();
 		break;
 	}
 }
 
-
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //
 void StateAttack::RequestExit()
 {
@@ -240,126 +235,126 @@ void StateAttack::RequestExit()
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //	Author	: dswinerd
 //
 void StateAttack::ReissueOrder() const
 {
-	if ( !m_Target.empty() )
+	if (!m_Target.empty())
 	{
 		const unsigned long playerID = GetEntity()->GetOwner() ? GetEntity()->GetOwner()->GetID() : 0;
 		const unsigned long entityID = GetEntity()->GetID();
 		const unsigned long targetID = m_Target.front()->GetID();
-		
-		ModObj::i()->GetWorld()->DoCommandEntityEntity( CMD_Attack, 
-														0,
-														CMDF_Queue,
-														playerID,
-														&entityID,
-														1,
-														&targetID,
-														1 );
+
+		ModObj::i()->GetWorld()->DoCommandEntityEntity(CMD_Attack,
+																									 0,
+																									 CMDF_Queue,
+																									 playerID,
+																									 &entityID,
+																									 1,
+																									 &targetID,
+																									 1);
 	}
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
 void StateAttack::ForceExit()
 {
 	m_exitState = AES_ExitRequested;
 
-	switch ( m_CurState )
+	switch (m_CurState)
 	{
-		case AS_TransitionToChasingTarget:
-		case AS_MovingTo_Target:
-		case AS_Chasing_Target:
-		case AS_Reaquire:
-		case AS_CoolPeriod:
-			m_pStateMove->ForceExit();
+	case AS_TransitionToChasingTarget:
+	case AS_MovingTo_Target:
+	case AS_Chasing_Target:
+	case AS_Reaquire:
+	case AS_CoolPeriod:
+		m_pStateMove->ForceExit();
 
-			// don't leave the creature 'LEAP'ing
-			if ( GetEntity()->GetAnimator() )
-				GetEntity()->GetAnimator()->SetStyle( 'MOVE' );
+		// don't leave the creature 'LEAP'ing
+		if (GetEntity()->GetAnimator())
+			GetEntity()->GetAnimator()->SetStyle('MOVE');
 		break;
 	}
 
 	m_CurState = AS_Null;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-State::StateIDType StateAttack::GetStateID( ) const
+State::StateIDType StateAttack::GetStateID() const
 {
 	return (State::StateIDType)StateID;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void StateAttack::SaveState( BiFF& biff ) const
+void StateAttack::SaveState(BiFF &biff) const
 {
-	IFF& iff = *biff.GetIFF();
+	IFF &iff = *biff.GetIFF();
 
 	unsigned long ver = 2;
-	IFFWrite( iff, ver );
+	IFFWrite(iff, ver);
 
-	m_Target.SaveEmbedded( iff );
+	m_Target.SaveEmbedded(iff);
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void StateAttack::LoadState( IFF& iff )
+void StateAttack::LoadState(IFF &iff)
 {
 	unsigned long ver;
-	IFFRead( iff, ver );
+	IFFRead(iff, ver);
 
-	Entity* pEntity = NULL;
+	Entity *pEntity = NULL;
 
-	if ( ver == 1 )
+	if (ver == 1)
 	{
 		Target temp;
-		temp.LoadEmbedded( iff, ModObj::i()->GetEntityFactory() );
+		temp.LoadEmbedded(iff, ModObj::i()->GetEntityFactory());
 		pEntity = temp.GetEntity();
 	}
 
-	if ( ver > 1 )
+	if (ver > 1)
 	{
 		EntityGroup temp;
-		temp.LoadEmbedded( iff, ModObj::i()->GetEntityFactory() );
+		temp.LoadEmbedded(iff, ModObj::i()->GetEntityFactory());
 		pEntity = temp.front();
 	}
 
 	// Re - Initialize the state
-	Enter( pEntity );
+	Enter(pEntity);
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
 bool StateAttack::UpdateInternal()
 {
-#pragma FIXME( Drew )	// This is Fuxored
-	if( m_pAttackInf && m_pAttackInf->hasAttack == 0 )
+#pragma FIXME(Drew) // This is Fuxored
+	if (m_pAttackInf && m_pAttackInf->hasAttack == 0)
 	{
 		m_exitState = AES_Invalid;
 		return true;
@@ -368,7 +363,7 @@ bool StateAttack::UpdateInternal()
 	Entity *pTarget = GetTarget();
 
 	// Check if Target is alive.
-	if ( !pTarget )
+	if (!pTarget)
 	{
 		m_exitState = AES_TargetDead;
 		ProcessRequestExit();
@@ -377,178 +372,177 @@ bool StateAttack::UpdateInternal()
 	// This is the attack state update function.
 	//	Here is the logic for moving toward the target, or attacking, etc....
 
-	if ( IsExiting() )
+	if (IsExiting())
 	{
 		bool bReturnVal = true;
-		switch ( m_CurState )
+		switch (m_CurState)
 		{
-			// These states need to wait for move to finish before exiting.
-			case AS_TransitionToChasingTarget:
-			case AS_MovingTo_Target:
-			{
-				bReturnVal = m_pStateMove->Update();
-			}
-			//
-			case AS_Attacking:
-				bReturnVal = true;
-			break;
-			//
-			case AS_CoolPeriod:
-				bReturnVal = false;
-				// we can't break off the coolperiod until it is done because if micromanaged this could lead to a player increasing a creature's rate of attack
-				if ( HandleCoolPeriod( ) )
-				{
-					// cool is done
-
-					// Note: StartReacquire() will only acquire the target during the sim tick.
-					//       We won't start attacking the acquired target until the next sim tick.
-					//       This is why m_FinishTime is computed the way it is in StartCoolPeriod().
-					
-					if ( !StartReaquire() )
-					{
-						// not doing a reaquire -> done!
-						bReturnVal = true;
-					}
-				}
-			break;
-
-			//
-			case AS_Reaquire:
-			{
-				// cant leave this until done or flyers will be able to attack more than every 4 seconds if they are micro-managed
-				bReturnVal = ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime;
-			}
-		}
-
-		// Other states can just exit.
-		dbAssert( !(bReturnVal && m_exitState == AES_Invalid) );
-		return bReturnVal;
-	}
-
-
-	switch ( m_CurState )
-	{
-		case AS_RandomWait:
-		if ( ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime )
-		{		
-			MoveToTarget();
-		}			
-		break;
-
+		// These states need to wait for move to finish before exiting.
 		case AS_TransitionToChasingTarget:
-		{
-			if ( m_pStateMove->Update() )
-			{
-				// try chasing the target; we can only guess where the target may be... and not
-				// chase after it indefinitely without actually seeing it 
-				Entity *pEntity = GetTarget();
-				if ( m_pAttackCurrent && pEntity )
-				{
-					m_CurState = AS_Chasing_Target;
-					
-					m_pStateMove->Enter( pEntity->GetPosition(), m_pAttackCurrent->m_maxRange );
-				}
-				else
-				{
-					m_CurState = AS_TargetDead;
-				}
-			}
-			break;
-		}
-
 		case AS_MovingTo_Target:
-		case AS_Chasing_Target:
 		{
-			if ( m_pStateMove->Update() )
-			{	// move is done
-
-				switch( m_pStateMove->GetExitState() )
-				{
-					case StateMove::MES_ReachedTarget:	// Got To the target
-						if ( m_CurState == AS_Chasing_Target )
-						{
-							if ( !RDNQuery::CanBeSeen( pTarget, GetEntity()->GetOwner() ) )
-							{
-								// still can't see the target... oh well
-								m_CurState = AS_TargetDead;
-								break;
-							}
-							else
-							{
-								// make sure we are in range to continue the attack
-								Entity *pEntity = GetTarget();
-								m_pStateMove->Enter( pEntity, m_pAttackCurrent->m_maxRange );
-								m_CurState = AS_MovingTo_Target;
-								break;
-							}
-						}
-						StartAttacking();
-					break;
-					case StateMove::MES_StoppedBeforeTarget:	// We have stopped before reaching our target.
-						MoveToTarget();
-					break;
-					case StateMove::MES_NoTarget:
-					{
-						m_exitState = AES_TargetDead;
-					}
-					case StateMove::MES_CantPathToTargetTerrain:	// We cannot path to our target, blocked by terrain
-					{
-						m_exitState = AES_CantPathToTargetTerrain;
-						return true;
-					}
-					case StateMove::MES_CantPathToTargetEntity:		// We cannot path to our target, blocked by entities
-					{
-						m_exitState = AES_CantPathToTargetEntity;
-						return true;
-					}					
-					case StateMove::MES_CantPathToTargetBuilding:	// We cannot path to our target, blocked by buildings
-					{
-						m_exitState = AES_CantPathToTargetBuilding;
-						return true;		
-					}					
-				}
-			}
+			bReturnVal = m_pStateMove->Update();
 		}
-		break;
-
+		//
 		case AS_Attacking:
-			HandleAttacking( );
-		break;
-
+			bReturnVal = true;
+			break;
+		//
 		case AS_CoolPeriod:
-			if ( HandleCoolPeriod( ) )
+			bReturnVal = false;
+			// we can't break off the coolperiod until it is done because if micromanaged this could lead to a player increasing a creature's rate of attack
+			if (HandleCoolPeriod())
 			{
+				// cool is done
+
 				// Note: StartReacquire() will only acquire the target during the sim tick.
 				//       We won't start attacking the acquired target until the next sim tick.
 				//       This is why m_FinishTime is computed the way it is in StartCoolPeriod().
-				
-				if ( !StartReaquire() )
+
+				if (!StartReaquire())
 				{
-					// not doing a reaquire
-					MoveToTarget();
+					// not doing a reaquire -> done!
+					bReturnVal = true;
 				}
 			}
-		break;
+			break;
 
+		//
 		case AS_Reaquire:
-			if ( ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime )
-			{
-				MoveToTarget();
-			}
-		break;
-
-		case AS_TargetDead:
-		case AS_Cant_Reach_Target:
 		{
-		
-			Entity* pEntity = static_cast<Entity*>(GetEntity());
-			if ( pEntity->GetAnimator() )
-				pEntity->GetAnimator()->SetStyle( 'MOVE' );
+			// cant leave this until done or flyers will be able to attack more than every 4 seconds if they are micro-managed
+			bReturnVal = ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime;
+		}
+		}
 
-			m_exitState = AES_TargetDead;
-			return true;
+		// Other states can just exit.
+		dbAssert(!(bReturnVal && m_exitState == AES_Invalid));
+		return bReturnVal;
+	}
+
+	switch (m_CurState)
+	{
+	case AS_RandomWait:
+		if (ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime)
+		{
+			MoveToTarget();
 		}
 		break;
+
+	case AS_TransitionToChasingTarget:
+	{
+		if (m_pStateMove->Update())
+		{
+			// try chasing the target; we can only guess where the target may be... and not
+			// chase after it indefinitely without actually seeing it
+			Entity *pEntity = GetTarget();
+			if (m_pAttackCurrent && pEntity)
+			{
+				m_CurState = AS_Chasing_Target;
+
+				m_pStateMove->Enter(pEntity->GetPosition(), m_pAttackCurrent->m_maxRange);
+			}
+			else
+			{
+				m_CurState = AS_TargetDead;
+			}
+		}
+		break;
+	}
+
+	case AS_MovingTo_Target:
+	case AS_Chasing_Target:
+	{
+		if (m_pStateMove->Update())
+		{ // move is done
+
+			switch (m_pStateMove->GetExitState())
+			{
+			case StateMove::MES_ReachedTarget: // Got To the target
+				if (m_CurState == AS_Chasing_Target)
+				{
+					if (!RDNQuery::CanBeSeen(pTarget, GetEntity()->GetOwner()))
+					{
+						// still can't see the target... oh well
+						m_CurState = AS_TargetDead;
+						break;
+					}
+					else
+					{
+						// make sure we are in range to continue the attack
+						Entity *pEntity = GetTarget();
+						m_pStateMove->Enter(pEntity, m_pAttackCurrent->m_maxRange);
+						m_CurState = AS_MovingTo_Target;
+						break;
+					}
+				}
+				StartAttacking();
+				break;
+			case StateMove::MES_StoppedBeforeTarget: // We have stopped before reaching our target.
+				MoveToTarget();
+				break;
+			case StateMove::MES_NoTarget:
+			{
+				m_exitState = AES_TargetDead;
+			}
+			case StateMove::MES_CantPathToTargetTerrain: // We cannot path to our target, blocked by terrain
+			{
+				m_exitState = AES_CantPathToTargetTerrain;
+				return true;
+			}
+			case StateMove::MES_CantPathToTargetEntity: // We cannot path to our target, blocked by entities
+			{
+				m_exitState = AES_CantPathToTargetEntity;
+				return true;
+			}
+			case StateMove::MES_CantPathToTargetBuilding: // We cannot path to our target, blocked by buildings
+			{
+				m_exitState = AES_CantPathToTargetBuilding;
+				return true;
+			}
+			}
+		}
+	}
+	break;
+
+	case AS_Attacking:
+		HandleAttacking();
+		break;
+
+	case AS_CoolPeriod:
+		if (HandleCoolPeriod())
+		{
+			// Note: StartReacquire() will only acquire the target during the sim tick.
+			//       We won't start attacking the acquired target until the next sim tick.
+			//       This is why m_FinishTime is computed the way it is in StartCoolPeriod().
+
+			if (!StartReaquire())
+			{
+				// not doing a reaquire
+				MoveToTarget();
+			}
+		}
+		break;
+
+	case AS_Reaquire:
+		if (ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime)
+		{
+			MoveToTarget();
+		}
+		break;
+
+	case AS_TargetDead:
+	case AS_Cant_Reach_Target:
+	{
+
+		Entity *pEntity = static_cast<Entity *>(GetEntity());
+		if (pEntity->GetAnimator())
+			pEntity->GetAnimator()->SetStyle('MOVE');
+
+		m_exitState = AES_TargetDead;
+		return true;
+	}
+	break;
 	}
 
 	// Finished updating states.
@@ -556,18 +550,18 @@ bool StateAttack::UpdateInternal()
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //
 void StateAttack::MoveToTarget()
 {
-	if ( GetTarget() )
+	if (GetTarget())
 	{
 		// now we're choosing the attack before the move is done because we need to know how close to the target to get
 		bool bValid = ChooseAttack();
 
-		if ( !bValid )
+		if (!bValid)
 		{
 			// no attack
 			// this will cause the state to exit, which might not be what we want.  Maybe we want to go into a waiting substate until a valid attack become possible.
@@ -577,17 +571,17 @@ void StateAttack::MoveToTarget()
 
 		dbAssert(m_pAttackCurrent);
 
-		if ( !m_bNoMove )
+		if (!m_bNoMove)
 		{
 			m_CurState = AS_MovingTo_Target;
 			Entity *pEntity = GetTarget();
-			m_pStateMove->Enter( pEntity, m_pAttackCurrent->m_maxRange, false, 0, StateMove::RT_None, 0 );
+			m_pStateMove->Enter(pEntity, m_pAttackCurrent->m_maxRange, false, 0, StateMove::RT_None, 0);
 
 			m_lastDistSqr = 0.0f;
 		}
 		else
 		{
-			if ( AtTargetForCurrentAttack() )
+			if (AtTargetForCurrentAttack())
 			{
 				StartAttacking();
 			}
@@ -604,35 +598,34 @@ void StateAttack::MoveToTarget()
 	}
 }
 
-
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: this picks a current attack to use (melee/range) based on some basic logic
 //	Result	: m_pAttackCurrent will be set
 //
-bool StateAttack::ChooseAttack( )
+bool StateAttack::ChooseAttack()
 {
-	// 
-	const Entity* attacker = GetEntity();
-	const Entity* defender = GetTarget();
+	//
+	const Entity *attacker = GetEntity();
+	const Entity *defender = GetTarget();
 
-	dbAssert( attacker && defender );
+	dbAssert(attacker && defender);
 
 	// reset attack
 	m_pAttackCurrent = NULL;
 
 	//
-	if( !m_pAttackCurrent && !m_pAttackInf->meleeList.empty() )
+	if (!m_pAttackCurrent && !m_pAttackInf->meleeList.empty())
 	{
 		// pick a melee attack here no matter what - it will be used as a back up in case of an error
-		const AttackPackageList& melee = m_pAttackInf->meleeList;
+		const AttackPackageList &melee = m_pAttackInf->meleeList;
 
 		const size_t index =
-			ModObj::i()->GetWorld()->GetRandMax( melee.size() );
+				ModObj::i()->GetWorld()->GetRandMax(melee.size());
 
-		m_pAttackCurrent = &m_pAttackInf->meleeList[ index ];
+		m_pAttackCurrent = &m_pAttackInf->meleeList[index];
 	}
 
-	if ( !m_pAttackCurrent )
+	if (!m_pAttackCurrent)
 	{
 		return false;
 	}
@@ -642,8 +635,8 @@ bool StateAttack::ChooseAttack( )
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: Starts reaquiring the target.  Right now only here for fliers.
-//	Result	: 
-//	Param.	: 
+//	Result	:
+//	Param.	:
 //	Author	: dswinerd
 //
 bool StateAttack::StartReaquire()
@@ -661,25 +654,24 @@ bool StateAttack::StartReaquire()
 	}
 
 	if (turnTicks)
-	{	// want to do the reaquire.  for fliers.
+	{ // want to do the reaquire.  for fliers.
 		m_CurState = AS_Reaquire;
 		m_FinishTime = ModObj::i()->GetWorld()->GetGameTicks() + turnTicks;
 
-		GetDynamics()->StartReaquire( m_pAttackCurrent->m_attackticks, m_pAttackCurrent->m_coolticks );
+		GetDynamics()->StartReaquire(m_pAttackCurrent->m_attackticks, m_pAttackCurrent->m_coolticks);
 
 		return true;
 	}
 	else
-	{	// don't bother with the reaquire.  for ground dudes.
+	{ // don't bother with the reaquire.  for ground dudes.
 		return false;
 	}
 }
 
-
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //
 void StateAttack::StartAttacking()
 {
@@ -688,21 +680,21 @@ void StateAttack::StartAttacking()
 	//	or at which game-tick should the health be removed from the creature, etc....
 
 	// request that the Entity look at the target
-	GetDynamics()->RequestEntityLookAtPoint( GetTarget()->GetPosition() );
+	GetDynamics()->RequestEntityLookAtPoint(GetTarget()->GetPosition());
 
 	m_CurState = AS_Attacking;
 
-	dbAssert( m_pAttackCurrent );
-		
-	if ( GetTarget() )
+	dbAssert(m_pAttackCurrent);
+
+	if (GetTarget())
 	{
 		//	Reveal self in FoW
-		if ( GetEntity()->GetOwner() != GetTarget()->GetOwner() )
+		if (GetEntity()->GetOwner() != GetTarget()->GetOwner())
 		{
-			RDNPlayer* pPlayer = static_cast<RDNPlayer*>( GetTarget()->GetOwner() );
+			RDNPlayer *pPlayer = static_cast<RDNPlayer *>(GetTarget()->GetOwner());
 			if (pPlayer)
 			{
-				pPlayer->GetFogOfWar()->RevealEntity( GetEntity(), RDNTuning::Instance()->GetFogOfWarInfo().attackerRevealTime );
+				pPlayer->GetFogOfWar()->RevealEntity(GetEntity(), RDNTuning::Instance()->GetFogOfWarInfo().attackerRevealTime);
 			}
 		}
 	}
@@ -711,27 +703,26 @@ void StateAttack::StartAttacking()
 	m_FinishTime = ModObj::i()->GetWorld()->GetGameTicks() + m_pAttackCurrent->m_attackticks;
 
 	// let the dynamics know the attack and cooldown duration
-	GetDynamics()->StartAttack( m_pAttackCurrent->m_attackticks, m_pAttackCurrent->m_coolticks, m_pAttackCurrent->m_rangesqr > 0 );
+	GetDynamics()->StartAttack(m_pAttackCurrent->m_attackticks, m_pAttackCurrent->m_coolticks, m_pAttackCurrent->m_rangesqr > 0);
 
 	// Start the attack animation, or setup a sim-tick time for the animation to start.
 	//	HACK : signal the entity to play an attack animation
-	Entity* pEntity = m_pStateMove->GetEntity();
-	if ( pEntity && pEntity->GetAnimator() )
+	Entity *pEntity = m_pStateMove->GetEntity();
+	if (pEntity && pEntity->GetAnimator())
 	{
-		float needTime = ((float)m_pAttackCurrent->m_attackticks)/ (float)(ModObj::i()->GetWorld()->GetNumSimsPerSecond());
-		
-		pEntity->GetAnimator()->ResetMotionTreeNode( m_pAttackCurrent->m_Animation );
-		pEntity->GetAnimator()->SetMotionVariable( "AttackTime", needTime);
+		float needTime = ((float)m_pAttackCurrent->m_attackticks) / (float)(ModObj::i()->GetWorld()->GetNumSimsPerSecond());
+
+		pEntity->GetAnimator()->ResetMotionTreeNode(m_pAttackCurrent->m_Animation);
+		pEntity->GetAnimator()->SetMotionVariable("AttackTime", needTime);
 		//	Tell the animator who his target is
-		pEntity->GetAnimator()->SetEffectsTarget( GetTarget() );
+		pEntity->GetAnimator()->SetEffectsTarget(GetTarget());
 	}
 }
 
-
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //
 void StateAttack::StartCoolPeriod()
 {
@@ -742,51 +733,50 @@ void StateAttack::StartCoolPeriod()
 
 	// Roll-back the finish-time by one tick to account for the fact that re-acquiring the target
 	// delays by one tick.  See StartReaquire() and UpdateInternal().
-	if ( m_pAttackCurrent->m_coolticks > 0 )
+	if (m_pAttackCurrent->m_coolticks > 0)
 	{
 		m_FinishTime--;
 	}
 
 	// let the dynamics know we are starting the cooldown
-	GetDynamics()->StartCoolDown( m_pAttackCurrent->m_coolticks );
+	GetDynamics()->StartCoolDown(m_pAttackCurrent->m_coolticks);
 
 	m_CurState = AS_CoolPeriod;
 }
-
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: returns true if the entity is within range of the target for any of his attacks
 //
 bool StateAttack::AtTargetForAnyAttack()
 {
-	const SimEntity *attacker = static_cast<const SimEntity *> ( GetEntity() );
-	const SimEntity *defender = static_cast<const SimEntity *> ( GetTarget() );
-	dbAssert( attacker && defender );
+	const SimEntity *attacker = static_cast<const SimEntity *>(GetEntity());
+	const SimEntity *defender = static_cast<const SimEntity *>(GetTarget());
+	dbAssert(attacker && defender);
 
-	m_lastDistSqr = EntityUtil::DistSqrDirCalcEntity( attacker, defender, 0.0f, NULL );
+	m_lastDistSqr = EntityUtil::DistSqrDirCalcEntity(attacker, defender, 0.0f, NULL);
 	// also test against this abitrary melee distance ( should be done in a common place )
-	if( m_lastDistSqr < 0.1f * 0.1f )
+	if (m_lastDistSqr < 0.1f * 0.1f)
 	{
 		// within range of melee attack.
-		return true;	
+		return true;
 	}
 
 	float maxRangeSqr = 0.0f;
 
-	if( m_pAttackInf )
+	if (m_pAttackInf)
 	{
-		if ( m_pAttackInf->maxRange == 0.0f )
+		if (m_pAttackInf->maxRange == 0.0f)
 		{
 			// This creature only has melee.
 			return false;
 		}
 
-		maxRangeSqr = m_pAttackInf->maxRange*m_pAttackInf->maxRange;
+		maxRangeSqr = m_pAttackInf->maxRange * m_pAttackInf->maxRange;
 	}
 
 	// test dist against this creatures max range
-	m_lastDistSqr = EntityUtil::DistSqrDirCalcEntity( attacker, defender, maxRangeSqr, NULL );
-	if( m_lastDistSqr < maxRangeSqr)
+	m_lastDistSqr = EntityUtil::DistSqrDirCalcEntity(attacker, defender, maxRangeSqr, NULL);
+	if (m_lastDistSqr < maxRangeSqr)
 	{
 		// Within range of at least one of the creatures range attacks.
 		return true;
@@ -795,36 +785,35 @@ bool StateAttack::AtTargetForAnyAttack()
 	return false;
 }
 
-
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: returns true if the entity is within range of the target for his chosen attack (m_pAttackCurrent)
 //
 bool StateAttack::AtTargetForCurrentAttack()
 {
-	if ( !m_pAttackCurrent )
+	if (!m_pAttackCurrent)
 	{
 		// must have an attack chosen
 		return false;
 	}
 
-	const SimEntity *attacker = static_cast<const SimEntity *> ( GetEntity() );
-	const SimEntity *defender = static_cast<const SimEntity *> ( GetTarget() );
-	dbAssert( attacker && defender );
+	const SimEntity *attacker = static_cast<const SimEntity *>(GetEntity());
+	const SimEntity *defender = static_cast<const SimEntity *>(GetTarget());
+	dbAssert(attacker && defender);
 
-	m_lastDistSqr = EntityUtil::DistSqrDirCalcEntity( attacker, defender, 0.0f, NULL );
-	
-	return( m_lastDistSqr <= __max( m_pAttackCurrent->m_rangesqr, 0.1f * 0.1f ) );
+	m_lastDistSqr = EntityUtil::DistSqrDirCalcEntity(attacker, defender, 0.0f, NULL);
+
+	return (m_lastDistSqr <= __max(m_pAttackCurrent->m_rangesqr, 0.1f * 0.1f));
 }
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: gets the target Entity
 //	Result	: returns a Entity* or NULL if no target
 //
-Entity* StateAttack::GetTarget()
+Entity *StateAttack::GetTarget()
 {
-	if ( !m_Target.empty() )
+	if (!m_Target.empty())
 	{
-		if ( QIExt<HealthExt>( m_Target.front() ) )
+		if (QIExt<HealthExt>(m_Target.front()))
 		{
 			return m_Target.front();
 		}
@@ -834,30 +823,30 @@ Entity* StateAttack::GetTarget()
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //	Author	: dswinerd
 //
-void StateAttack::HandleAttacking( )
+void StateAttack::HandleAttacking()
 {
 	// Do the updating logic for the attack in here.
 
 	// Put any per simframe animation updates in here.
 
 	// Have we finished AS_Attacking yet?
-	if ( ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime )
+	if (ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime)
 	{
 		// this should be valid at all times - set up in StartAttacking->ChooseAttack
-		dbAssert( m_pAttackCurrent );
-		
+		dbAssert(m_pAttackCurrent);
+
 		// Subtract health from the dude.
-		if ( GetTarget() )
+		if (GetTarget())
 		{
 			// there must be a target to do damage to
 
 			// normal attack
-			m_pAttack->DoDamageTo( *m_pAttackCurrent, GetTarget() );
+			m_pAttack->DoDamageTo(*m_pAttackCurrent, GetTarget());
 		}
 
 		StartCoolPeriod();
@@ -865,18 +854,18 @@ void StateAttack::HandleAttacking( )
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //	Author	: dswinerd
 //
-bool StateAttack::HandleCoolPeriod( )
+bool StateAttack::HandleCoolPeriod()
 {
-	if ( ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime )
+	if (ModObj::i()->GetWorld()->GetGameTicks() >= m_FinishTime)
 	{
-		Entity* pEntity = static_cast<Entity*>(GetEntity());
-		if ( pEntity->GetAnimator() )
-			pEntity->GetAnimator()->SetStyle( 'MOVE' );
+		Entity *pEntity = static_cast<Entity *>(GetEntity());
+		if (pEntity->GetAnimator())
+			pEntity->GetAnimator()->SetStyle('MOVE');
 
 		return true;
 	}
@@ -886,10 +875,10 @@ bool StateAttack::HandleCoolPeriod( )
 	}
 }
 
-bool StateAttack::IsAttackingTarget( ) const
+bool StateAttack::IsAttackingTarget() const
 {
-	if (m_CurState == AS_Attacking || m_CurState == AS_CoolPeriod || 
-		m_CurState == AS_Reaquire)
+	if (m_CurState == AS_Attacking || m_CurState == AS_CoolPeriod ||
+			m_CurState == AS_Reaquire)
 		return true;
 	return false;
 }

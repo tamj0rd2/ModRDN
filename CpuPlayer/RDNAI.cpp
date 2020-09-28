@@ -3,7 +3,7 @@
 // Author: Shelby
 // Date  : 2001-1-3
 //      (c) relic entertainment inc.2001
-// 
+//
 //
 
 #include "pch.h"
@@ -39,18 +39,18 @@
 
 #include <Platform/Platform.h>
 
-#define VERBOSELOG		1
+#define VERBOSELOG 1
 
-#if !( defined(shubick) || defined(ddunlop) )
-	#undef  FIXME 
-	#define FIXME( x )	comment( user, #x )
+#if !(defined(shubick) || defined(ddunlop))
+#undef FIXME
+#define FIXME(x) comment(user, #x)
 #endif
 
 /////////////////////////////////////////////////////////////////////
 // RDNAI
 
-RDNAI::RDNAI( CommandInterface* )
-:	m_player( NULL )
+RDNAI::RDNAI(CommandInterface *)
+		: m_player(NULL)
 {
 }
 
@@ -65,13 +65,13 @@ RDNAI::~RDNAI()
 // This is when the RDNPlayer has been initialized
 //------------------------------------------------------------------------------------------------
 
-void RDNAI::AIInit( unsigned long PlayerID, const char* script )
+void RDNAI::AIInit(unsigned long PlayerID, const char *script)
 {
-	UNREF_P( script );
-	
-	dbAssert( m_player == NULL );
-	m_player = static_cast< RDNPlayer* >( ModObj::i()->GetWorld()->GetPlayerFromID( PlayerID ) );
-	dbAssert( m_player != NULL );
+	UNREF_P(script);
+
+	dbAssert(m_player == NULL);
+	m_player = static_cast<RDNPlayer *>(ModObj::i()->GetWorld()->GetPlayerFromID(PlayerID));
+	dbAssert(m_player != NULL);
 
 	return;
 }
@@ -87,26 +87,26 @@ unsigned long RDNAI::GetPlayerID() const
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-void RDNAI::Think( float )
+void RDNAI::Think(float)
 {
-	return;		
+	return;
 }
 
-void RDNAI::Save( IFF& iff ) const
+void RDNAI::Save(IFF &iff) const
 {
-	iff.PushChunk( Type_NormalVers, 'AISV', 1000 );
+	iff.PushChunk(Type_NormalVers, 'AISV', 1000);
 	iff.PopChunk();
 
-	return;		
+	return;
 }
 
-void RDNAI::Load( IFF& iff )
+void RDNAI::Load(IFF &iff)
 {
 	//	Add parse handlers, let the caller perform the Parse()
-	iff.AddParseHandler( &HandleAISV, Type_Form, 'AISV', this, 0 );
+	iff.AddParseHandler(&HandleAISV, Type_Form, 'AISV', this, 0);
 }
 
-unsigned long RDNAI::HandleAISV( IFF&, ChunkNode*, void*, void* )
+unsigned long RDNAI::HandleAISV(IFF &, ChunkNode *, void *, void *)
 {
 	return 0;
 }

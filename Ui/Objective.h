@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : Objective.h
-// Desc    : 
+// Desc    :
 // Created : Friday, September 21, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -44,33 +44,33 @@ public:
 
 public:
 	// accessors
-	int				GetID() { return m_ID; }
-	int				GetShortDescID() { return m_shortDescID; }
-	int				GetTipID() { return m_tipID; }
-	Type			GetType() { return m_type; }
-	State			GetState() { return m_state; }
-	Entity*			GetEntity() const;
+	int GetID() { return m_ID; }
+	int GetShortDescID() { return m_shortDescID; }
+	int GetTipID() { return m_tipID; }
+	Type GetType() { return m_type; }
+	State GetState() { return m_state; }
+	Entity *GetEntity() const;
 
-	void			SetID( int id ) { m_ID = id; }
-	void			SetShortDescID( int id ) { m_shortDescID = id; }
-	void			SetTipID( int id ) { m_tipID = id; }
-	void			SetType( Type type ) { m_type = type; }
-	void			SetState( State state );
-	void			SetEntity( Entity* pEntity );
+	void SetID(int id) { m_ID = id; }
+	void SetShortDescID(int id) { m_shortDescID = id; }
+	void SetTipID(int id) { m_tipID = id; }
+	void SetType(Type type) { m_type = type; }
+	void SetState(State state);
+	void SetEntity(Entity *pEntity);
 
 	// load and save objective states
-	void			Load( IFF& iff );
-	void			Save( IFF& iff );
+	void Load(IFF &iff);
+	void Save(IFF &iff);
 
 	// friend
 	friend class ObjectiveFactory;
 
 private:
 	// instance variables
-	int				m_ID;
-	int				m_shortDescID;
-	int				m_tipID;
-	Type			m_type;
-	State			m_state;
-	EntityGroup		m_eGroup;
+	int m_ID;
+	int m_shortDescID;
+	int m_tipID;
+	Type m_type;
+	State m_state;
+	EntityGroup m_eGroup;
 };

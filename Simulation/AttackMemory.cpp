@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : AttackMemory.cpp
-// Desc    : 
+// Desc    :
 // Created : Thursday, February 14, 2002
 // Author  : dswinerd
-// 
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -33,14 +33,13 @@ AttackMemory::~AttackMemory()
 //	Param.	: pEntity - the attacking entity
 //			  time - the time of the attack.  in GameTicks
 //	Author	: dswinerd
-//	
-void AttackMemory::SetAttackedBy( Entity* pEntity, long time )
+//
+void AttackMemory::SetAttackedBy(Entity *pEntity, long time)
 {
-	m_memory.AddMemory( pEntity, time );
+	m_memory.AddMemory(pEntity, time);
 
 	return;
 }
-
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: determines if we were attacked by the given entity
@@ -49,9 +48,9 @@ void AttackMemory::SetAttackedBy( Entity* pEntity, long time )
 //			  time - we want attacks after this time
 //	Author	: dswinerd
 //
-bool AttackMemory::WasAttackedBy( Entity *pEntity, long time ) const
+bool AttackMemory::WasAttackedBy(Entity *pEntity, long time) const
 {
-	return m_memory.HaveMemory( pEntity, time );
+	return m_memory.HaveMemory(pEntity, time);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -61,9 +60,9 @@ bool AttackMemory::WasAttackedBy( Entity *pEntity, long time ) const
 //			  time - we want attacks after this time
 //	Author	: clee
 //
-bool AttackMemory::WasAttackedBy( Player *pPlayer, long time ) const
+bool AttackMemory::WasAttackedBy(Player *pPlayer, long time) const
 {
-	return m_memory.HaveMemory( pPlayer, time );
+	return m_memory.HaveMemory(pPlayer, time);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -72,21 +71,21 @@ bool AttackMemory::WasAttackedBy( Player *pPlayer, long time ) const
 //	Param.	: time - the time we remember be attacked since
 //	Author	: dswinerd
 //
-bool AttackMemory::HasBeenAttackedSince( long time ) const
+bool AttackMemory::HasBeenAttackedSince(long time) const
 {
-	return m_memory.HaveMemoriesSince( time );
+	return m_memory.HaveMemoriesSince(time);
 }
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: returns an EntityGroup of all the guys that I remember attacking me since the given time
-//	Result	: 
+//	Result	:
 //	Param.	: output EntityGroup& attackers
 //			  time - we want attacks after this time.  In GameTicks.
 //	Author	: dswinerd
 //
-void AttackMemory::GetAttackers( EntityGroup& attackers, long time ) const
+void AttackMemory::GetAttackers(EntityGroup &attackers, long time) const
 {
-	m_memory.GetMemories( attackers, time );
+	m_memory.GetMemories(attackers, time);
 
 	return;
 }

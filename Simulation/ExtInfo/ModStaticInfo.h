@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : ModStaticInfo.h
-// Desc    : 
+// Desc    :
 // Created : Monday, March 19, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -17,12 +17,12 @@ class ModController;
 class EntityController;
 class Entity;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // ModStaticInfo
 
 class ModStaticInfo : public ECStaticInfo
 {
-// types
+	// types
 public:
 	class ExtInfo;
 
@@ -39,123 +39,121 @@ public:
 		EXTINFOID_UI,
 	};
 
-// construction
+	// construction
 public:
-	ModStaticInfo( const ControllerBlueprint* cbp )
-	  : ECStaticInfo( cbp ) 
+	ModStaticInfo(const ControllerBlueprint *cbp)
+			: ECStaticInfo(cbp)
 	{
 	}
 
-// interface
+	// interface
 public:
 	// query for the specified substruct
-	virtual const ModStaticInfo::ExtInfo* QInfo( unsigned char id ) const;
+	virtual const ModStaticInfo::ExtInfo *QInfo(unsigned char id) const;
 };
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
-template < class T >
-	inline const T* QIExtInfo( const ModStaticInfo* msi )
-	{
-		return ( msi == 0 )? 0 : static_cast< const T* >( msi->QInfo( T::ExtensionID ) );
-	}
+template <class T>
+inline const T *QIExtInfo(const ModStaticInfo *msi)
+{
+	return (msi == 0) ? 0 : static_cast<const T *>(msi->QInfo(T::ExtensionID));
+}
 
-template < class T >
-	inline const T* QIExtInfo( const ECStaticInfo* si )
-	{
-		return QIExtInfo<T>( static_cast< const ModStaticInfo* >( si ) );
-	}
+template <class T>
+inline const T *QIExtInfo(const ECStaticInfo *si)
+{
+	return QIExtInfo<T>(static_cast<const ModStaticInfo *>(si));
+}
 
-template < class T >
-	inline const T* QIExtInfo( const ModController* control )
-	{
-		return (control == 0)? 0 : QIExtInfo<T>( control->GetECStaticInfo() );
-	}
+template <class T>
+inline const T *QIExtInfo(const ModController *control)
+{
+	return (control == 0) ? 0 : QIExtInfo<T>(control->GetECStaticInfo());
+}
 
-template < class T >
-	inline const T* QIExtInfo( const EntityController* control )
-	{
-		return QIExtInfo<T>( static_cast< const ModController* >(control) );
-	}
+template <class T>
+inline const T *QIExtInfo(const EntityController *control)
+{
+	return QIExtInfo<T>(static_cast<const ModController *>(control));
+}
 
-template < class T >
-	inline const T* QIExtInfo( const Entity* pEntity )
-	{
-		return QIExtInfo<T>( pEntity->GetController() );
-	}
+template <class T>
+inline const T *QIExtInfo(const Entity *pEntity)
+{
+	return QIExtInfo<T>(pEntity->GetController());
+}
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // ModStaticInfo::ExtInfo
 
 class ModStaticInfo::ExtInfo
 {
-// interface
+	// interface
 protected:
-	template< typename T >
-		T GetVal( const ControllerBlueprint* cbp, const char* attr, T def )
+	template <typename T>
+	T GetVal(const ControllerBlueprint *cbp, const char *attr, T def)
 	{
 		// validate parm
-		dbAssert( cbp != 0 );
-		dbAssert( strlen( attr ) != 0 );
-		
+		dbAssert(cbp != 0);
+		dbAssert(strlen(attr) != 0);
+
 		// check if attribute exists
-		if( !cbp->GameAttributeCheck( attr ) )
+		if (!cbp->GameAttributeCheck(attr))
 		{
-			dbWarningf( 'SMOD', "ebp %S missing attribute %s", 
-				cbp->GetScreenName(),
-				attr
-				);
+			dbWarningf('SMOD', "ebp %S missing attribute %s",
+								 cbp->GetScreenName(),
+								 attr);
 
 			return def;
 		}
 
 		// retrieve value
-		return T( cbp->GameAttributeRetrieve( attr ) );
+		return T(cbp->GameAttributeRetrieve(attr));
 	}
-		
-	template< typename T >
-		T GetVal( const ControllerBlueprint* cbp, const char* attr, T tmin, T tmax )
+
+	template <typename T>
+	T GetVal(const ControllerBlueprint *cbp, const char *attr, T tmin, T tmax)
 	{
 		// validate parm
-		dbAssert( tmin < tmax );
-		
+		dbAssert(tmin < tmax);
+
 		// retrieve value
-		T t = GetVal( cbp, attr, tmin );
+		T t = GetVal(cbp, attr, tmin);
 
-		if ( t < tmin || t > tmax )
+		if (t < tmin || t > tmax)
 		{
-			dbWarningf( 'SMOD', "ebp %S attribute %s out of bounds", cbp->GetScreenName(), attr );
+			dbWarningf('SMOD', "ebp %S attribute %s out of bounds", cbp->GetScreenName(), attr);
 
-			if ( t < tmin )
+			if (t < tmin)
 				t = tmin;
 
-			if( t > tmax )
+			if (t > tmax)
 				t = tmax;
 		}
 
 		return t;
 	}
 
-	template<>
-		bool GetVal<bool>( const ControllerBlueprint* cbp, const char* attr, bool def )
+	template <>
+	bool GetVal<bool>(const ControllerBlueprint *cbp, const char *attr, bool def)
 	{
 		// validate parm
-		dbAssert( cbp != 0 );
-		dbAssert( strlen( attr ) != 0 );
-		
+		dbAssert(cbp != 0);
+		dbAssert(strlen(attr) != 0);
+
 		// check if attribute exists
-		if( !cbp->GameAttributeCheck( attr ) )
+		if (!cbp->GameAttributeCheck(attr))
 		{
-			dbWarningf( 'SMOD', "ebp %S missing attribute %s", 
-				cbp->GetScreenName(),
-				attr
-				);
+			dbWarningf('SMOD', "ebp %S missing attribute %s",
+								 cbp->GetScreenName(),
+								 attr);
 
 			return def;
 		}
 
 		// retrieve value
-		return cbp->GameAttributeRetrieve( attr ) != 0.0f;
+		return cbp->GameAttributeRetrieve(attr) != 0.0f;
 	}
 };

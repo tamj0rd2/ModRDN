@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNGhost.h
-// Desc    : 
+// Desc    :
 // Created : Tuesday, February 18, 2002
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2002 Relic Entertainment Inc.
 //
 
@@ -14,7 +14,7 @@
 
 #include "../Simulation/RDNPlayer.h"
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Forward Declarations
 class Entity;
 class RDNPlayer;
@@ -25,41 +25,41 @@ class RDNPlayer;
 //
 class RDNGhost : public RDNPlayer::Observer
 {
-// construction
+	// construction
 public:
-	 RDNGhost( const RDNPlayer* );
+	RDNGhost(const RDNPlayer *);
 	~RDNGhost();
 
-// interface
+	// interface
 public:
-	void	OnEntityCreate( const Entity* );
+	void OnEntityCreate(const Entity *);
 
-	void	Update();
+	void Update();
 
-	const std::vector<Ghost*>&
-			GetGhostContainer() const;
+	const std::vector<Ghost *> &
+	GetGhostContainer() const;
 
-// interface : RDNPlayer::Observer
-	virtual void	OnIncResourceCash	( const RDNPlayer*, float amount, RDNPlayer::ResourceIncreased reason );
-	virtual void	OnDecResourceCash	( const RDNPlayer*, float amount );
+	// interface : RDNPlayer::Observer
+	virtual void OnIncResourceCash(const RDNPlayer *, float amount, RDNPlayer::ResourceIncreased reason);
+	virtual void OnDecResourceCash(const RDNPlayer *, float amount);
 
-	virtual void	OnAddEntity			( const RDNPlayer*, const Entity* entity );
-	virtual void	OnRemoveEntity		( const RDNPlayer*, const Entity* entity );
+	virtual void OnAddEntity(const RDNPlayer *, const Entity *entity);
+	virtual void OnRemoveEntity(const RDNPlayer *, const Entity *entity);
 
-// fields
+	// fields
 private:
-	typedef std::vector<Ghost*> GhostCont;
+	typedef std::vector<Ghost *> GhostCont;
 
-	const RDNPlayer*	m_pWatcher;
-	GhostCont			m_cGhost;
+	const RDNPlayer *m_pWatcher;
+	GhostCont m_cGhost;
 
-	long				m_LastGameTickUpdate;
+	long m_LastGameTickUpdate;
 
-// implementation
+	// implementation
 private:
-	bool	isGhostable( const Entity* );
-	void	addGhost( const Entity* );
-	void	removeGhost( const Entity* );
-	void	resetGhost( const Entity* );
-	GhostCont::iterator	findGhost( const Entity* );
+	bool isGhostable(const Entity *);
+	void addGhost(const Entity *);
+	void removeGhost(const Entity *);
+	void resetGhost(const Entity *);
+	GhostCont::iterator findGhost(const Entity *);
 };

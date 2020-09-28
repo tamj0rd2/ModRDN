@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNMiniMap.h
-// Desc    : 
+// Desc    :
 // Created : Monday, April 6, 2001
 // Author  : Shelby Hubick
-// 
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -25,53 +25,51 @@ namespace Plat
 	struct InputEvent;
 };
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // RDNHUD
 
 class RDNMiniMap
 {
-// construction
-public:				
-	 RDNMiniMap( MiniMap*, const RDNPlayer*, CameraInterface*, SelectionInterface* selection, const RDNGhost* );
+	// construction
+public:
+	RDNMiniMap(MiniMap *, const RDNPlayer *, CameraInterface *, SelectionInterface *selection, const RDNGhost *);
 	~RDNMiniMap();
 
 public:
+	void Update(float elapsedSeconds);
 
-	void	Update( float elapsedSeconds);
+	void SetModalClickCapture(bool bCapture);
 
-	void	SetModalClickCapture( bool bCapture );
+	void UpdateEntityFow(const Entity *e);
 
-	void	UpdateEntityFow( const Entity* e );
+	bool IsEntityVisible(const Entity *e);
 
-	bool	IsEntityVisible( const Entity* e );
+	void SetRevealAll(bool b);
+	bool GetRevealAll() const;
 
-	void	SetRevealAll( bool b );
-	bool	GetRevealAll() const;
-							
-// fields
+	// fields
 private:
 	class Data;
-	Data* m_pimpl;
+	Data *m_pimpl;
 
 private:
-		
 	// ---- BUTTON CALLBACKS
 
-	void				OnRightClick( );
-	void				OnLeftClick( );
+	void OnRightClick();
+	void OnLeftClick();
 
 	//---- INIT HELPER FUNCTIONS -----
 
-	void				RegisterCallbacksToButtons();
+	void RegisterCallbacksToButtons();
 
 	//---- UPDATE HELPERS -----
 
-	void				UpdatePoints( float elapsedSeconds );
-	void				UpdateBlips( float elapsedSeconds );
-	void				UpdateFog( float elapsedSeconds );
-	
-	void				AddWorldEntities( );
-	void				AddLocalEntities( );
+	void UpdatePoints(float elapsedSeconds);
+	void UpdateBlips(float elapsedSeconds);
+	void UpdateFog(float elapsedSeconds);
 
-	void				AddEntityPoint( const EntityController* pController, bool bSelected );
+	void AddWorldEntities();
+	void AddLocalEntities();
+
+	void AddEntityPoint(const EntityController *pController, bool bSelected);
 };

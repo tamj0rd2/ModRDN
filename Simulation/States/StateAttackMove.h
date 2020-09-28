@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : StateAttackMove.h
-// Desc    : 
+// Desc    :
 // Created : Thursday, March 01, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -22,13 +22,12 @@ class EntityDynamics;
 class StateMove;
 class StateAttack;
 
-
-///////////////////////////////////////////////////////////////////// 
-// StateMove 
+/////////////////////////////////////////////////////////////////////
+// StateMove
 
 class StateAttackMove : public State
 {
-// types
+	// types
 public:
 	enum
 	{
@@ -36,57 +35,54 @@ public:
 	};
 
 private:
+	StateMove *m_pStateMove;
+	StateAttack *m_pStateAttack;
+	State *m_pCurState;
 
-	StateMove*			m_pStateMove;
-	StateAttack*		m_pStateAttack;
-	State*				m_pCurState;
+	Vec3f m_Destination;
+	float m_AP;
+	float m_SearchRad;
 
-	Vec3f				m_Destination;
-	float				m_AP;
-	float				m_SearchRad;
+	unsigned long m_State;
 
-	unsigned long		m_State;
+	long m_SearchTimer;
 
-	long				m_SearchTimer;
+	EntityGroup m_Targets;
 
-	EntityGroup			m_Targets;
+	long m_lastsearchtime;
 
-	long				m_lastsearchtime;
-
-// Functions.
+	// Functions.
 public:
+	StateAttackMove(EntityDynamics *e_dynamics);
 
-	StateAttackMove( EntityDynamics *e_dynamics );
+	void Init(StateMove *, StateAttack *);
 
-	void Init( StateMove*, StateAttack* );
-	
-	void Enter( const Entity* , float AP );
-	void Enter( const Vec3f& dest, float AP );
+	void Enter(const Entity *, float AP);
+	void Enter(const Vec3f &dest, float AP);
 
-// Inherited -- State
+	// Inherited -- State
 public:
-	virtual bool				Update();
+	virtual bool Update();
 
-	virtual void				RequestExit();
-	virtual void				ReissueOrder() const;
+	virtual void RequestExit();
+	virtual void ReissueOrder() const;
 
-	virtual void				ForceExit();
+	virtual void ForceExit();
 
 	// retrieve the ID of this state
-	virtual State::StateIDType	GetStateID( ) const;
+	virtual State::StateIDType GetStateID() const;
 
 	// Save Load
-	virtual void				SaveState( BiFF& ) const;
-	virtual void				LoadState( IFF& );
+	virtual void SaveState(BiFF &) const;
+	virtual void LoadState(IFF &);
 
-	virtual State*				GetSubState( unsigned char stateid );
+	virtual State *GetSubState(unsigned char stateid);
 
 private:
-	
 	void ToStateMove();
 
-	void RememberBlockedTarget( Entity *pBlockedTarget );
-	bool FindClosestEnemy( float SearchRad );
-	bool FindRetaliationEnemy( );
-	bool FindAlternateEnemy( );
+	void RememberBlockedTarget(Entity *pBlockedTarget);
+	bool FindClosestEnemy(float SearchRad);
+	bool FindRetaliationEnemy();
+	bool FindAlternateEnemy();
 };

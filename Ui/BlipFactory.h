@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : BlipFactory.h
-// Desc    : 
+// Desc    :
 // Created : Monday, September 24, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -13,140 +13,140 @@
 
 #include <Util/Colour.h>
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Blip
 
 class Blip
 {
 	friend class BlipFactory;
 
-// types
+	// types
 public:
 	enum Flags
 	{
-		BF_ENTITY  = 1 << 0,
-		BF_POS     = 1 << 1,
-		BF_TEMP    = 1 << 2,
+		BF_ENTITY = 1 << 0,
+		BF_POS = 1 << 1,
+		BF_TEMP = 1 << 2,
 	};
 
-// construction 
+	// construction
 	// private so it must be created by friends
 private:
-	Blip( int id, bool temp );
+	Blip(int id, bool temp);
 
-// interface
+	// interface
 public:
-	int				GetID() const;
+	int GetID() const;
 
 	// needed to display
-	const Vec3f&	GetPosition() const;
-	float			GetRadius() const;
-	Colour			GetColour() const;
+	const Vec3f &GetPosition() const;
+	float GetRadius() const;
+	Colour GetColour() const;
 
 	// call this every frame
-	bool			Update( float timeNow );
+	bool Update(float timeNow);
 
 	// call this to determine if we should remove this blip
-	bool			IsDead() const;
+	bool IsDead() const;
 
 	// don't save temporaries
-	bool			IsTemp() const;
-	
+	bool IsTemp() const;
+
 	//
-	void			SetPosition( const Vec3f& pos );
-	void			SetEntity  ( const Entity* e );
+	void SetPosition(const Vec3f &pos);
+	void SetEntity(const Entity *e);
 
 	// override default life time for temp blips
-	void			SetLifeTime( float lifetime );
+	void SetLifeTime(float lifetime);
 
 	// load and save blips
-	void			Load( IFF& iff );
-	void			Save( IFF& iff );
+	void Load(IFF &iff);
+	void Save(IFF &iff);
 
-// fields
+	// fields
 private:
-	const int	m_id;
+	const int m_id;
 
 	// use an entity group to detect the destruction of entity
-	int			m_flags;
-	EntityGroup	m_entity;	
-	Vec3f		m_pos;
+	int m_flags;
+	EntityGroup m_entity;
+	Vec3f m_pos;
 
 	// for animation purposes
-	float		m_timeBlip;
-	float		m_lifetime;
-	float		m_radius;
+	float m_timeBlip;
+	float m_lifetime;
+	float m_radius;
 
-// implementation
+	// implementation
 private:
 	void Reset();
 
-// copy -- do not define
+	// copy -- do not define
 private:
-	Blip( const Blip& );
-	Blip& operator= ( const Blip& );
+	Blip(const Blip &);
+	Blip &operator=(const Blip &);
 };
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // BlipFactory
 
 class BlipFactory
 {
-// types
+	// types
 public:
-	typedef std::vector<Blip*> BlipArray;
+	typedef std::vector<Blip *> BlipArray;
 
-// construction
+	// construction
 public:
-	 BlipFactory();
+	BlipFactory();
 	~BlipFactory();
 
-// interface
+	// interface
 public:
-	Blip*	CreateBlipTemp();
-	Blip*	CreateBlip( int id );
+	Blip *CreateBlipTemp();
+	Blip *CreateBlip(int id);
 
 	// NOTE: order can change from frame to frame
-	size_t	GetBlipCount() const;
-	Blip*	GetBlipAt( size_t index );
+	size_t GetBlipCount() const;
+	Blip *GetBlipAt(size_t index);
 
-	Blip*	GetBlipFromId( int id );
+	Blip *GetBlipFromId(int id);
 
-	void	DeleteBlip( int id );
-	void	DeleteBlipDead();
+	void DeleteBlip(int id);
+	void DeleteBlipDead();
 
 	// load and save blips
-	void	Load( IFF& iff );
-	void	Save( IFF& iff );
+	void Load(IFF &iff);
+	void Save(IFF &iff);
 
-// fields
+	// fields
 private:
-	int			m_blipTemp;
-	BlipArray	m_blips;
+	int m_blipTemp;
+	BlipArray m_blips;
 
-// copy -- do not define
+	// copy -- do not define
 private:
-	BlipFactory( const BlipFactory& );
-	BlipFactory& operator= ( const BlipFactory& );
+	BlipFactory(const BlipFactory &);
+	BlipFactory &operator=(const BlipFactory &);
 };
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // inlines
 
-inline int Blip::GetID() const 
-{ 
-	return m_id; 
+inline int Blip::GetID() const
+{
+	return m_id;
 }
 
-inline const Vec3f& Blip::GetPosition() const
+inline const Vec3f &Blip::GetPosition() const
 {
-	dbAssert( !IsDead() );
+	dbAssert(!IsDead());
 	return m_pos;
 }
 
 inline float Blip::GetRadius() const
 {
-	dbAssert( !IsDead() );
+	dbAssert(!IsDead());
 	return m_radius;
 }
 
@@ -167,13 +167,13 @@ inline bool Blip::IsDead() const
 
 inline bool Blip::IsTemp() const
 {
-	return ( m_flags & BF_TEMP ) != 0;
+	return (m_flags & BF_TEMP) != 0;
 }
 
-inline Blip* BlipFactory::GetBlipAt( size_t index )
+inline Blip *BlipFactory::GetBlipAt(size_t index)
 {
 	// validate parm
-	dbAssert( index < m_blips.size() );
+	dbAssert(index < m_blips.size());
 
 	return m_blips[index];
 }

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNQuery.cpp
-// Desc    : 
+// Desc    :
 // Created : Friday, February 23, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -47,27 +47,25 @@
 /////////////////////////////////////////////////////////////////////
 // Filter constructors
 
-FindClosestDetectionFilter::FindClosestDetectionFilter
-(	const Entity*		pSelf, 
-	const Player*		pPlayer,
-	const EntityGroup*	pIgnoreGroup,
-	FindClosestFilter*	pSecondaryFilter )
-	:m_pSelf			(pSelf),
-	 m_pPlayer			(pPlayer),
-	 m_pIgnoreGroup		(pIgnoreGroup),
-	 m_pSecondaryFilter	(pSecondaryFilter)
+FindClosestDetectionFilter::FindClosestDetectionFilter(const Entity *pSelf,
+																											 const Player *pPlayer,
+																											 const EntityGroup *pIgnoreGroup,
+																											 FindClosestFilter *pSecondaryFilter)
+		: m_pSelf(pSelf),
+			m_pPlayer(pPlayer),
+			m_pIgnoreGroup(pIgnoreGroup),
+			m_pSecondaryFilter(pSecondaryFilter)
 {
 	dbAssert(pSelf);
 }
 
-FindClosestDetectionFilter::FindClosestDetectionFilter
-(	const Entity*		pSelf, 
-	const EntityGroup*	pIgnoreGroup, 
-	FindClosestFilter*	pSecondaryFilter )
-	:m_pSelf			(pSelf),
-	 m_pPlayer			(pSelf->GetOwner()),
-	 m_pIgnoreGroup		(pIgnoreGroup),
-	 m_pSecondaryFilter	(pSecondaryFilter)
+FindClosestDetectionFilter::FindClosestDetectionFilter(const Entity *pSelf,
+																											 const EntityGroup *pIgnoreGroup,
+																											 FindClosestFilter *pSecondaryFilter)
+		: m_pSelf(pSelf),
+			m_pPlayer(pSelf->GetOwner()),
+			m_pIgnoreGroup(pIgnoreGroup),
+			m_pSecondaryFilter(pSecondaryFilter)
 {
 	// moved from InitFindClosestDetectionFilter()
 	//
@@ -75,43 +73,42 @@ FindClosestDetectionFilter::FindClosestDetectionFilter
 	dbAssert(pSelf);
 }
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
-static bool CanAttackType( const Entity* attacker, const Entity* target )
+static bool CanAttackType(const Entity *attacker, const Entity *target)
 {
 	// validate parms
-	dbAssert( attacker );
-	dbAssert( target );
+	dbAssert(attacker);
+	dbAssert(target);
 
 	//
 	unsigned long attackerControllerType = NULL_EC;
 
-	if( attacker )
+	if (attacker)
 	{
 		attackerControllerType = attacker->GetControllerBP()->GetControllerType();
 	}
 
-		// can self attack?
-	const AttackExtInfo*			attack			= QIExtInfo<AttackExtInfo>( attacker->GetController() );
+	// can self attack?
+	const AttackExtInfo *attack = QIExtInfo<AttackExtInfo>(attacker->GetController());
 
-	if ( attack == NULL )
+	if (attack == NULL)
 		return false;
 
 	// close combat guys...
-	const MovingExtInfo* movSelf   = QIExtInfo<MovingExtInfo>( attacker->GetController() );
-	const MovingExtInfo* movTarget = QIExtInfo<MovingExtInfo>( target  ->GetController() );
+	const MovingExtInfo *movSelf = QIExtInfo<MovingExtInfo>(attacker->GetController());
+	const MovingExtInfo *movTarget = QIExtInfo<MovingExtInfo>(target->GetController());
 
-	const MovingExt* pMovExtSelf   = QIExt<MovingExt>( attacker->GetController() );
-	const MovingExt* pMovExtTarget = QIExt<MovingExt>( target	->GetController() );
+	const MovingExt *pMovExtSelf = QIExt<MovingExt>(attacker->GetController());
+	const MovingExt *pMovExtTarget = QIExt<MovingExt>(target->GetController());
 
-	if(( movSelf == 0 ) || ( pMovExtSelf == 0 ))
+	if ((movSelf == 0) || (pMovExtSelf == 0))
 	{
 		// entity may be dead
 		return false;
 	}
-	else
-	if(( movTarget == 0 ) || (pMovExtTarget == 0 ))
+	else if ((movTarget == 0) || (pMovExtTarget == 0))
 	{
 		// is building - never return true in this block
 	}
@@ -120,28 +117,28 @@ static bool CanAttackType( const Entity* attacker, const Entity* target )
 		// NOTE: flyers can now attack anything and everything
 		// this means ground units are attackable by everything, hence
 		// the removal of the last 'else if'
-		
+
 		// if a flyer and the other guy isn't
-		if( movTarget->IsFlyer() && !movSelf->IsFlyer() )
+		if (movTarget->IsFlyer() && !movSelf->IsFlyer())
 			return false;
 		else
-		// if you are a water creature and the other guy is not a swimmer or flyer
-		if( pMovExtTarget->IsSwimmer() && !movTarget->IsGround() && (!pMovExtSelf->IsSwimmer() && !movSelf->IsFlyer() ) )
+				// if you are a water creature and the other guy is not a swimmer or flyer
+				if (pMovExtTarget->IsSwimmer() && !movTarget->IsGround() && (!pMovExtSelf->IsSwimmer() && !movSelf->IsFlyer()))
 			return false;
 		else
-		// if you are a ground creature and the target is not
-		if( movTarget->IsGround() && !pMovExtTarget->IsSwimmer() && (!movSelf->IsGround() && !movSelf->IsFlyer() )  )
+				// if you are a ground creature and the target is not
+				if (movTarget->IsGround() && !pMovExtTarget->IsSwimmer() && (!movSelf->IsGround() && !movSelf->IsFlyer()))
 			return false;
 	}
 
-	if ( !movSelf->IsFlyer() )
+	if (!movSelf->IsFlyer())
 	{
 		// can I reach this target
-		const PathfinderQuery* pq = ModObj::i()->GetWorld()->GetPathfinder()->Query();
+		const PathfinderQuery *pq = ModObj::i()->GetWorld()->GetPathfinder()->Query();
 		if (!pq->IsReachableFrom(
-					Vec2f(attacker->GetPosition().x, attacker->GetPosition().z), 
-					Vec2f(target->GetPosition().x, target->GetPosition().z),
-					movSelf->movingType == movSelf->MOV_AMPHIBIOUS ))
+						Vec2f(attacker->GetPosition().x, attacker->GetPosition().z),
+						Vec2f(target->GetPosition().x, target->GetPosition().z),
+						movSelf->movingType == movSelf->MOV_AMPHIBIOUS))
 		{
 			return false;
 		}
@@ -155,18 +152,17 @@ static bool CanAttackType( const Entity* attacker, const Entity* target )
 // have a health extension - use this filter
 //-------------------------------------------------------------------------------------
 
-bool FindClosestEnemyFilter::Check( const Entity* pEntity )
+bool FindClosestEnemyFilter::Check(const Entity *pEntity)
 {
 	// check relationship, don't check FOW or visibility
-	return RDNQuery::CanBeAttacked( pEntity, m_pPlayer, true, false, false );
+	return RDNQuery::CanBeAttacked(pEntity, m_pPlayer, true, false, false);
 }
 
-
 //-------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
-bool FindClosestTargetFilter::Check( const Entity* target )
+bool FindClosestTargetFilter::Check(const Entity *target)
 {
-	return RDNQuery::CanAttack( m_pAttacker, target );
+	return RDNQuery::CanAttack(m_pAttacker, target);
 }
 
 //-------------------------------------------------------------------------------------
@@ -174,7 +170,7 @@ bool FindClosestTargetFilter::Check( const Entity* target )
 // have a health extension - use this filter.
 //-------------------------------------------------------------------------------------
 
-bool FindClosestUnitWithHealthFilter::Check( const Entity* pEntity )
+bool FindClosestUnitWithHealthFilter::Check(const Entity *pEntity)
 {
 	// does this entity have an owner
 	if (pEntity->GetOwner())
@@ -192,9 +188,9 @@ bool FindClosestUnitWithHealthFilter::Check( const Entity* pEntity )
 
 //------------------------------------------------------------------------------------------------------------------------
 // Detection queries
-// 
-//  These functions search for creatures to attack, as in attack move, guard and patrol. This 
-//  should filter out stealth creatures or things you cannot SEE. 
+//
+//  These functions search for creatures to attack, as in attack move, guard and patrol. This
+//  should filter out stealth creatures or things you cannot SEE.
 //
 //------------------------------------------------------------------------------------------------------------------------
 
@@ -204,21 +200,21 @@ bool FindClosestUnitWithHealthFilter::Check( const Entity* pEntity )
 // when you are seeking for things that are VISIBLE.
 //-------------------------------------------------------------------------------------
 
-bool FindClosestDetectionFilter::Check( const Entity* pEntity )
+bool FindClosestDetectionFilter::Check(const Entity *pEntity)
 {
 	// is pEntity in our ignoreGroup?
-	if( m_pIgnoreGroup && m_pIgnoreGroup->find(pEntity) != m_pIgnoreGroup->end() ) 
-	{	// ignoring
+	if (m_pIgnoreGroup && m_pIgnoreGroup->find(pEntity) != m_pIgnoreGroup->end())
+	{ // ignoring
 		return false;
 	}
 
 	// check that it can be attacked
-	dbAssert( m_pSelf );
-	if( !RDNQuery::CanAttack( m_pSelf, pEntity, true ) )
+	dbAssert(m_pSelf);
+	if (!RDNQuery::CanAttack(m_pSelf, pEntity, true))
 		return false;
 
-	if ( m_pSecondaryFilter )
-		return m_pSecondaryFilter->Check( pEntity );
+	if (m_pSecondaryFilter)
+		return m_pSecondaryFilter->Check(pEntity);
 
 	return true;
 }
@@ -228,15 +224,15 @@ bool FindClosestDetectionFilter::Check( const Entity* pEntity )
 // currently by the soundbeam tower and by the AI for determining area of threat.
 //-------------------------------------------------------------------------------------
 
-bool FindClosestEnemyNoStealthNoBuildingFilter::Check( const Entity* pEntity )
+bool FindClosestEnemyNoStealthNoBuildingFilter::Check(const Entity *pEntity)
 {
 	// check that it can be attacked
-	if( !RDNQuery::CanBeAttacked( pEntity, m_pPlayer ) )
+	if (!RDNQuery::CanBeAttacked(pEntity, m_pPlayer))
 		return false;
 
 	// is building
-	const SiteExtInfo* site = QIExtInfo<SiteExtInfo>(pEntity);
-	if( site )
+	const SiteExtInfo *site = QIExtInfo<SiteExtInfo>(pEntity);
+	if (site)
 		return false;
 
 	return true;
@@ -247,15 +243,15 @@ bool FindClosestEnemyNoStealthNoBuildingFilter::Check( const Entity* pEntity )
 // currently by the anti-air tower.
 //-------------------------------------------------------------------------------------
 
-bool FindClosestEnemyFlyerFilter::Check( const Entity* pEntity )
+bool FindClosestEnemyFlyerFilter::Check(const Entity *pEntity)
 {
 	// check that it can be attacked
-	if( !RDNQuery::CanBeAttacked( pEntity, m_pPlayer ) )
+	if (!RDNQuery::CanBeAttacked(pEntity, m_pPlayer))
 		return false;
 
 	// is flyer
-	const MovingExtInfo* moving = QIExtInfo<MovingExtInfo>(pEntity);
-	if (moving && moving->IsFlyer() )
+	const MovingExtInfo *moving = QIExtInfo<MovingExtInfo>(pEntity);
+	if (moving && moving->IsFlyer())
 		return true;
 
 	return false;
@@ -265,16 +261,16 @@ bool FindClosestEnemyFlyerFilter::Check( const Entity* pEntity )
 // Used for searching/targeting. Only Entities of the desired type.
 //-------------------------------------------------------------------------------------
 
-bool FindClosestEnemyOfType::Check( const Entity* pEntity )
+bool FindClosestEnemyOfType::Check(const Entity *pEntity)
 {
-	dbAssert( pEntity );
+	dbAssert(pEntity);
 
 	// check that it can be attacked
-	if( !RDNQuery::CanAttack( m_pSearcher, pEntity ) )
+	if (!RDNQuery::CanAttack(m_pSearcher, pEntity))
 		return false;
 
-	if( pEntity->GetControllerBP() && pEntity->GetControllerBP()->GetControllerType() == m_ControllerType)
-	{	
+	if (pEntity->GetControllerBP() && pEntity->GetControllerBP()->GetControllerType() == m_ControllerType)
+	{
 		// this is the type we are looking for
 		return true;
 	}
@@ -292,21 +288,24 @@ namespace
 	struct ControllerPriority
 	{
 		// a Controller with this priority will be ignored
-		enum { IGNORE_ME = -1 };
+		enum
+		{
+			IGNORE_ME = -1
+		};
 
-		ControllerType	type;
-		int				priority;
+		ControllerType type;
+		int priority;
 	};
 
-	ControllerPriority CONTROLLER_PRIORITY[] = 
-	{ 
-		{ Guy_EC			, 100	},
-		{ HQ_EC				, 100	},
-		{ CashPile_EC		, ControllerPriority::IGNORE_ME },
+	ControllerPriority CONTROLLER_PRIORITY[] =
+			{
+					{Guy_EC, 100},
+					{HQ_EC, 100},
+					{CashPile_EC, ControllerPriority::IGNORE_ME},
 	};
-}
+} // namespace
 
-static int ThreatPrioritizeExecute( const Entity* pEntity, const Player* pPlayer, ControllerPriority* controllerList, int length )
+static int ThreatPrioritizeExecute(const Entity *pEntity, const Player *pPlayer, ControllerPriority *controllerList, int length)
 {
 	int priority = 0;
 
@@ -315,13 +314,13 @@ static int ThreatPrioritizeExecute( const Entity* pEntity, const Player* pPlayer
 	{
 		unsigned long type = pEntity->GetControllerBP()->GetControllerType();
 
-		for (int i=0; i<length; i++)
+		for (int i = 0; i < length; i++)
 		{
-			if( type == (unsigned long)( controllerList[i].type ) )
+			if (type == (unsigned long)(controllerList[i].type))
 			{
 				priority = controllerList[i].priority;
 
-				if ( priority <= ControllerPriority::IGNORE_ME )
+				if (priority <= ControllerPriority::IGNORE_ME)
 				{
 					// never choose this type of controller
 					continue;
@@ -329,24 +328,24 @@ static int ThreatPrioritizeExecute( const Entity* pEntity, const Player* pPlayer
 
 				if (pEntity->GetController())
 				{
-					const ModController* pController = static_cast<const ModController*>( pEntity->GetController() );
+					const ModController *pController = static_cast<const ModController *>(pEntity->GetController());
 
 					for (;;)
 					{
 						// make it a high priority if the entity's attacking us
 						const int AttackPriorityBonus = 1000;
-						const StateAttack* pStateAttack = 
-							static_cast< const StateAttack* >( pController->QIActiveState( State::SID_Attack ) );
+						const StateAttack *pStateAttack =
+								static_cast<const StateAttack *>(pController->QIActiveState(State::SID_Attack));
 						if (pStateAttack)
 						{
-							if( pStateAttack->GetTargetEntity() && pStateAttack->GetTargetEntity()->GetOwner() == pPlayer)
+							if (pStateAttack->GetTargetEntity() && pStateAttack->GetTargetEntity()->GetOwner() == pPlayer)
 							{
 								// increase priority
 								priority += AttackPriorityBonus;
 								break;
 							}
 						}
-					
+
 						// no more checks for increased priority
 						break;
 					}
@@ -364,38 +363,38 @@ static int ThreatPrioritizeExecute( const Entity* pEntity, const Player* pPlayer
 // prioritize all controller types
 //-------------------------------------------------------------------------------------
 
-int	ThreatPrioritizerAll::Prioritize( const Entity* pEntity )
+int ThreatPrioritizerAll::Prioritize(const Entity *pEntity)
 {
-	return ThreatPrioritizeExecute( pEntity, m_pPlayer, CONTROLLER_PRIORITY, LENGTHOF(CONTROLLER_PRIORITY) );
+	return ThreatPrioritizeExecute(pEntity, m_pPlayer, CONTROLLER_PRIORITY, LENGTHOF(CONTROLLER_PRIORITY));
 }
 
 //-------------------------------------------------------------------------------------
 // Given a position, a radius and a filter find the closest unit
 //-------------------------------------------------------------------------------------
 
-const Entity* RDNQuery::FindClosestPrioritize( const Vec3f& apos, float SearchRad, FindClosestFilter& filter, ThreatPrioritizer& prioritizer, const Entity* pIgnore)
+const Entity *RDNQuery::FindClosestPrioritize(const Vec3f &apos, float SearchRad, FindClosestFilter &filter, ThreatPrioritizer &prioritizer, const Entity *pIgnore)
 {
 	EntityGroup tempGroup;
 	// find closest enemy
-	ModObj::i()->GetWorld()->FindClosest( tempGroup, filter, 0, apos, SearchRad, pIgnore );
+	ModObj::i()->GetWorld()->FindClosest(tempGroup, filter, 0, apos, SearchRad, pIgnore);
 
 	// prioritize enemies
 	EntityGroup::iterator ei = tempGroup.begin();
 	EntityGroup::iterator ee = tempGroup.end();
 
-	Entity*		pEntity		= NULL;
-	int			entityPrio	= ControllerPriority::IGNORE_ME;
+	Entity *pEntity = NULL;
+	int entityPrio = ControllerPriority::IGNORE_ME;
 
 	for (; ei != ee; ei++)
 	{
-		int prio = prioritizer.Prioritize( *ei );
+		int prio = prioritizer.Prioritize(*ei);
 		if (prio > entityPrio)
 		{
-			pEntity		= *ei;
-			entityPrio	= prio;
+			pEntity = *ei;
+			entityPrio = prio;
 		}
 	}
-	
+
 	return pEntity;
 }
 
@@ -403,82 +402,81 @@ const Entity* RDNQuery::FindClosestPrioritize( const Vec3f& apos, float SearchRa
 // Given a position, a radius and a filter find the closest unit
 //-------------------------------------------------------------------------------------
 
-const Entity* RDNQuery::FindClosestPrioritize( const Entity* pME, float SearchRad, FindClosestFilter& filter, ThreatPrioritizer& prioritizer, const Entity* pIgnore)
+const Entity *RDNQuery::FindClosestPrioritize(const Entity *pME, float SearchRad, FindClosestFilter &filter, ThreatPrioritizer &prioritizer, const Entity *pIgnore)
 {
 	EntityGroup tempGroup;
 	// find closest enemy
-	ModObj::i()->GetWorld()->FindClosest( tempGroup, filter, 0, pME, SearchRad, pIgnore );
+	ModObj::i()->GetWorld()->FindClosest(tempGroup, filter, 0, pME, SearchRad, pIgnore);
 
 	// prioritize enemies
 	EntityGroup::iterator ei = tempGroup.begin();
 	EntityGroup::iterator ee = tempGroup.end();
 
-	Entity*		pEntity		= NULL;
-	int			entityPrio	= ControllerPriority::IGNORE_ME;
+	Entity *pEntity = NULL;
+	int entityPrio = ControllerPriority::IGNORE_ME;
 
 	for (; ei != ee; ei++)
 	{
-		int prio = prioritizer.Prioritize( *ei );
+		int prio = prioritizer.Prioritize(*ei);
 		if (prio > entityPrio)
 		{
-			pEntity		= *ei;
-			entityPrio	= prio;
+			pEntity = *ei;
+			entityPrio = prio;
 		}
 	}
-	
+
 	return pEntity;
 }
 
-
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-const Entity* RDNQuery::FindClosestEnemy( const Entity* pEntity, float SearchRad, FindClosestFilter& secondaryfilter, const EntityGroup* pIgnoreGroup )
+const Entity *RDNQuery::FindClosestEnemy(const Entity *pEntity, float SearchRad, FindClosestFilter &secondaryfilter, const EntityGroup *pIgnoreGroup)
 {
-	dbAssert( pEntity );
+	dbAssert(pEntity);
 
 	// eventually we could move this filter out of here and layer it with other filters
 	FindClosestDetectionFilter filter(pEntity, pIgnoreGroup, &secondaryfilter);
 
-	// 
-	ThreatPrioritizerAll prioritizer( pEntity->GetOwner() );
+	//
+	ThreatPrioritizerAll prioritizer(pEntity->GetOwner());
 
-	return FindClosestPrioritize( pEntity->GetPosition(), SearchRad, filter, prioritizer );
+	return FindClosestPrioritize(pEntity->GetPosition(), SearchRad, filter, prioritizer);
 }
 
 //-------------------------------------------------------------------------------------
 // Given am entity and a search radius find an enemy that it can attack
 //-------------------------------------------------------------------------------------
 
-const Entity* RDNQuery::FindClosestEnemy( const Entity* pME, float SearchRad, const EntityGroup* pIgnoreGroup )
+const Entity *RDNQuery::FindClosestEnemy(const Entity *pME, float SearchRad, const EntityGroup *pIgnoreGroup)
 {
-	return FindClosestEnemy( pME, pME->GetPosition(), SearchRad, pIgnoreGroup );
+	return FindClosestEnemy(pME, pME->GetPosition(), SearchRad, pIgnoreGroup);
 }
 
-const Entity* RDNQuery::FindClosestEnemy( const Entity* pME, const Vec3f& SearchPos, float SearchRad, const EntityGroup* pIgnoreGroup )
+const Entity *RDNQuery::FindClosestEnemy(const Entity *pME, const Vec3f &SearchPos, float SearchRad, const EntityGroup *pIgnoreGroup)
 {
-	dbAssert( pME );
+	dbAssert(pME);
 
 	// eventually we could move this filter out of here and layer it with other filters
-	FindClosestDetectionFilter filter( pME, pIgnoreGroup, NULL );
+	FindClosestDetectionFilter filter(pME, pIgnoreGroup, NULL);
 
-	// 
-	ThreatPrioritizerAll prioritizer( pME->GetOwner() );
+	//
+	ThreatPrioritizerAll prioritizer(pME->GetOwner());
 
-	return FindClosestPrioritize( SearchPos, SearchRad, filter, prioritizer );
+	return FindClosestPrioritize(SearchPos, SearchRad, filter, prioritizer);
 }
 
-const Entity* RDNQuery::FindClosestEnemy( const Entity* pME, const Vec3f& SearchPos, float SearchRad, ThreatPrioritizer& prioritizer, const EntityGroup* pIgnoreGroup )
+const Entity *RDNQuery::FindClosestEnemy(const Entity *pME, const Vec3f &SearchPos, float SearchRad, ThreatPrioritizer &prioritizer, const EntityGroup *pIgnoreGroup)
 {
-	dbAssert( pME );
+	dbAssert(pME);
 
 	// eventually we could move this filter out of here and layer it with other filters
-	FindClosestDetectionFilter filter( pME, pIgnoreGroup, NULL );
+	FindClosestDetectionFilter filter(pME, pIgnoreGroup, NULL);
 
-	return FindClosestPrioritize( SearchPos, SearchRad, filter, prioritizer );
+	return FindClosestPrioritize(SearchPos, SearchRad, filter, prioritizer);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -489,9 +487,9 @@ const Entity* RDNQuery::FindClosestEnemy( const Entity* pME, const Vec3f& Search
 //			  memoryLength - only remember back this many ticks
 //	Author	: dswinerd
 //
-const Entity* RDNQuery::FindRetaliationEnemy( const Entity* pEntity, float searchRad, long memoryLength, const EntityGroup* pIgnoreGroup )
+const Entity *RDNQuery::FindRetaliationEnemy(const Entity *pEntity, float searchRad, long memoryLength, const EntityGroup *pIgnoreGroup)
 {
-	const HealthExt *pHealthExt = QIExt<HealthExt>( pEntity );
+	const HealthExt *pHealthExt = QIExt<HealthExt>(pEntity);
 	if (!pHealthExt)
 	{
 		return 0;
@@ -499,41 +497,41 @@ const Entity* RDNQuery::FindRetaliationEnemy( const Entity* pEntity, float searc
 
 	// get the EntityGroup that contains all the Entities that we remember attacking us
 	EntityGroup attackers;
-	pHealthExt->GetAttackMemory().GetAttackers( attackers, ModObj::i()->GetWorld()->GetGameTicks() - memoryLength );
+	pHealthExt->GetAttackMemory().GetAttackers(attackers, ModObj::i()->GetWorld()->GetGameTicks() - memoryLength);
 
-	if( !attackers.empty() )
-	{	// find the closest one of these (that we can see) that is within searchRad
+	if (!attackers.empty())
+	{ // find the closest one of these (that we can see) that is within searchRad
 
 		float bestDistSqr = FLT_MAX;
 		Entity *pBestEntity = 0;
 
 		EntityGroup::iterator ib = attackers.begin();
 		EntityGroup::iterator ie = attackers.end();
-		for ( ; ib != ie; ++ib )
+		for (; ib != ie; ++ib)
 		{
-			Entity* pAttacker = *ib;
+			Entity *pAttacker = *ib;
 
-			if ( pIgnoreGroup && pIgnoreGroup->find( pAttacker ) != pIgnoreGroup->end() )
+			if (pIgnoreGroup && pIgnoreGroup->find(pAttacker) != pIgnoreGroup->end())
 			{
 				// ignoring him
 				continue;
 			}
 
-			if( !RDNQuery::CanAttack( pEntity, pAttacker ) )
+			if (!RDNQuery::CanAttack(pEntity, pAttacker))
 				// pEntity can't attack pAttacker
 				continue;
 
-			float distSqr = EntityUtil::DistSqrDirCalcEntity( pEntity, pAttacker, 0, NULL );
+			float distSqr = EntityUtil::DistSqrDirCalcEntity(pEntity, pAttacker, 0, NULL);
 
-			if ( distSqr < bestDistSqr && distSqr < searchRad*searchRad )
-			{	// new closest previous attacker
+			if (distSqr < bestDistSqr && distSqr < searchRad * searchRad)
+			{ // new closest previous attacker
 				bestDistSqr = distSqr;
 				pBestEntity = pAttacker;
 			}
 		}
 
 		if (pBestEntity)
-		{	// found a target
+		{ // found a target
 			return pBestEntity;
 		}
 	}
@@ -541,25 +539,26 @@ const Entity* RDNQuery::FindRetaliationEnemy( const Entity* pEntity, float searc
 	return 0;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-#define ENTITYQUERY(n)\
-	bool RDNQuery::n( const Entity* self, const Entity* target )	\
-	{																\
-		/* validate parm */											\
-		if( self == 0 )												\
-		{															\
-			dbBreak(); return 0;									\
-		}															\
-																	\
-		EntityGroup g;												\
-		g.push_back( const_cast<Entity*>( self ) );					\
-																	\
-		return n( g, target );										\
+#define ENTITYQUERY(n)                                       \
+	bool RDNQuery::n(const Entity *self, const Entity *target) \
+	{                                                          \
+		/* validate parm */                                      \
+		if (self == 0)                                           \
+		{                                                        \
+			dbBreak();                                             \
+			return 0;                                              \
+		}                                                        \
+                                                             \
+		EntityGroup g;                                           \
+		g.push_back(const_cast<Entity *>(self));                 \
+                                                             \
+		return n(g, target);                                     \
 	}
 
 //	ENTITYQUERY( CanBuild			)
@@ -572,25 +571,25 @@ const Entity* RDNQuery::FindRetaliationEnemy( const Entity* pEntity, float searc
 //	Param.	: e - the Entity we are testing
 //			  p - the Player doing the viewings
 //
-bool RDNQuery::CanBeSeen( const Entity* e, const Player* p, bool bCheckFOW )
+bool RDNQuery::CanBeSeen(const Entity *e, const Player *p, bool bCheckFOW)
 {
 	// validate parm
-	if( e == 0 || p == 0 )
+	if (e == 0 || p == 0)
 		return false;
 
 	// entities without controller are always visible: trees, rocks, waterfalls, ...
-	if( e->GetController() == 0 )
+	if (e->GetController() == 0)
 		return true;
 
 	// entities that the player control are always visible
-	if( p->CanControlEntity( e ) )
+	if (p->CanControlEntity(e))
 		return true;
 
 	//
-	const PlayerFOW* fow = static_cast<const RDNPlayer*>( p )->GetFogOfWar();
+	const PlayerFOW *fow = static_cast<const RDNPlayer *>(p)->GetFogOfWar();
 
 	// standard unit
-	return (!bCheckFOW || fow->IsVisible( e ));
+	return (!bCheckFOW || fow->IsVisible(e));
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -599,21 +598,21 @@ bool RDNQuery::CanBeSeen( const Entity* e, const Player* p, bool bCheckFOW )
 //	Param.	: e - the Entity we are testing
 //			  p - the Player we are testing against
 //
-bool RDNQuery::IsFriend( const Entity* e, const Player* p )
+bool RDNQuery::IsFriend(const Entity *e, const Player *p)
 {
 	// validate parms
-	if( e == 0 )
+	if (e == 0)
 		return false;
 
-	if( p == 0 )
+	if (p == 0)
 		return false;
 
 	// check self
-	if( p->CanControlEntity(e) )
+	if (p->CanControlEntity(e))
 		return true;
 
 	// never friend with nature object
-	if( e->GetOwner() == 0 )
+	if (e->GetOwner() == 0)
 		return false;
 
 	return true;
@@ -626,21 +625,21 @@ bool RDNQuery::IsFriend( const Entity* e, const Player* p )
 //			  p - the Player we are testing against
 //	Author	: dswinerd
 //
-bool RDNQuery::IsEnemy( const Entity* e, const Player* p )
+bool RDNQuery::IsEnemy(const Entity *e, const Player *p)
 {
 	// validate parms
-	if( e == 0 )
+	if (e == 0)
 		return false;
 
-	if( p == 0 )
+	if (p == 0)
 		return false;
 
 	// check self
-	if( p->CanControlEntity(e) )
+	if (p->CanControlEntity(e))
 		return false;
 
 	// never enemy with nature object
-	if( e->GetOwner() == 0 )
+	if (e->GetOwner() == 0)
 		return false;
 
 	return true;
@@ -653,32 +652,32 @@ bool RDNQuery::IsEnemy( const Entity* e, const Player* p )
 //			  p - the Player wanting to attack
 //			  bCheckRelationship - will be true if we want to check alliances, etc.
 //
-bool RDNQuery::CanBeAttacked( const Entity* e, const Player* p, bool bCheckRelationship, bool bCheckFOW, bool bCheckVis )
+bool RDNQuery::CanBeAttacked(const Entity *e, const Player *p, bool bCheckRelationship, bool bCheckFOW, bool bCheckVis)
 {
-	UNREF_P( bCheckRelationship );	//	used for alliance system
+	UNREF_P(bCheckRelationship); //	used for alliance system
 
 	// validate parm
-	if( e == 0 )
+	if (e == 0)
 		return false;
 
-	if( e->GetOwner() == 0 )
+	if (e->GetOwner() == 0)
 		// nature object -- can't be attacked
 		return false;
 
 	// can target be attacked
-	const HealthExt* health = QIExt<HealthExt>( e );
-	
-	if( health == 0 || health->GetHealth() == 0.0f )
+	const HealthExt *health = QIExt<HealthExt>(e);
+
+	if (health == 0 || health->GetHealth() == 0.0f)
 		return false;
 
 	// can't attack own units
-	if ( e->GetOwner() == p )
+	if (e->GetOwner() == p)
 		return false;
-	
+
 	// make sure target is visible
-	if( bCheckVis )
+	if (bCheckVis)
 	{
-		if ( RDNQuery::CanBeSeen( e, p, bCheckFOW ) == 0 )
+		if (RDNQuery::CanBeSeen(e, p, bCheckFOW) == 0)
 			return false;
 	}
 
@@ -687,21 +686,21 @@ bool RDNQuery::CanBeAttacked( const Entity* e, const Player* p, bool bCheckRelat
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: Determines if we can rally to the given entity
-//	Result	: 
-//	Param.	: 
+//	Result	:
+//	Param.	:
 //
-bool RDNQuery::CanRallyTo( const Entity* e, const Player* p )
+bool RDNQuery::CanRallyTo(const Entity *e, const Player *p)
 {
 	UNREF_P(p);
 
 	if (!e)
-	{	// rally at a point
-		return(true);
+	{ // rally at a point
+		return (true);
 	}
 
 	// right now can rally to any entity, but that will probably change
 
-	return(true);
+	return (true);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -711,52 +710,53 @@ bool RDNQuery::CanRallyTo( const Entity* e, const Player* p )
 //	          e - the entity to guard
 //			  p - the player controlling the creature
 //
-bool RDNQuery::CanGuard( const EntityGroup& selection, const Entity* e, const Player* p )
+bool RDNQuery::CanGuard(const EntityGroup &selection, const Entity *e, const Player *p)
 {
 	// can guard just a point
-	if( e == 0 )
+	if (e == 0)
 		return true;
 
 	// cannot guard trees & rocks
-	if( e->GetOwner() == 0 )
+	if (e->GetOwner() == 0)
 		return false;
 
 	// p cannot guard un-allied entities
-	if( RDNQuery::IsFriend( e, p ) == 0 )
+	if (RDNQuery::IsFriend(e, p) == 0)
 		return false;
 
 	return !selection.empty();
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-bool RDNQuery::CanAttack( const EntityGroup& g, const Entity* target, bool bCheckRelationship, bool bCheckFOW )
+bool RDNQuery::CanAttack(const EntityGroup &g, const Entity *target, bool bCheckRelationship, bool bCheckFOW)
 {
 	// validate parm
-	if( g.empty() )
+	if (g.empty())
 	{
-		dbBreak(); return false;
+		dbBreak();
+		return false;
 	}
 
 	//
-	if( !CanBeAttacked( target, g.front()->GetOwner(), bCheckRelationship, bCheckFOW ) )
+	if (!CanBeAttacked(target, g.front()->GetOwner(), bCheckRelationship, bCheckFOW))
 		return false;
 
 	// check if any dude in the group can do it
 	EntityGroup::const_iterator i = g.begin();
 	EntityGroup::const_iterator e = g.end();
 
-	for( ; i != e; ++i )
+	for (; i != e; ++i)
 	{
-		if( CanAttackType( *i, target ) )
+		if (CanAttackType(*i, target))
 			break;
 	}
 
-	if( i == e )
+	if (i == e)
 		// nobody
 		return false;
 
@@ -764,37 +764,38 @@ bool RDNQuery::CanAttack( const EntityGroup& g, const Entity* target, bool bChec
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //	Author	: dswinerd
 //
-bool RDNQuery::CanAttack( const Entity* self, const Entity* target, bool bCheckRelationship, bool bCheckFOW )
-{																
-	/* validate parm */											
-	if( self == 0 )												
-	{															
-		dbBreak(); return 0;									
-	}															
-																
-	EntityGroup g;												
-	g.push_back( const_cast<Entity*>( self ) );					
-																
-	return CanAttack( g, target, bCheckRelationship, bCheckFOW );
+bool RDNQuery::CanAttack(const Entity *self, const Entity *target, bool bCheckRelationship, bool bCheckFOW)
+{
+	/* validate parm */
+	if (self == 0)
+	{
+		dbBreak();
+		return 0;
+	}
+
+	EntityGroup g;
+	g.push_back(const_cast<Entity *>(self));
+
+	return CanAttack(g, target, bCheckRelationship, bCheckFOW);
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //	Author	: dswinerd
 //
-bool RDNQuery::CanDoCommand( const EntityGroup& selection, const EntityGroup& targets, unsigned char command, unsigned long param )
+bool RDNQuery::CanDoCommand(const EntityGroup &selection, const EntityGroup &targets, unsigned char command, unsigned long param)
 {
-	UNREF_P( command );
-	UNREF_P( param );
-	
-	if ( selection.empty() || targets.empty() )
+	UNREF_P(command);
+	UNREF_P(param);
+
+	if (selection.empty() || targets.empty())
 	{
 		// nothing can't do anything
 		return false;
@@ -803,37 +804,36 @@ bool RDNQuery::CanDoCommand( const EntityGroup& selection, const EntityGroup& ta
 	return true;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-bool RDNQuery::CanDoCommand( const Entity* entity, const Entity* target, unsigned long command, unsigned long param )
+bool RDNQuery::CanDoCommand(const Entity *entity, const Entity *target, unsigned long command, unsigned long param)
 {
-	if ( target == NULL )
+	if (target == NULL)
 	{
-		return CommandProcessor::CanDoCommand( entity, command, param );
+		return CommandProcessor::CanDoCommand(entity, command, param);
 	}
 	else
 	{
-		return CommandProcessor::CanDoCommand( entity, target, command, param );
+		return CommandProcessor::CanDoCommand(entity, target, command, param);
 	}
 
 	return false;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-bool FindClosestUnitWithOwnerFilter::Check( const Entity* pEntity )
+bool FindClosestUnitWithOwnerFilter::Check(const Entity *pEntity)
 {
 	return pEntity->GetOwner() == m_pPlayer;
 }
-
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: determines the given entity has been attacked in the last numTicks
@@ -843,7 +843,7 @@ bool FindClosestUnitWithOwnerFilter::Check( const Entity* pEntity )
 //	Note	: pEntity - needs a HealthExt to have a memory
 //	Author	: dswinerd
 //
-bool RDNQuery::HasBeenAttackedRecently( Entity *pEntity, long numTicks )
+bool RDNQuery::HasBeenAttackedRecently(Entity *pEntity, long numTicks)
 {
 	// validate parms
 	if (!pEntity)
@@ -851,15 +851,14 @@ bool RDNQuery::HasBeenAttackedRecently( Entity *pEntity, long numTicks )
 		return false;
 	}
 
-	HealthExt *pHealthExt = QIExt<HealthExt>( pEntity );
+	HealthExt *pHealthExt = QIExt<HealthExt>(pEntity);
 	if (!pHealthExt)
 	{
 		return true;
 	}
 
-	return pHealthExt->GetAttackMemory().HasBeenAttackedSince( ModObj::i()->GetWorld()->GetGameTicks() - numTicks );
+	return pHealthExt->GetAttackMemory().HasBeenAttackedSince(ModObj::i()->GetWorld()->GetGameTicks() - numTicks);
 }
-
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: determines if pEntity was attacked by pAttacker in the last numTicks
@@ -869,7 +868,7 @@ bool RDNQuery::HasBeenAttackedRecently( Entity *pEntity, long numTicks )
 //			  numTicks - the number of ticks in the past we are concerned about
 //	Author	: dswinerd
 //
-bool RDNQuery::WasAttackedBy( Entity *pEntity, Entity *pAttacker, long numTicks )
+bool RDNQuery::WasAttackedBy(Entity *pEntity, Entity *pAttacker, long numTicks)
 {
 	// validate parms
 	if (!pEntity || !pAttacker)
@@ -877,13 +876,13 @@ bool RDNQuery::WasAttackedBy( Entity *pEntity, Entity *pAttacker, long numTicks 
 		return false;
 	}
 
-	HealthExt *pHealthExt = QIExt<HealthExt>( pEntity );
+	HealthExt *pHealthExt = QIExt<HealthExt>(pEntity);
 	if (!pHealthExt)
 	{
 		return false;
 	}
 
-	return pHealthExt->GetAttackMemory().WasAttackedBy( pAttacker, ModObj::i()->GetWorld()->GetGameTicks() - numTicks );
+	return pHealthExt->GetAttackMemory().WasAttackedBy(pAttacker, ModObj::i()->GetWorld()->GetGameTicks() - numTicks);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -894,7 +893,7 @@ bool RDNQuery::WasAttackedBy( Entity *pEntity, Entity *pAttacker, long numTicks 
 //			  numTicks - the number of ticks in the past we are concerned about
 //	Author	: dswinerd
 //
-bool RDNQuery::WasAttackedBy( Entity *pEntity, Player *pAttackerOwner, long numTicks)
+bool RDNQuery::WasAttackedBy(Entity *pEntity, Player *pAttackerOwner, long numTicks)
 {
 	// validate parms
 	if (!pEntity || !pAttackerOwner)
@@ -902,13 +901,13 @@ bool RDNQuery::WasAttackedBy( Entity *pEntity, Player *pAttackerOwner, long numT
 		return false;
 	}
 
-	HealthExt *pHealthExt = QIExt<HealthExt>( pEntity );
+	HealthExt *pHealthExt = QIExt<HealthExt>(pEntity);
 	if (!pHealthExt)
 	{
 		return false;
 	}
 
-	return pHealthExt->GetAttackMemory().WasAttackedBy( pAttackerOwner, ModObj::i()->GetWorld()->GetGameTicks() - numTicks );
+	return pHealthExt->GetAttackMemory().WasAttackedBy(pAttackerOwner, ModObj::i()->GetWorld()->GetGameTicks() - numTicks);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -917,30 +916,30 @@ bool RDNQuery::WasAttackedBy( Entity *pEntity, Player *pAttackerOwner, long numT
 //	Param.	: self - the entity looking
 //			  position
 //
-bool RDNQuery::CanSeePosition( const Entity* self, const Vec3f& position )
+bool RDNQuery::CanSeePosition(const Entity *self, const Vec3f &position)
 {
-	const RDNPlayer *pOwner = static_cast< const RDNPlayer* >( self->GetOwner() );
-	if ( !pOwner )
+	const RDNPlayer *pOwner = static_cast<const RDNPlayer *>(self->GetOwner());
+	if (!pOwner)
 	{
 		// must have an owner!
 		return true;
 	}
 
-	if ( !pOwner->GetFogOfWar() )
+	if (!pOwner->GetFogOfWar())
 	{
 		return true;
 	}
 
-	return pOwner->GetFogOfWar()->IsVisible( position );
+	return pOwner->GetFogOfWar()->IsVisible(position);
 }
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: determines if it is possible for one moving object to touch another. ie. to get within melee range
 //	Result	: returns true if can touch
 //
-bool RDNQuery::CanTouch( const MovingExtInfo* movSelf, const MovingExtInfo* movTarget )
+bool RDNQuery::CanTouch(const MovingExtInfo *movSelf, const MovingExtInfo *movTarget)
 {
-	if ( !movSelf || !movTarget )
+	if (!movSelf || !movTarget)
 	{
 		// can't touch nothing
 		return false;

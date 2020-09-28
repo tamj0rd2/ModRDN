@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : StateAttack.h
-// Desc    : 
-// Created : 
-// Author  : 
-// 
+// Desc    :
+// Created :
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -27,13 +27,12 @@ struct AttackPackage;
 struct AttackInfoPackage;
 class StateMove;
 
-
-///////////////////////////////////////////////////////////////////// 
-// StateAttack 
+/////////////////////////////////////////////////////////////////////
+// StateAttack
 
 class StateAttack : public State
 {
-// types
+	// types
 public:
 	enum
 	{
@@ -51,41 +50,40 @@ public:
 		AES_Invalid,
 	};
 
-// construction
+	// construction
 public:
-	StateAttack( EntityDynamics *e_dynamics );
+	StateAttack(EntityDynamics *e_dynamics);
 
-// interface
+	// interface
 public:
-	void						Init( StateMove*, AttackExt*, const AttackInfoPackage* );
+	void Init(StateMove *, AttackExt *, const AttackInfoPackage *);
 
-	void						Enter( Entity* pTarget );
-	void						EnterNoMove( Entity* pTarget );
+	void Enter(Entity *pTarget);
+	void EnterNoMove(Entity *pTarget);
 
-	const Entity*				GetTargetEntity() const;					// returns the Entity was are targeting.  Can be NULL.
+	const Entity *GetTargetEntity() const; // returns the Entity was are targeting.  Can be NULL.
 
-	AttackExitState				GetExitState( );							// returns the reason for exiting
+	AttackExitState GetExitState(); // returns the reason for exiting
 
-// Inherited -- State
+	// Inherited -- State
 public:
-	virtual bool				Update();
-	virtual void				RequestExit();
-	virtual void				ReissueOrder() const;
+	virtual bool Update();
+	virtual void RequestExit();
+	virtual void ReissueOrder() const;
 
-	virtual void				ForceExit();
+	virtual void ForceExit();
 
 	// retrieve the ID of this state
-	virtual State::StateIDType	GetStateID( ) const;
+	virtual State::StateIDType GetStateID() const;
 
 	// Save Load
-	virtual void				SaveState( BiFF& ) const;
-	virtual void				LoadState( IFF& );
+	virtual void SaveState(BiFF &) const;
+	virtual void LoadState(IFF &);
 
-	bool						IsAttackingTarget( ) const;
+	bool IsAttackingTarget() const;
 
-// fields
+	// fields
 private:
-
 	enum AttackStates
 	{
 		AS_Null,
@@ -97,59 +95,57 @@ private:
 		AS_Cant_Reach_Target,
 		AS_Chasing_Target,
 		AS_TransitionToChasingTarget,
-		AS_Reaquire,				// used for fliers
+		AS_Reaquire, // used for fliers
 	};
 
-	StateMove*					m_pStateMove;
+	StateMove *m_pStateMove;
 
-	EntityGroup					m_Target;
+	EntityGroup m_Target;
 
-	AttackStates				m_CurState;
+	AttackStates m_CurState;
 
-	long						m_FinishTime;	// Timer variable in game ticks.
+	long m_FinishTime; // Timer variable in game ticks.
 
-	unsigned long				m_AttackCount;
+	unsigned long m_AttackCount;
 
-	AttackExt*					m_pAttack;
-	const AttackInfoPackage*	m_pAttackInf;
-	const AttackPackage*		m_pAttackCurrent;	// Current attack it has picked (melee/range)
+	AttackExt *m_pAttack;
+	const AttackInfoPackage *m_pAttackInf;
+	const AttackPackage *m_pAttackCurrent; // Current attack it has picked (melee/range)
 
-	float						m_lastDistSqr;
+	float m_lastDistSqr;
 
-	AttackExitState				m_exitState;
+	AttackExitState m_exitState;
 
 	// Should the attack state try and move closer to the target
-	bool						m_bNoMove;
+	bool m_bNoMove;
 
-	Vec2f						m_chargeStartHeading;		// will hold the heading to the target at the time a charge attack started
+	Vec2f m_chargeStartHeading; // will hold the heading to the target at the time a charge attack started
 
-// implementation
+	// implementation
 private:
+	bool UpdateInternal();
 
-	bool	UpdateInternal();
+	void MoveToTarget();
+	void StartAttacking();
+	void StartCoolPeriod();
+	bool StartReaquire();
 
-	void	MoveToTarget();
-	void	StartAttacking();
-	void	StartCoolPeriod();
-	bool	StartReaquire();
+	bool AtTargetForAnyAttack();
+	bool AtTargetForCurrentAttack();
 
-	bool	AtTargetForAnyAttack();
-	bool	AtTargetForCurrentAttack();
-	
-	void	DoFlyerDamage();
+	void DoFlyerDamage();
 
-	bool	ChooseAttack();
+	bool ChooseAttack();
 
-	Entity* GetTarget();
+	Entity *GetTarget();
 
-	void	ProcessRequestExit();
+	void ProcessRequestExit();
 
-	void	HandleAttacking( );
-	bool	HandleCoolPeriod( );
+	void HandleAttacking();
+	bool HandleCoolPeriod();
 
-
-// copy -- do not define
+	// copy -- do not define
 private:
-	StateAttack( const StateAttack& );
-	StateAttack& operator= ( const StateAttack& );
+	StateAttack(const StateAttack &);
+	StateAttack &operator=(const StateAttack &);
 };

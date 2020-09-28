@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : Extension.h
-// Desc    : 
+// Desc    :
 // Created : Tuesday, February 13, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 #pragma once
@@ -15,7 +15,7 @@ class IFF;
 class ChunkNode;
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Extension 
+//  Extension
 
 // NOTE: this class MUST remain a pure virtual base class, otherwise we'll have
 // serious problems
@@ -24,7 +24,7 @@ class ChunkNode;
 
 class Extension
 {
-// construction
+	// construction
 protected:
 	~Extension()
 	{
@@ -32,21 +32,19 @@ protected:
 
 public:
 	// Must be implemented by the extension, even if the implementation does nothing.
-	virtual void SaveExt( BiFF& ) const = 0;
-	virtual void LoadExt( IFF& ) = 0;
+	virtual void SaveExt(BiFF &) const = 0;
+	virtual void LoadExt(IFF &) = 0;
 
 protected:
-	virtual ModController* GetSelf() = 0;
-	
-	inline const ModController* GetSelf() const;
+	virtual ModController *GetSelf() = 0;
 
+	inline const ModController *GetSelf() const;
 };
 
-
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Inline Functions
 
-inline const ModController* Extension::GetSelf() const
+inline const ModController *Extension::GetSelf() const
 {
-	return (const_cast<Extension*>(this))->GetSelf();
+	return (const_cast<Extension *>(this))->GetSelf();
 }

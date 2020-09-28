@@ -1,27 +1,30 @@
 /////////////////////////////////////////////////////////////////////
 // File    : WarriorExtInfo.h
-// Desc    : 
+// Desc    :
 // Created : Monday, March 19, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
 #pragma once
 
-#include "ModStaticInfo.h" 
+#include "ModStaticInfo.h"
 #include "../AttackTypes.h"
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // RaceExtInfo
 
 class WarriorExtInfo : public ModStaticInfo::ExtInfo
 {
-// types
+	// types
 public:
-	enum { ExtensionID = ModStaticInfo::EXTINFOID_Warrior };
+	enum
+	{
+		ExtensionID = ModStaticInfo::EXTINFOID_Warrior
+	};
 
-// fields
+	// fields
 public:
 	enum WarriorID
 	{
@@ -29,16 +32,16 @@ public:
 		WARRIOR_Paper,
 		WARRIOR_Scissors,
 	};
-	
-	WarriorID	warriorID;
+
+	WarriorID warriorID;
 
 	//	AttackTypes.h/DamageType defines flags for these fields
-	int		damagedBy;
+	int damagedBy;
 
-// construction
+	// construction
 public:
-	WarriorExtInfo( const ControllerBlueprint* cbp )
+	WarriorExtInfo(const ControllerBlueprint *cbp)
 	{
-		damagedBy	= GetVal( cbp, "damagedBy", 0, DT_None|DT_Rock|DT_Paper|DT_Scissors );
+		damagedBy = GetVal(cbp, "damagedBy", 0, DT_None | DT_Rock | DT_Paper | DT_Scissors);
 	}
 };

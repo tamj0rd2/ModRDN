@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : MovingExt.h
-// Desc    : 
+// Desc    :
 // Created : Thursday, June 28, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -22,74 +22,71 @@ class Entity;
 
 class MovingExt : public Extension
 {
-// types
+	// types
 public:
 	enum
 	{
 		ExtensionID = EXTID_Moving,
 	};
 
-// interface
+	// interface
 public:
-	float			GetSpeed( ) const;
-	
-	void			AddSpeedMultiplier( float multiplier );
-	void			RemSpeedMultiplier( float multiplier );
+	float GetSpeed() const;
 
-	void			SetSpeedOverride( float speed );
-	float			GetSpeedOverride( ) const;
+	void AddSpeedMultiplier(float multiplier);
+	void RemSpeedMultiplier(float multiplier);
 
-	void			RemoveSpeedOverride( );
+	void SetSpeedOverride(float speed);
+	float GetSpeedOverride() const;
 
-	float			GetNoOverrideSpeed( ) const;
-	float			GetSpeedBonus( ) const;
+	void RemoveSpeedOverride();
+
+	float GetNoOverrideSpeed() const;
+	float GetSpeedBonus() const;
 	// used for group movement
-	float			GetMaxNormalSpeed( ) const;
+	float GetMaxNormalSpeed() const;
 
 	// Hack to introduce dynamic movement behavior
-	virtual void	SetDynSwimmer( bool swimmer );
-	bool			IsSwimmer() const;
+	virtual void SetDynSwimmer(bool swimmer);
+	bool IsSwimmer() const;
 
 	// speed bonuses
-	void			AddLandSpeedBonus( float bonus );
-	void			RemLandSpeedBonus( float bonus );
+	void AddLandSpeedBonus(float bonus);
+	void RemLandSpeedBonus(float bonus);
 
-	void			AddWaterSpeedBonus( float bonus );
-	void			RemWaterSpeedBonus( float bonus );
+	void AddWaterSpeedBonus(float bonus);
+	void RemWaterSpeedBonus(float bonus);
 
-	void			AddAirSpeedBonus( float bonus );
-	void			RemAirSpeedBonus( float bonus );
+	void AddAirSpeedBonus(float bonus);
+	void RemAirSpeedBonus(float bonus);
 
-// inherited interface: Extension
+	// inherited interface: Extension
 private:
-
-	virtual void SaveExt( BiFF& ) const;
-	virtual void LoadExt( IFF& );
+	virtual void SaveExt(BiFF &) const;
+	virtual void LoadExt(IFF &);
 
 	// Chunk Handlers
-	static unsigned long HandleEMOV( IFF& iff, ChunkNode*, void* pContext1, void* );
+	static unsigned long HandleEMOV(IFF &iff, ChunkNode *, void *pContext1, void *);
 
-// construction
+	// construction
 protected:
-	MovingExt( Entity* pEntity );
+	MovingExt(Entity *pEntity);
 
-// fields
+	// fields
 private:
+	float m_Multiplier;
+	unsigned char m_MultCount;
 
-	float			m_Multiplier;
-	unsigned char	m_MultCount;
+	float m_SpeedOveride;
 
-	float			m_SpeedOveride;
+	float m_landSpeedBonus;
+	float m_waterSpeedBonus;
+	float m_airSpeedBonus;
 
-	float			m_landSpeedBonus;
-	float			m_waterSpeedBonus;
-	float			m_airSpeedBonus;
-
-	unsigned char	m_landBonusCount;
-	unsigned char	m_waterBonusCount;
-	unsigned char	m_airBonusCount;
+	unsigned char m_landBonusCount;
+	unsigned char m_waterBonusCount;
+	unsigned char m_airBonusCount;
 
 	// dynamic behavior
-	bool			m_bIsDynSwimmer;
+	bool m_bIsDynSwimmer;
 };
-

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : State.cpp
-// Desc    : 
+// Desc    :
 // Created : Thursday, November 01, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -13,17 +13,17 @@
 #include <SimEngine/EntityDynamics.h>
 #include <SimEngine/SimEntity.h>
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // State
 //
 
-State::State( EntityDynamics *e_dynamics ) 
-:	m_pDynamics( e_dynamics ),
-	m_bExiting( true )
+State::State(EntityDynamics *e_dynamics)
+		: m_pDynamics(e_dynamics),
+			m_bExiting(true)
 {
 }
 
-bool State::AcceptCommand( int )
+bool State::AcceptCommand(int)
 {
 	return true;
 }
@@ -36,14 +36,14 @@ void State::ForceExit()
 {
 }
 
-State* State::GetSubState( unsigned char StateID )
+State *State::GetSubState(unsigned char StateID)
 {
-	if ( IsExiting() )
+	if (IsExiting())
 	{
 		return NULL;
 	}
-	
-	if ( GetStateID() == StateID )
+
+	if (GetStateID() == StateID)
 	{
 		return this;
 	}
@@ -51,12 +51,12 @@ State* State::GetSubState( unsigned char StateID )
 	return NULL;
 }
 
-Entity* State::GetEntity( )
+Entity *State::GetEntity()
 {
 	return m_pDynamics->GetEntity();
 }
 
-const Entity* State::GetEntity( ) const
+const Entity *State::GetEntity() const
 {
 	return m_pDynamics->GetEntity();
 }

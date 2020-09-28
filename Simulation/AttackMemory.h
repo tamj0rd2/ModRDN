@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : AttackMemory.h
-// Desc    : 
+// Desc    :
 // Created : Thursday, February 14, 2002
 // Author  : dswinerd
-// 
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -24,30 +24,29 @@ class Player;
 //
 class AttackMemory
 {
-// construction
+	// construction
 public:
-	 AttackMemory();
+	AttackMemory();
 	~AttackMemory();
 
-// interface
+	// interface
 public:
-	void	SetAttackedBy( Entity *pEntity, long time );
+	void SetAttackedBy(Entity *pEntity, long time);
 
-	bool	WasAttackedBy( Entity *pEntity, long time ) const;
+	bool WasAttackedBy(Entity *pEntity, long time) const;
 
-	bool	WasAttackedBy( Player *pPlayer, long time ) const;
+	bool WasAttackedBy(Player *pPlayer, long time) const;
 
-	bool	HasBeenAttackedSince( long time ) const;
+	bool HasBeenAttackedSince(long time) const;
 
-	void	GetAttackers( EntityGroup& attackers, long time ) const;
+	void GetAttackers(EntityGroup &attackers, long time) const;
 
-// fields
+	// fields
 private:
-
 	EntityMemory m_memory;
 
-// copy 
+	// copy
 private:
-	AttackMemory( const AttackMemory& );
-	AttackMemory& operator= ( const AttackMemory& );
+	AttackMemory(const AttackMemory &);
+	AttackMemory &operator=(const AttackMemory &);
 };

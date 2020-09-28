@@ -1,15 +1,15 @@
 /////////////////////////////////////////////////////////////////////
 // File    : SiteExtInfo.h
-// Desc    : 
+// Desc    :
 // Created : Monday, March 19, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
 #pragma once
 
-#include "ModStaticInfo.h" 
+#include "ModStaticInfo.h"
 
 #include "../Controllers/ControllerTypes.h"
 
@@ -19,22 +19,25 @@
 class Entity;
 class EntityDynamics;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // SiteExtInfo
 
 class SiteExtInfo : public ModStaticInfo::ExtInfo
 {
-// types
+	// types
 public:
-	enum { ExtensionID = ModStaticInfo::EXTINFOID_Site };
+	enum
+	{
+		ExtensionID = ModStaticInfo::EXTINFOID_Site
+	};
 
 	enum LocationType
 	{
-		LT_NoWhere,			// can be placed no where
-		LT_Land,			// can be placed only on land
-		LT_Water,			// can be placed only on water
-		LT_Object,			// can be placed only on an object
-		LT_LandWater		// can be placed on land or water
+		LT_NoWhere,	 // can be placed no where
+		LT_Land,		 // can be placed only on land
+		LT_Water,		 // can be placed only on water
+		LT_Object,	 // can be placed only on an object
+		LT_LandWater // can be placed on land or water
 	};
 
 	enum HeightSnapType
@@ -43,29 +46,26 @@ public:
 		HST_HeightMap
 	};
 
-// statics
+	// statics
 public:
-	static EntityDynamics* CreateDynamics( Entity* entity, const SiteExtInfo* site );
+	static EntityDynamics *CreateDynamics(Entity *entity, const SiteExtInfo *site);
 
-// fields
+	// fields
 public:
-	LocationType	canPlaceType;
+	LocationType canPlaceType;
 
-	HeightSnapType	heightSnapType;
+	HeightSnapType heightSnapType;
 
 	// this is only valid if the LocationType is LT_Object
-	int				attachTo;
+	int attachTo;
 
 	// how much should this object be rotated by when it's placed on the ground
-	float			rotateRads;
+	float rotateRads;
 
 	// show site decal
-	bool			showSiteDecal;
+	bool showSiteDecal;
 
-// construction
+	// construction
 public:
-	SiteExtInfo( const ControllerBlueprint* cbp );
-	
+	SiteExtInfo(const ControllerBlueprint *cbp);
 };
-
-

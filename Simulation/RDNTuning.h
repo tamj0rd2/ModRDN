@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNTuning.h
-// Desc    : 
+// Desc    :
 // Created : Wednesday, June 20, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -14,119 +14,118 @@
 #pragma once
 
 // Are these defined elsewhere, or just explicitly assumed?
-#define ST_NUM_ANIMAL_SIZES             10
-#define ST_NUM_ANIMAL_RANKS             5
+#define ST_NUM_ANIMAL_SIZES 10
+#define ST_NUM_ANIMAL_RANKS 5
 
 // forward declarations
 class LuaConfig;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // RDNTuning
 
 class RDNTuning
 {
-// construction
+	// construction
 private:
-	 RDNTuning();
+	RDNTuning();
 	~RDNTuning();
 
 public:
-	static RDNTuning* Instance();
+	static RDNTuning *Instance();
 
 	static bool Initialize();
-	static void Shutdown  ();
+	static void Shutdown();
 
-// interface
+	// interface
 public:
-
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// Player
 	struct PlayerInfo
 	{
-		float	startingCash;
+		float startingCash;
 	};
 
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// Race
 	struct RaceInfo
 	{
 		struct Race
 		{
-			float	healthMultiplier;
-			float	costMultiplier;
-			float	speedMultiplier;
+			float healthMultiplier;
+			float costMultiplier;
+			float speedMultiplier;
 		};
 
-		Race	stronger;
-		Race	cheaper;
-		Race	faster;
+		Race stronger;
+		Race cheaper;
+		Race faster;
 	};
 
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// HQ
 	struct HQInfo
 	{
-		float	healthMax;
+		float healthMax;
 	};
 
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// CashPile
 	struct CashPileInfo
 	{
-		float	cashRate;
-		float	cashRadius;
+		float cashRate;
+		float cashRadius;
 	};
-	
-	///////////////////////////////////////////////////////////////////// 
+
+	/////////////////////////////////////////////////////////////////////
 	// Effect Information
 	struct EffectInfo
 	{
 		struct Effect
 		{
-			char			fx[64];
-			char			location[64];
-			long			count;
+			char fx[64];
+			char location[64];
+			long count;
 		};
 
-		Effect	impact;
+		Effect impact;
 	};
 
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// FogOfWar Information
 	struct FogOfWarInfo
 	{
-		float 	attackerRevealTime;
+		float attackerRevealTime;
 	};
 
-//
+	//
 public:
-	unsigned long	GetSyncToken() const;
+	unsigned long GetSyncToken() const;
 
 //
-#define ADDTUNINGSET( x )								\
-	public:												\
-		const x& Get##x() const	{	return m_##x;	}	\
-	private:											\
-		x	m_##x;
+#define ADDTUNINGSET(x)                     \
+public:                                     \
+	const x &Get##x() const { return m_##x; } \
+                                            \
+private:                                    \
+	x m_##x;
 
-// fields
-	ADDTUNINGSET( PlayerInfo );
-	ADDTUNINGSET( RaceInfo )
-	ADDTUNINGSET( HQInfo )
-	ADDTUNINGSET( CashPileInfo )
-	ADDTUNINGSET( EffectInfo )
-	ADDTUNINGSET( FogOfWarInfo )
+	// fields
+	ADDTUNINGSET(PlayerInfo);
+	ADDTUNINGSET(RaceInfo)
+	ADDTUNINGSET(HQInfo)
+	ADDTUNINGSET(CashPileInfo)
+	ADDTUNINGSET(EffectInfo)
+	ADDTUNINGSET(FogOfWarInfo)
 
 //
 #undef ADDTUNINGSET
 
-
-// implementation
+	// implementation
 private:
-	void LoadFrom( const char* );
+	void LoadFrom(const char *);
 
-// copy -- do not define
+	// copy -- do not define
 private:
-	RDNTuning( const RDNTuning& );
-	RDNTuning& operator= ( const RDNTuning& );
+	RDNTuning(const RDNTuning &);
+	RDNTuning &operator=(const RDNTuning &);
 };

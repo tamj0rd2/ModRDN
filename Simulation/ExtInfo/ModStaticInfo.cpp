@@ -1,22 +1,21 @@
 /////////////////////////////////////////////////////////////////////
 // File    : ModStaticInfo.cpp
-// Desc    : 
+// Desc    :
 // Created : Thursday, March 22, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
-#include "pch.h" 
-#include "ModStaticInfo.h" 
+#include "pch.h"
+#include "ModStaticInfo.h"
 
-
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // ModStaticInfo
 
-const ModStaticInfo::ExtInfo* ModStaticInfo::QInfo( unsigned char id ) const
+const ModStaticInfo::ExtInfo *ModStaticInfo::QInfo(unsigned char id) const
 {
-	UNREF_P( id );
+	UNREF_P(id);
 
 	return 0;
 }

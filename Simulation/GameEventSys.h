@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////////
 //	File	: GameEventSys.h
-//	Desc.	: 
+//	Desc.	:
 //	Date	: May 31, 2001
-//  Author  : Shelby	
+//  Author  : Shelby
 //
 
 #pragma once
@@ -10,64 +10,64 @@
 // forward declaration
 class RDNPlayer;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // GameEventSys
 
 class GameEventSys
 {
-// construction
+	// construction
 private:
 	// singleton
-	 GameEventSys();
+	GameEventSys();
 	~GameEventSys();
 
 public:
 	// static interface
-	static void				Initialize();
-	static void				Shutdown();
-	static GameEventSys*	Instance();
+	static void Initialize();
+	static void Shutdown();
+	static GameEventSys *Instance();
 
-// types
+	// types
 public:
 	class Event;
 	class Listener;
-	
-// interface
+
+	// interface
 public:
-	void	RegisterClient  ( Listener* );
-	void	UnregisterClient( Listener* );
+	void RegisterClient(Listener *);
+	void UnregisterClient(Listener *);
 
-	void	PublishEvent( const Event& );
+	void PublishEvent(const Event &);
 
-// fields
+	// fields
 private:
 	class Data;
-	Data* m_pimpl;
-	
-// copy -- do not define
+	Data *m_pimpl;
+
+	// copy -- do not define
 private:
-	GameEventSys( const GameEventSys& );
-	GameEventSys& operator= ( const GameEventSys& );
+	GameEventSys(const GameEventSys &);
+	GameEventSys &operator=(const GameEventSys &);
 };
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // GameEventSys::GameEventBase
 
 // * the base class for all game events
 
 class GameEventSys::Event
 {
-// fields
+	// fields
 private:
-	const RDNPlayer*	
+	const RDNPlayer *
 			m_player;
-	int		m_type;			// the type of event this is, so we can static cast to it
+	int m_type; // the type of event this is, so we can static cast to it
 
-// construction
+	// construction
 protected:
-	Event( int type, const RDNPlayer* p )
-		: m_type  ( type ), 
-		  m_player( p ) 
+	Event(int type, const RDNPlayer *p)
+			: m_type(type),
+				m_player(p)
 	{
 	}
 
@@ -76,13 +76,13 @@ public:
 	{
 	}
 
-// interface
+	// interface
 public:
-	const RDNPlayer*	GetPlayer() const {return m_player;}
-	int					GetType  () const {return m_type;}
+	const RDNPlayer *GetPlayer() const { return m_player; }
+	int GetType() const { return m_type; }
 };
-	
-///////////////////////////////////////////////////////////////////// 
+
+/////////////////////////////////////////////////////////////////////
 // GameEventSys::GameEventListener
 
 // * listener class - clients should inherit from this
@@ -90,5 +90,5 @@ public:
 class GameEventSys::Listener
 {
 public:
-	virtual void OnEvent( const Event& ) = 0;
+	virtual void OnEvent(const Event &) = 0;
 };

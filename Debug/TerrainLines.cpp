@@ -15,32 +15,32 @@
 // Terrain Line helper class
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
-TerrainLine::TerrainLine( const float stepsize )
+TerrainLine::TerrainLine(const float stepsize)
 {
 	m_p1 = Vec2f(FLT_MAX, FLT_MAX);
 	m_p2 = Vec2f(FLT_MAX, FLT_MAX);
-	m_col = Colour(0,0,0,0);
+	m_col = Colour(0, 0, 0, 0);
 	m_valid = false;
 
 	m_accuracy = stepsize;
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
-TerrainLine::TerrainLine( const Vec2f &p1, const Vec2f &p2, const Colour &col, const float stepsize )
+TerrainLine::TerrainLine(const Vec2f &p1, const Vec2f &p2, const Colour &col, const float stepsize)
 {
 	m_p1 = Vec2f(FLT_MAX, FLT_MAX);
 	m_p2 = Vec2f(FLT_MAX, FLT_MAX);
-	m_col = Colour(0,0,0,0);
+	m_col = Colour(0, 0, 0, 0);
 	m_valid = false;
 
 	SetPoints(p1, p2, col);
@@ -49,39 +49,38 @@ TerrainLine::TerrainLine( const Vec2f &p1, const Vec2f &p2, const Colour &col, c
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 TerrainLine::~TerrainLine()
 {
 	m_linelist.clear();
 }
 
-float TerrainLine::GetHeight( const Vec2f &xzpos) const
+float TerrainLine::GetHeight(const Vec2f &xzpos) const
 {
 	float height;
 
 	height = ModObj::i()->GetWorld()->GetTerrain()->GetHeight(xzpos.x, xzpos.y);
 
 	// the line is always draw 1/10 of a meter (10 cm) above the ground
-	return (height+0.10f);
+	return (height + 0.10f);
 }
 
-
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
-void TerrainLine::Render( void )
+void TerrainLine::Render(void)
 {
 	if (!m_valid)
 		CreatePrimitives();
 
-	if(m_linelist.size() < 2)
+	if (m_linelist.size() < 2)
 		return;
 
 	std::vector<Vec3f>::const_iterator iter_prev = m_linelist.begin();
@@ -89,53 +88,53 @@ void TerrainLine::Render( void )
 	const std::vector<Vec3f>::const_iterator iter_end = m_linelist.end();
 
 	// Loop over all edges, and find which one this point is closest to.
-	for(;iter != iter_end; iter_prev = iter, ++iter)
+	for (; iter != iter_end; iter_prev = iter, ++iter)
 	{
 		// Render all the sub-lines to make up the terrain hugging line.
-		DebugRender::Draw( DebugRender::Line( *iter_prev, *iter, m_col ) );
+		DebugRender::Draw(DebugRender::Line(*iter_prev, *iter, m_col));
 	}
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 void TerrainLine::SetPoints(const Vec2f &p1, const Vec2f &p2)
 {
 	if (m_p1 != p1 || m_p2 != p2)
 	{
 		m_valid = false;
-		m_p1	= p1;
-		m_p2	= p2;
+		m_p1 = p1;
+		m_p2 = p2;
 	}
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 void TerrainLine::SetPoints(const Vec2f &p1, const Vec2f &p2, const Colour &col)
 {
 	if (m_p1 != p1 || m_p2 != p2)
 	{
 		m_valid = false;
-		m_p1	= p1;
-		m_p2	= p2;
-		m_col	= col;
+		m_p1 = p1;
+		m_p2 = p2;
+		m_col = col;
 	}
 
 	SetColour(col);
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 void TerrainLine::SetColour(const Colour &col)
 {
@@ -143,18 +142,18 @@ void TerrainLine::SetColour(const Colour &col)
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
-void TerrainLine::CreatePrimitives( void )
+void TerrainLine::CreatePrimitives(void)
 {
 	// Create a vector of Vec3's that can be drawn by DebugRender.
-	Vec3f	newPt;
-	Vec2f	start, delta;
-	float	t_inc, len, curh, lasth;
-	size_t	count;
+	Vec3f newPt;
+	Vec2f start, delta;
+	float t_inc, len, curh, lasth;
+	size_t count;
 
 	m_linelist.resize(0);
 
@@ -162,18 +161,18 @@ void TerrainLine::CreatePrimitives( void )
 	start.x = m_p1.x;
 	start.y = m_p1.y;
 
-	len = (m_p2-m_p1).Length();
+	len = (m_p2 - m_p1).Length();
 
 	// the step increment ammount for the line
 	float accuracy = m_accuracy;
-	count = (size_t)(len/accuracy);
+	count = (size_t)(len / accuracy);
 
-	m_linelist.reserve(count+2);
+	m_linelist.reserve(count + 2);
 
 	// what the increment ammount along the line should be
 	t_inc = accuracy; //accuracy/len;
 
-	delta = (m_p2-m_p1).Normalize();
+	delta = (m_p2 - m_p1).Normalize();
 	delta *= t_inc;
 
 	// Add the first point to the list.
@@ -191,7 +190,7 @@ void TerrainLine::CreatePrimitives( void )
 	Vec2f curpos = start + delta;
 	Vec2f lastpos;
 
-	for(size_t i=0;i<count;i++)
+	for (size_t i = 0; i < count; i++)
 	{
 		curh = GetHeight(curpos);
 
@@ -204,7 +203,7 @@ void TerrainLine::CreatePrimitives( void )
 		{
 			// Add this point, and also the previous point if we skipped it.
 
-			if(skip_point)
+			if (skip_point)
 			{
 				// Add the previous point to the list.
 				newPt.x = lastpos.x;
@@ -237,8 +236,7 @@ void TerrainLine::CreatePrimitives( void )
 
 	m_valid = true;
 
-
-/*
+	/*
 	sp::SimpleVertex	spVec;
 	Vec2f				start, delta;
 	float				t_inc, len, curh, lasth;
@@ -335,4 +333,3 @@ void TerrainLine::CreatePrimitives( void )
 	m_valid = true;
 */
 }
-

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : StateIdle.h
-// Desc    : 
+// Desc    :
 // Created : Friday, January 25, 2002
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2002 Relic Entertainment Inc.
 //
 
@@ -15,51 +15,50 @@
 // Forward Declarations
 class EntityDynamics;
 
-///////////////////////////////////////////////////////////////////// 
-// StateIdle 
+/////////////////////////////////////////////////////////////////////
+// StateIdle
 // This state is responsible for the entities idle reactions.
 
 class StateIdle : public State
 {
-// types
+	// types
 public:
 	enum
 	{
 		StateID = SID_Idle,
 	};
 
-// construction
+	// construction
 public:
-	StateIdle( EntityDynamics* e_dynamics );
+	StateIdle(EntityDynamics *e_dynamics);
 
-// interface
+	// interface
 public:
 	void Enter();
 
 	// returns the number of ticks spent in idle since Enter
 	long GetIdleTicks() const;
 
-// inherited -- State
+	// inherited -- State
 public:
-	virtual bool				Update();
-	
-	virtual void				SoftExit();
-	virtual void				RequestExit();
-	virtual void				ReissueOrder() const;
+	virtual bool Update();
 
-	virtual void				ForceExit();
+	virtual void SoftExit();
+	virtual void RequestExit();
+	virtual void ReissueOrder() const;
+
+	virtual void ForceExit();
 
 	// retrieve the ID of this state
-	virtual State::StateIDType	GetStateID( ) const;
+	virtual State::StateIDType GetStateID() const;
 
 	// Save Load
-	virtual void				SaveState( BiFF& ) const;
-	virtual void				LoadState( IFF& );
+	virtual void SaveState(BiFF &) const;
+	virtual void LoadState(IFF &);
 
-// implementation
+	// implementation
 private:
-
-// fields
+	// fields
 private:
-	long	m_tickBegin;
+	long m_tickBegin;
 };

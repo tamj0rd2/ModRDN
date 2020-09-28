@@ -12,14 +12,13 @@
 class Entity;
 class EntityDynamics;
 
-
-///////////////////////////////////////////////////////////////////// 
-// StateMove 
-// This state is responsible for moving the entity - (what does that entail?).		
+/////////////////////////////////////////////////////////////////////
+// StateMove
+// This state is responsible for moving the entity - (what does that entail?).
 
 class StateMove : public State
 {
-// types
+	// types
 public:
 	enum
 	{
@@ -28,11 +27,11 @@ public:
 
 	enum RetryType
 	{
-		RT_None							= 0x00,
-		RT_BlockedOnEntity				= 0x01,
-		RT_BlockedOnEntityAllowSpace	= 0x02,
-		RT_BlockedOnTerrain				= 0x04,
-		RT_BlockedOnBuilding			= 0x08
+		RT_None = 0x00,
+		RT_BlockedOnEntity = 0x01,
+		RT_BlockedOnEntityAllowSpace = 0x02,
+		RT_BlockedOnTerrain = 0x04,
+		RT_BlockedOnBuilding = 0x08
 	};
 
 	enum MoveExitState
@@ -54,80 +53,78 @@ public:
 		MSS_MoveFailed,
 	};
 
-// Data
+	// Data
 private:
+	std::vector<Vec3f> m_WayPoints;
+	Vec3f m_Offset;
 
-	std::vector<Vec3f>		m_WayPoints;
-	Vec3f					m_Offset;
+	Target m_Target;
+	float m_AP; // Acceptible Proximity to target (only move to within this distance of target).
+	bool m_bCheckFOW;
 
-	Target					m_Target;
-	float					m_AP;			// Acceptible Proximity to target (only move to within this distance of target).
-	bool					m_bCheckFOW;
+	unsigned long m_flags;
 
-	unsigned long			m_flags;
+	MoveExitState m_exitstate;
 
-	MoveExitState			m_exitstate;
+	MoveSubState m_subState;
 
-	MoveSubState			m_subState;
+	RetryType m_retryType;
+	long m_retryTime;
+	int m_retryCount;
+	int m_retryLimit;
+	int m_waypointsVisited;
 
-	RetryType				m_retryType;
-	long					m_retryTime;
-	int						m_retryCount;
-	int						m_retryLimit;
-	int						m_waypointsVisited;
-
-// Functions.
+	// Functions.
 public:
+	StateMove(EntityDynamics *e_dynamics);
 
-	StateMove( EntityDynamics *e_dynamics );
-	
-	void						Enter( const Entity *pDest, float AP, bool bCheckFOW = false, unsigned long flags = 0, RetryType rt = RT_BlockedOnEntity,		   int retryLimit = 4 );
-	void						Enter( const Vec3f& dest,   float AP, unsigned long flags = 0, RetryType rt = RT_BlockedOnEntityAllowSpace, int retryLimit = 4 );
-	void						Enter( const Vec3f& dest,   const Vec3f& offset, float AP, unsigned long flags = 0, RetryType rt = RT_BlockedOnEntityAllowSpace, int retryLimit = 4 );
+	void Enter(const Entity *pDest, float AP, bool bCheckFOW = false, unsigned long flags = 0, RetryType rt = RT_BlockedOnEntity, int retryLimit = 4);
+	void Enter(const Vec3f &dest, float AP, unsigned long flags = 0, RetryType rt = RT_BlockedOnEntityAllowSpace, int retryLimit = 4);
+	void Enter(const Vec3f &dest, const Vec3f &offset, float AP, unsigned long flags = 0, RetryType rt = RT_BlockedOnEntityAllowSpace, int retryLimit = 4);
 
-	void						AddWayPoint( const Vec3f& point );
+	void AddWayPoint(const Vec3f &point);
 
-	size_t						GetNumWayPoints() const;
-	const Vec3f*				GetWayPoints() const;
-	const int					GetNumWayPointsVisited() const;
-	
-	const Vec3f&				GetOffset() const;
+	size_t GetNumWayPoints() const;
+	const Vec3f *GetWayPoints() const;
+	const int GetNumWayPointsVisited() const;
 
-	MoveExitState				GetExitState( );
+	const Vec3f &GetOffset() const;
 
-// Inherited -- State
+	MoveExitState GetExitState();
+
+	// Inherited -- State
 public:
-	virtual bool				Update();	// Return values:
-											//	0 - still moving.
-											//	1 - stopped because reached its goal.
-											//	2 - can't find path to goal.
-	virtual void				RequestExit();
+	virtual bool Update(); // Return values:
+												 //	0 - still moving.
+												 //	1 - stopped because reached its goal.
+												 //	2 - can't find path to goal.
+	virtual void RequestExit();
 
-	virtual void				ReissueOrder() const;
+	virtual void ReissueOrder() const;
 
-	virtual void				ForceExit();
+	virtual void ForceExit();
 
 	// retrieve the ID of this state
-	virtual State::StateIDType	GetStateID( ) const;
+	virtual State::StateIDType GetStateID() const;
 
 	// Save Load
-	virtual void				SaveState( BiFF& ) const;
-	virtual void				LoadState( IFF& );
+	virtual void SaveState(BiFF &) const;
+	virtual void LoadState(IFF &);
 
-// Functions
+	// Functions
 private:
-	void						DoEnter();				// code common to bother Enter routines
-	void						DoRequestMove();
+	void DoEnter(); // code common to bother Enter routines
+	void DoRequestMove();
 
-	void						DoInternalEnter( const Vec3f& dest );
+	void DoInternalEnter(const Vec3f &dest);
 
-	void						ToRetry( long retryTime );
+	void ToRetry(long retryTime);
 
-	bool						CantGetThereProcess();
+	bool CantGetThereProcess();
 
-	void						IncrementWaypoint( );
+	void IncrementWaypoint();
 
-	bool						HandleNormalState();
-	bool						HandleWaitingToRetry();
-	bool						HandleNormalEntityLost();
+	bool HandleNormalState();
+	bool HandleWaitingToRetry();
+	bool HandleNormalEntityLost();
 };

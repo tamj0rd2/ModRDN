@@ -6,10 +6,8 @@
 
 #pragma once
 
-
-
 enum CommandMoveParams
 {
-	CMD_MP_None			= 0,
+	CMD_MP_None = 0,
 	CMD_MP_NoGroupSpeed = 1 << 0,
 };

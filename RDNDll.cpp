@@ -1,24 +1,24 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNDll.cpp
-// Desc    : 
+// Desc    :
 // Created : Thursday, August 02, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
-#include "pch.h" 
-#include "RDNDll.h" 
-#include "RDNDllScore.h" 
+#include "pch.h"
+#include "RDNDll.h"
+#include "RDNDllScore.h"
 
 #include "ModObj.h"
-#include "RDNDllSetup.h" 
-#include "UI/RDNText.h" 
+#include "RDNDllSetup.h"
+#include "UI/RDNText.h"
 
 #include "Stats/RDNStats.h"
 
-#include "Simulation/RDNPlayer.h" 
-#include "Simulation/RDNWorld.h" 
+#include "Simulation/RDNPlayer.h"
+#include "Simulation/RDNWorld.h"
 #include "Simulation/RDNTuning.h"
 #include "Simulation/RDNEBPs.h"
 
@@ -28,7 +28,7 @@
 #include "Simulation/Controllers/HQController.h"
 #include "Simulation/Controllers/GuyController.h"
 
-#include "UI/RDNHud.h" 
+#include "UI/RDNHud.h"
 #include "UI/RDNUIState.h"
 #include "UI/RDNEntityFilter.h"
 #include "UI/RDNNISletInterface.h"
@@ -53,41 +53,40 @@
 #include <Filesystem/FilePath.h>
 #include <Util/Iff.h>
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
-static void RegisterControllers( SimEngineInterface* p )
+static void RegisterControllers(SimEngineInterface *p)
 {
-	EntityFactory* pEntityFactory = p->GetEntityFactory();
+	EntityFactory *pEntityFactory = p->GetEntityFactory();
 
-#define RC(name,type,classtype) \
-	pEntityFactory->RegisterController( name, type, new EntityFactory_ControllerCreator_Templ< classtype::StaticInfo, classtype > );
+#define RC(name, type, classtype) \
+	pEntityFactory->RegisterController(name, type, new EntityFactory_ControllerCreator_Templ<classtype::StaticInfo, classtype>);
 
-		RC( "HQ",					HQ_EC,					HQController				);
-		RC( "Guy",					Guy_EC,					GuyController				);
+	RC("HQ", HQ_EC, HQController);
+	RC("Guy", Guy_EC, GuyController);
 
 #undef RC
 
-	pEntityFactory->SetEntitySize( sizeof(SimEntity) );
+	pEntityFactory->SetEntitySize(sizeof(SimEntity));
 
 	return;
 }
 
-static void EntityCreate( const Entity* pEntity )
+static void EntityCreate(const Entity *pEntity)
 {
 	//	Give the RDNHud a chance to see the entity spawning
-	if( RDNHUD::IsInitialized() )
-		RDNHUD::i()->OnEntityCreate( pEntity );
+	if (RDNHUD::IsInitialized())
+		RDNHUD::i()->OnEntityCreate(pEntity);
 
-	// 
-	RDNWorld* pRDNWorld = ModObj::i()->GetWorld();
+	//
+	RDNWorld *pRDNWorld = ModObj::i()->GetWorld();
 
-	EntityAnimator			*pAnimator		= pEntity->GetAnimator();
-	const EntityController	*pEC			= pEntity->GetController();
+	EntityAnimator *pAnimator = pEntity->GetAnimator();
+	const EntityController *pEC = pEntity->GetController();
 
-	
-	// Make sure entity has animator and controller blueprint 
-	if( !pAnimator || !pEC )
+	// Make sure entity has animator and controller blueprint
+	if (!pAnimator || !pEC)
 		return;
 
 	// Set up the Selection Intersection method for this entity
@@ -95,95 +94,103 @@ static void EntityCreate( const Entity* pEntity )
 	// Figure out if the entity is a building, unit, or unselectable(ignore if so)
 
 	// make sure the entity is selectable
-	if ( !pEntity->GetEntityFlag( EF_Selectable ) )
-		return;// not selectable
+	if (!pEntity->GetEntityFlag(EF_Selectable))
+		return; // not selectable
 
-	const MovingExtInfo* moving = QIExtInfo<MovingExtInfo>( pEntity );
-	const SiteExtInfo*   site   = QIExtInfo<SiteExtInfo  >( pEntity );
+	const MovingExtInfo *moving = QIExtInfo<MovingExtInfo>(pEntity);
+	const SiteExtInfo *site = QIExtInfo<SiteExtInfo>(pEntity);
 
-	if( moving == 0 && site == 0 )
+	if (moving == 0 && site == 0)
 	{
-		dbFatalf( "MOD -- Missing attributes for placing %S", pEntity->GetControllerBP()->GetScreenName() );
+		dbFatalf("MOD -- Missing attributes for placing %S", pEntity->GetControllerBP()->GetScreenName());
 	}
 
 	// If it's a moving entity
-	if ( moving )
+	if (moving)
 	{
 		// ENTITY IS A UNIT
-		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_ChildBVs|EntityAnimator::SIT_OverSizeBV);
+		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_ChildBVs | EntityAnimator::SIT_OverSizeBV);
 		return;
 	}
-	else if ( site )
+	else if (site)
 	{
 		// ENTITY IS A BUILDING
-		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_GroundSelect|EntityAnimator::SIT_ChildBVs);
+		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_GroundSelect | EntityAnimator::SIT_ChildBVs);
 		// set impass info
 		long cellSize = (long)pRDNWorld->GetPathfinder()->GetTerrainCellMap()->GetCellSize();
 		long width, height;
-		BuildingDynamics::GetEntityWidthHeight( pEntity->GetControllerBP(), &pEntity->GetTransform(), width, height );
-		pAnimator->SetGroundSelectInfo( width*cellSize, height*cellSize );
+		BuildingDynamics::GetEntityWidthHeight(pEntity->GetControllerBP(), &pEntity->GetTransform(), width, height);
+		pAnimator->SetGroundSelectInfo(width * cellSize, height * cellSize);
 	}
 	else
 	{
 		// If we can't figure out what it is then treat it as a building.
-		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_ChildBVs|EntityAnimator::SIT_OverSizeBV);
+		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_ChildBVs | EntityAnimator::SIT_OverSizeBV);
 	}
 
 	return;
 }
 
-static void KillSimPlayer( unsigned long idplayer, DLLSimInterface::NetworkKillType type )
+static void KillSimPlayer(unsigned long idplayer, DLLSimInterface::NetworkKillType type)
 {
 	//
-	RDNWorld* w = ModObj::i()->GetWorld();
+	RDNWorld *w = ModObj::i()->GetWorld();
 
 	//
-	Player* p = w->GetPlayerFromID( idplayer );
+	Player *p = w->GetPlayerFromID(idplayer);
 
-	if( p == 0 )
+	if (p == 0)
 	{
-		dbBreak(); return;
+		dbBreak();
+		return;
 	}
 
 	// kill that player (if not already dead)
-	if( p->IsPlayerDead() == 0 )
+	if (p->IsPlayerDead() == 0)
 	{
 		int RDNReason = -1;
-		
-		switch( type )
-		{
-			case DLLSimInterface::NKT_Aborted     : RDNReason = RDNPlayer::KPR_NetworkAbort; break;
-			case DLLSimInterface::NKT_Disconnected: RDNReason = RDNPlayer::KPR_NetworkDisconnected; break;
-			case DLLSimInterface::NKT_KickedOut   : RDNReason = RDNPlayer::KPR_NetworkKickedOut; break;
-			case DLLSimInterface::NKT_OutOfSync   : RDNReason = RDNPlayer::KPR_NetworkOutOfSync; break;
 
-			default:
-				dbBreak();
+		switch (type)
+		{
+		case DLLSimInterface::NKT_Aborted:
+			RDNReason = RDNPlayer::KPR_NetworkAbort;
+			break;
+		case DLLSimInterface::NKT_Disconnected:
+			RDNReason = RDNPlayer::KPR_NetworkDisconnected;
+			break;
+		case DLLSimInterface::NKT_KickedOut:
+			RDNReason = RDNPlayer::KPR_NetworkKickedOut;
+			break;
+		case DLLSimInterface::NKT_OutOfSync:
+			RDNReason = RDNPlayer::KPR_NetworkOutOfSync;
+			break;
+
+		default:
+			dbBreak();
 		}
-		
-		p->KillPlayer( RDNReason );
+
+		p->KillPlayer(RDNReason);
 	}
 
 	return;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
 namespace
 {
-	class RDNDllGameInterface : 
-		private DLLCpuInterface,
-		private DLLSimInterface,
-		private DLLGuiInterface,
-		public DLLGameInterface
+	class RDNDllGameInterface : private DLLCpuInterface,
+															private DLLSimInterface,
+															private DLLGuiInterface,
+															public DLLGameInterface
 	{
 	public:
-		 RDNDllGameInterface( SimEngineInterface* sim )
+		RDNDllGameInterface(SimEngineInterface *sim)
 		{
-			RegisterControllers( sim );
+			RegisterControllers(sim);
 
-			ModObj::Initialize( sim );
+			ModObj::Initialize(sim);
 
 			RDNUIState::Startup();
 
@@ -196,161 +203,162 @@ namespace
 
 			ModObj::Shutdown();
 		}
-		
-	// inherited -- DLLGameInterface
+
+		// inherited -- DLLGameInterface
 	public:
-		virtual DLLCpuInterface* GetCpuInterface()
+		virtual DLLCpuInterface *GetCpuInterface()
 		{
-			return static_cast<DLLCpuInterface*>( this );
+			return static_cast<DLLCpuInterface *>(this);
 		}
 
-		virtual DLLGuiInterface* GetGuiInterface()
+		virtual DLLGuiInterface *GetGuiInterface()
 		{
-			return static_cast<DLLGuiInterface*>( this );
+			return static_cast<DLLGuiInterface *>(this);
 		}
 
-		virtual DLLSimInterface* GetSimInterface()
+		virtual DLLSimInterface *GetSimInterface()
 		{
-			return static_cast<DLLSimInterface*>( this );
+			return static_cast<DLLSimInterface *>(this);
 		}
 
-	// inherited -- DLLCpuInterface
+		// inherited -- DLLCpuInterface
 	private:
-		virtual GameAI*	CreateGameAI( CommandInterface* command )
+		virtual GameAI *CreateGameAI(CommandInterface *command)
 		{
-			return new RDNAI( command );
+			return new RDNAI(command);
 		}
 
-		virtual void InitLuaAI( LuaConfig* lc )
+		virtual void InitLuaAI(LuaConfig *lc)
 		{
-			UNREF_P( lc );
+			UNREF_P(lc);
 			//	lc->RegisterLibrary( LUALIB_RDNAI );
 		}
 
-		virtual void ShutLuaAI( LuaConfig* lc )
+		virtual void ShutLuaAI(LuaConfig *lc)
 		{
-			UNREF_P( lc );
+			UNREF_P(lc);
 			//	lc->DeRegisterLibrary( LUALIB_RDNAI );
 		}
 
-	// inherited -- DLLSimInterface
+		// inherited -- DLLSimInterface
 	private:
-		virtual bool InitLuaSim( LuaConfig* lc )
+		virtual bool InitLuaSim(LuaConfig *lc)
 		{
-			UNREF_P( lc );
+			UNREF_P(lc);
 			return true;
 		}
 
-		virtual void ShutLuaSim( LuaConfig* lc )
+		virtual void ShutLuaSim(LuaConfig *lc)
 		{
-			UNREF_P( lc );
+			UNREF_P(lc);
 		}
 
 		virtual void InitTriggers()
 		{
 		}
 
-		virtual void SetDecalInterface( DecalInterface* decal )
+		virtual void SetDecalInterface(DecalInterface *decal)
 		{
-			ModObj::i()->SetDecalInterface( decal );
+			ModObj::i()->SetDecalInterface(decal);
 		}
 
-		virtual void SetTerrainOverlayInterface( TerrainOverlayInterface* overlay )
+		virtual void SetTerrainOverlayInterface(TerrainOverlayInterface *overlay)
 		{
-			ModObj::i()->SetTerrainOverlayInterface( overlay );
+			ModObj::i()->SetTerrainOverlayInterface(overlay);
 		}
 
-		virtual void SetGhostInterface( GhostInterface* ghost )
+		virtual void SetGhostInterface(GhostInterface *ghost)
 		{
-			ModObj::i()->SetGhostInterface( ghost );
+			ModObj::i()->SetGhostInterface(ghost);
 		}
 
-		virtual World* CreateNewWorld( bool bMissionEd )
+		virtual World *CreateNewWorld(bool bMissionEd)
 		{
-			ModObj::i()->CreateWorld( bMissionEd );
+			ModObj::i()->CreateWorld(bMissionEd);
 
 			// set random seed
-			World* pWorld = ModObj::i()->GetWorld();
+			World *pWorld = ModObj::i()->GetWorld();
 			if (pWorld)
 			{
-				pWorld->SetRandomSeed( RDNDllSetup::Instance()->GetRandomSeed() );
+				pWorld->SetRandomSeed(RDNDllSetup::Instance()->GetRandomSeed());
 			}
 
 			return pWorld;
 		}
 
-		virtual Player* CreateNewPlayer()
+		virtual Player *CreateNewPlayer()
 		{
 			return ModObj::i()->GetWorld()->CreateNewPlayer();
 		}
 
-		virtual Entity* CreateNewEntity( void* buffer, unsigned long id, const ControllerBlueprint* cbp )
+		virtual Entity *CreateNewEntity(void *buffer, unsigned long id, const ControllerBlueprint *cbp)
 		{
-			return new( buffer ) SimEntity( id, cbp );
+			return new (buffer) SimEntity(id, cbp);
 		}
 
-		virtual unsigned long MapPlayerToSimulation( size_t playerIndex ) const
+		virtual unsigned long MapPlayerToSimulation(size_t playerIndex) const
 		{
-			return RDNDllSetup::Instance()->MapPlayerToSimulation( ModObj::i()->GetWorld(), playerIndex );
+			return RDNDllSetup::Instance()->MapPlayerToSimulation(ModObj::i()->GetWorld(), playerIndex);
 		}
 
-		virtual void GetDataToken( std::vector< std::pair< unsigned long, const char* > >& crcArray ) const
+		virtual void GetDataToken(std::vector<std::pair<unsigned long, const char *> > &crcArray) const
 		{
 			// tuning
-			const unsigned long tuning		= RDNTuning::Instance()->GetSyncToken();
+			const unsigned long tuning = RDNTuning::Instance()->GetSyncToken();
 
 			//
-			crcArray.push_back( std::make_pair( tuning,   (const char*)"tuning" ) );
+			crcArray.push_back(std::make_pair(tuning, (const char *)"tuning"));
 
 			return;
 		}
 
-		virtual bool IsPlayerAlly( unsigned long idPlayer1, unsigned long idPlayer2 ) const
+		virtual bool IsPlayerAlly(unsigned long idPlayer1, unsigned long idPlayer2) const
 		{
 			return idPlayer1 == idPlayer2;
 		}
 
-		virtual bool IsPlayerEnemy( unsigned long idPlayer1, unsigned long idPlayer2 ) const
+		virtual bool IsPlayerEnemy(unsigned long idPlayer1, unsigned long idPlayer2) const
 		{
 			return idPlayer1 != idPlayer2;
 		}
 
-		virtual bool IsScenarioSuccess( unsigned long idPlayer ) const
+		virtual bool IsScenarioSuccess(unsigned long idPlayer) const
 		{
 			// check if game is over
-			if( ModObj::i()->GetWorld()->IsGameOver() == 0 )
+			if (ModObj::i()->GetWorld()->IsGameOver() == 0)
 				return false;
 
 			// check if specified player is dead
-			const Player* player = ModObj::i()->GetWorld()->GetPlayerFromID( idPlayer );
+			const Player *player = ModObj::i()->GetWorld()->GetPlayerFromID(idPlayer);
 
-			if( player == 0 )
+			if (player == 0)
 			{
-				dbBreak(); return false;
+				dbBreak();
+				return false;
 			}
 
-			if( player->IsPlayerDead() )
+			if (player->IsPlayerDead())
 				return false;
 
 			// yup, scenario is all good
 			return true;
 		}
 
-		virtual void OnTerrainModify( const Rect2f& rect, const ImpassEditArray* impassEdit )
+		virtual void OnTerrainModify(const Rect2f &rect, const ImpassEditArray *impassEdit)
 		{
-			if( ModObj::i()->GetWorld()->GetPathfinder() )
+			if (ModObj::i()->GetWorld()->GetPathfinder())
 			{
-				ModObj::i()->GetWorld()->GetPathfinder()->OnTerrainModify( ModObj::i()->GetWorld(), rect, impassEdit );
+				ModObj::i()->GetWorld()->GetPathfinder()->OnTerrainModify(ModObj::i()->GetWorld(), rect, impassEdit);
 			}
 		}
 
-		virtual bool IsCellImpassible( int x, int z )
-		{			
-			if( ModObj::i()->GetWorld()->GetPathfinder() )
+		virtual bool IsCellImpassible(int x, int z)
+		{
+			if (ModObj::i()->GetWorld()->GetPathfinder())
 			{
-				const TerrainCellMap* tcmap = ModObj::i()->GetWorld()->GetPathfinder()->GetTerrainCellMap();
-				TCMask test = eLandImpassible|eWaterImpassible|eAmphibianImpassible;
-				if ( ( tcmap && ( tcmap->GetCell( x, z ) & test) == test ) )
+				const TerrainCellMap *tcmap = ModObj::i()->GetWorld()->GetPathfinder()->GetTerrainCellMap();
+				TCMask test = eLandImpassible | eWaterImpassible | eAmphibianImpassible;
+				if ((tcmap && (tcmap->GetCell(x, z) & test) == test))
 				{
 					// totally impassible
 					return true;
@@ -365,24 +373,24 @@ namespace
 				return false;
 			}
 		}
-		
-		virtual size_t GetPlayerCount( GameType gametype )
+
+		virtual size_t GetPlayerCount(GameType gametype)
 		{
 			// go through each player
-			const RDNWorld* pWorld = ModObj::i()->GetWorld();
+			const RDNWorld *pWorld = ModObj::i()->GetWorld();
 
 			size_t pi = 0;
 			size_t playerCount = 0;
 
-			for( ; pi != pWorld->GetPlayerCount(); ++pi )
+			for (; pi != pWorld->GetPlayerCount(); ++pi)
 			{
-				const Player* player = pWorld->GetPlayerAt( pi );
-				const EntityGroup& egroup = player->GetEntities();
-				
+				const Player *player = pWorld->GetPlayerAt(pi);
+				const EntityGroup &egroup = player->GetEntities();
+
 				// it atleast has units
 				if (egroup.size() > 0)
 				{
-					if ( gametype == GT_SP )
+					if (gametype == GT_SP)
 					{
 						// has units good, enough for SP
 						playerCount++;
@@ -394,9 +402,9 @@ namespace
 
 						for (; iter != egroup.end(); iter++)
 						{
-							Entity* ent = (*iter);
+							Entity *ent = (*iter);
 							// found a lab
-							if ( ent->GetControllerBP() == RDNEBP::Get( RDNEBP::HQ ) )
+							if (ent->GetControllerBP() == RDNEBP::Get(RDNEBP::HQ))
 							{
 								playerCount++;
 								break;
@@ -405,32 +413,32 @@ namespace
 					}
 				}
 			}
-			
+
 			return playerCount;
 		}
 
-		virtual void SaveWorldStaticData( IFF& iff, const ImpassEditArray* impassEdit )
+		virtual void SaveWorldStaticData(IFF &iff, const ImpassEditArray *impassEdit)
 		{
-			ModObj::i()->GetWorld()->SaveStaticData( iff, impassEdit );
+			ModObj::i()->GetWorld()->SaveStaticData(iff, impassEdit);
 		}
 
-		virtual void LoadWorldStaticData( IFF& iff )
+		virtual void LoadWorldStaticData(IFF &iff)
 		{
-			ModObj::i()->GetWorld()->LoadStaticData( iff );
+			ModObj::i()->GetWorld()->LoadStaticData(iff);
 		}
 
-		virtual void LoadSPPersistentData( IFF&, SPPersistenceInterface* )
+		virtual void LoadSPPersistentData(IFF &, SPPersistenceInterface *)
 		{
 			//	Add parse handlers here, allow caller to Parse()
 		}
 
-		virtual void SaveSPPersistentData( IFF&, SPPersistenceInterface* )
+		virtual void SaveSPPersistentData(IFF &, SPPersistenceInterface *)
 		{
 		}
 
-		virtual void NetworkKillPlayer( unsigned long idplayer, NetworkKillType type )
+		virtual void NetworkKillPlayer(unsigned long idplayer, NetworkKillType type)
 		{
-			KillSimPlayer( idplayer, type );
+			KillSimPlayer(idplayer, type);
 		}
 
 		virtual void StatsGameAbort()
@@ -441,106 +449,101 @@ namespace
 		{
 		}
 
-	// inherited -- DLLGuiInterface
+		// inherited -- DLLGuiInterface
 	private:
-
-		virtual void InitLuaGui( LuaConfig* lc )
+		virtual void InitLuaGui(LuaConfig *lc)
 		{
-			UNREF_P( lc );
+			UNREF_P(lc);
 		}
 
-		virtual void ShutLuaGui( LuaConfig* lc )
+		virtual void ShutLuaGui(LuaConfig *lc)
 		{
-			UNREF_P( lc );
+			UNREF_P(lc);
 		}
 
-		virtual void OnEntityCreate( const Entity* e )
+		virtual void OnEntityCreate(const Entity *e)
 		{
-			EntityCreate( e );
+			EntityCreate(e);
 		}
 
-		virtual void ChangePlayerArmy( unsigned long, const std::vector< long >& )
+		virtual void ChangePlayerArmy(unsigned long, const std::vector<long> &)
 		{
-			dbFatalf( "Sample mod doesn't use armies." );
+			dbFatalf("Sample mod doesn't use armies.");
 		}
-		
-		virtual EntityFilter* GetEntityFilter()
+
+		virtual EntityFilter *GetEntityFilter()
 		{
 			return RDNEntityFilter::Instance();
 		}
 
-		virtual ModSimVis* GetModSimVis()
+		virtual ModSimVis *GetModSimVis()
 		{
-			if ( RDNHUD::IsInitialized() )
+			if (RDNHUD::IsInitialized())
 				return RDNHUD::i();
 
 			return NULL;
 		}
 
-		virtual ModUIEvent* GetModUIEvent()
+		virtual ModUIEvent *GetModUIEvent()
 		{
 			return RDNHUD::i();
 		}
 
-		virtual NISletInterface* GetNISletInterface()
+		virtual NISletInterface *GetNISletInterface()
 		{
 			return RDNNISletInterface::Instance();
 		}
 
-		virtual void DoCommand( const EntityGroup& g )
+		virtual void DoCommand(const EntityGroup &g)
 		{
-			RDNHUD::i()->DoCommand( g );
-		}
-		
-		virtual void DoCommand( const Vec3f* v, unsigned long n )
-		{
-			RDNHUD::i()->DoCommand( v, n );
+			RDNHUD::i()->DoCommand(g);
 		}
 
-		virtual bool ProcessInput( const Plat::InputEvent& ie )
+		virtual void DoCommand(const Vec3f *v, unsigned long n)
 		{
-			return RDNHUD::i()->Input( ie );
+			RDNHUD::i()->DoCommand(v, n);
 		}
 
-		virtual const char* GetCursor( const Entity* mouseOverEntity )
+		virtual bool ProcessInput(const Plat::InputEvent &ie)
 		{
-			return RDNHUD::i()->GetCursor( mouseOverEntity );
+			return RDNHUD::i()->Input(ie);
 		}
 
-		virtual void CreateHUD
-			( 
-			const Player* localplayer, 
-			RTSHud* hud, 
-			CommandInterface* command,
-			UIInterface* ui, 
-			MessageInterface* message,
-			SelectionInterface* sel, 
-			CameraInterface* cam, 
-			SoundInterface* sound,
-			FXInterface* fx
-			)
+		virtual const char *GetCursor(const Entity *mouseOverEntity)
+		{
+			return RDNHUD::i()->GetCursor(mouseOverEntity);
+		}
+
+		virtual void CreateHUD(
+				const Player *localplayer,
+				RTSHud *hud,
+				CommandInterface *command,
+				UIInterface *ui,
+				MessageInterface *message,
+				SelectionInterface *sel,
+				CameraInterface *cam,
+				SoundInterface *sound,
+				FXInterface *fx)
 		{
 			// these shouldn't be passed here
-			ModObj::i()->SetSoundInterface    ( sound );
-			ModObj::i()->SetFxInterface       ( fx );
+			ModObj::i()->SetSoundInterface(sound);
+			ModObj::i()->SetFxInterface(fx);
 
 			// these should be sent directly to the trigger system, NOT the ModObj
-			ModObj::i()->SetCameraInterface   ( cam );
-			ModObj::i()->SetSelectionInterface( sel );
-			ModObj::i()->SetUIInterface( ui );
+			ModObj::i()->SetCameraInterface(cam);
+			ModObj::i()->SetSelectionInterface(sel);
+			ModObj::i()->SetUIInterface(ui);
 
-			RDNHUD::Initialize
-				( 
-				static_cast<const RDNPlayer*>(localplayer), 
-				hud, 
-				command, 
-				ModObj::i()->GetSelectionInterface(), 
-				ModObj::i()->GetCameraInterface(), 
-				ui, 
-				ModObj::i()->GetSoundInterface(),
-				ModObj::i()->GetFxInterface(),
-				message
-				);
+			RDNHUD::Initialize(
+					static_cast<const RDNPlayer *>(localplayer),
+					hud,
+					command,
+					ModObj::i()->GetSelectionInterface(),
+					ModObj::i()->GetCameraInterface(),
+					ui,
+					ModObj::i()->GetSoundInterface(),
+					ModObj::i()->GetFxInterface(),
+					message);
 		}
 
 		virtual void ShutdownHUD()
@@ -548,27 +551,27 @@ namespace
 			RDNHUD::Shutdown();
 		}
 
-		virtual void UpdateHUD( float elapsedSeconds)
+		virtual void UpdateHUD(float elapsedSeconds)
 		{
-			RDNHUD::i()->Update( elapsedSeconds);
+			RDNHUD::i()->Update(elapsedSeconds);
 		}
 
-		virtual void UIPause( bool bPause )
+		virtual void UIPause(bool bPause)
 		{
-			RDNHUD::i()->UIPause( bPause );
+			RDNHUD::i()->UIPause(bPause);
 		}
 
-		virtual void Save( IFF& iff )
+		virtual void Save(IFF &iff)
 		{
-			RDNUIState::i()->Save( iff );
+			RDNUIState::i()->Save(iff);
 		}
 
-		virtual void Load( IFF& iff )
+		virtual void Load(IFF &iff)
 		{
-			RDNUIState::i()->Load( iff );
+			RDNUIState::i()->Load(iff);
 		}
-		
-		virtual void ShowModOptions ( void )
+
+		virtual void ShowModOptions(void)
 		{
 			RDNHUD::i()->ShowModOptions();
 		}
@@ -576,38 +579,38 @@ namespace
 
 	class RDNDllInterface : public DLLInterface
 	{
-	// fields
+		// fields
 	private:
-		wchar_t		m_name[ 32 ];
+		wchar_t m_name[32];
 
-		char		m_version[ 16 ];
-			
-		RDNDllGameInterface* 
-					m_game;
+		char m_version[16];
 
-		DLLSetupInterface* 
-					m_setup;
-		
-		DLLScoreInterface* 
-					m_score;
+		RDNDllGameInterface *
+				m_game;
 
-		bool		m_init;
+		DLLSetupInterface *
+				m_setup;
 
-	// construction -- singleton
+		DLLScoreInterface *
+				m_score;
+
+		bool m_init;
+
+		// construction -- singleton
 	public:
 		RDNDllInterface()
-			: m_init ( false ),
-			  m_game ( 0 ),
-			  m_score( 0 ),
-			  m_setup( 0 )
+				: m_init(false),
+					m_game(0),
+					m_score(0),
+					m_setup(0)
 		{
 			//
 			m_version[0] = '\0';
 
 			// retrieve mod name
-			if( !Localizer::GetString( m_name, LENGTHOF(m_name), MODNAME ) )
+			if (!Localizer::GetString(m_name, LENGTHOF(m_name), MODNAME))
 			{
-				wcscpy( m_name, L"Impossible Creatures" );
+				wcscpy(m_name, L"Impossible Creatures");
 			}
 
 			dbTracef("Hello world!");
@@ -615,49 +618,49 @@ namespace
 
 		~RDNDllInterface()
 		{
-			dbAssert( m_game  == 0 );
-			dbAssert( m_score == 0 );
-			dbAssert( m_setup == 0 );
-			dbAssert( m_init == false );
+			dbAssert(m_game == 0);
+			dbAssert(m_score == 0);
+			dbAssert(m_setup == 0);
+			dbAssert(m_init == false);
 		}
 
-	// interface
+		// interface
 	public:
-		const char* GetVersion() const
+		const char *GetVersion() const
 		{
-			dbAssert( m_init );
+			dbAssert(m_init);
 			return m_version;
 		}
 
-	// inherited
+		// inherited
 	public:
-		virtual const wchar_t* GetName()
+		virtual const wchar_t *GetName()
 		{
 			return m_name;
 		}
-		
-		virtual bool IsScenarioCompatible( const char* modname ) const
+
+		virtual bool IsScenarioCompatible(const char *modname) const
 		{
-			bool isCompatible = ( strcmp( "RDNMod", modname ) == 0);
+			bool isCompatible = (strcmp("RDNMod", modname) == 0);
 
 			return isCompatible;
 		}
 
-		virtual bool Initialize( const char* version )
+		virtual bool Initialize(const char *version)
 		{
-			// 
-			dbAssert( !m_init );
+			//
+			dbAssert(!m_init);
 
 			//
 			m_init = true;
 
 			//
-			strcpy( m_version, version );
+			strcpy(m_version, version);
 
 			// read-only data
 			RDNTuning::Initialize();
 
-			// initialize the stats layer - since the stats object lives longer than 
+			// initialize the stats layer - since the stats object lives longer than
 			// the simulation, it is initialized before and shutdown later
 			RDNStats::Initialize();
 
@@ -669,11 +672,11 @@ namespace
 
 		virtual void Shutdown()
 		{
-			// 
-			dbAssert( m_score == 0 );
-			dbAssert( m_setup == 0 );
-			dbAssert( m_game == 0 );
-			dbAssert( m_init );
+			//
+			dbAssert(m_score == 0);
+			dbAssert(m_setup == 0);
+			dbAssert(m_game == 0);
+			dbAssert(m_init);
 
 			// read-only data
 			RDNTuning::Shutdown();
@@ -681,7 +684,7 @@ namespace
 			// mod setup stuff
 			RDNDllSetup::Shutdown();
 
-			// since the stats object lives longer than the simulation, 
+			// since the stats object lives longer than the simulation,
 			// it is initialized before and shutdown later
 			RDNStats::Shutdown();
 
@@ -691,12 +694,12 @@ namespace
 			return;
 		}
 
-		virtual DLLSetupInterface* SetupCreate()
+		virtual DLLSetupInterface *SetupCreate()
 		{
-			dbAssert( m_init );
-			dbAssert( m_setup == 0 );
-			dbAssert( m_game  == 0 ); // shouldn't create a scores while a game is being played
-			dbAssert( m_score == 0 ); // shouldn't create a scores until score is released
+			dbAssert(m_init);
+			dbAssert(m_setup == 0);
+			dbAssert(m_game == 0);	// shouldn't create a scores while a game is being played
+			dbAssert(m_score == 0); // shouldn't create a scores until score is released
 
 			RDNDllSetup::Instance()->Reset();
 			m_setup = RDNDllSetup::Instance()->Get();
@@ -704,63 +707,63 @@ namespace
 			return m_setup;
 		}
 
-		virtual void SetupDestroy( DLLSetupInterface* p )
+		virtual void SetupDestroy(DLLSetupInterface *p)
 		{
-			// 
-			dbAssert( p != 0 );
-			dbAssert( p == m_setup );
+			//
+			dbAssert(p != 0);
+			dbAssert(p == m_setup);
 
 			//
-			RDNDllSetup::Instance()->Release( m_setup );
+			RDNDllSetup::Instance()->Release(m_setup);
 			m_setup = 0;
 
 			return;
 		}
 
-		virtual DLLGameInterface* GameCreate( SimEngineInterface* sim )
+		virtual DLLGameInterface *GameCreate(SimEngineInterface *sim)
 		{
-			dbAssert( m_init );
-			dbAssert( m_game == 0 );
-			dbAssert( m_score == 0 ); // shouldn't create a game until score is released
-			dbAssert( m_setup == 0 ); // shouldn't create a game until setup is released
+			dbAssert(m_init);
+			dbAssert(m_game == 0);
+			dbAssert(m_score == 0); // shouldn't create a game until score is released
+			dbAssert(m_setup == 0); // shouldn't create a game until setup is released
 
-			m_game = new RDNDllGameInterface( sim );
+			m_game = new RDNDllGameInterface(sim);
 
 			return m_game;
 		}
 
-		virtual void GameDestroy( DLLGameInterface* p )
+		virtual void GameDestroy(DLLGameInterface *p)
 		{
-			// 
-			dbAssert( p != 0 );
-			dbAssert( p == m_game );
+			//
+			dbAssert(p != 0);
+			dbAssert(p == m_game);
 
 			//
-			DELETEZERO( m_game );
+			DELETEZERO(m_game);
 
 			return;
 		}
 
-		virtual DLLScoreInterface* ScoreCreate()
+		virtual DLLScoreInterface *ScoreCreate()
 		{
-			dbAssert( m_init );
-			dbAssert( m_score == 0 );
-			dbAssert( m_game  == 0 ); // shouldn't create a scores while a game is being played
-			dbAssert( m_setup == 0 ); // shouldn't create a scores until setup is released
+			dbAssert(m_init);
+			dbAssert(m_score == 0);
+			dbAssert(m_game == 0);	// shouldn't create a scores while a game is being played
+			dbAssert(m_setup == 0); // shouldn't create a scores until setup is released
 
 			m_score = RDNDllScoreCreate();
 
 			return m_score;
 		}
 
-		virtual void ScoreDestroy( DLLScoreInterface* p )
+		virtual void ScoreDestroy(DLLScoreInterface *p)
 		{
-			// 
-			dbAssert( p != 0 );
-			dbAssert( p == m_score );
+			//
+			dbAssert(p != 0);
+			dbAssert(p == m_score);
 
 			//
-			RDNDllScoreDestroy( m_score );
+			RDNDllScoreDestroy(m_score);
 			m_score = 0;
 
 			return;
@@ -781,12 +784,12 @@ namespace
 			return ZSP_Done;
 		}
 	};
-}
+} // namespace
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
-static RDNDllInterface* s_instance = 0;
+static RDNDllInterface *s_instance = 0;
 
 void RDNDllInterfaceInitialize()
 {
@@ -795,26 +798,26 @@ void RDNDllInterfaceInitialize()
 
 void RDNDllInterfaceShutdown()
 {
-	DELETEZERO( s_instance );
+	DELETEZERO(s_instance);
 }
 
-const char* RDNDLLVersion()
+const char *RDNDLLVersion()
 {
 	return s_instance->GetVersion();
 }
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
-extern "C" 
+extern "C"
 {
-	__declspec( dllexport ) DLLInterface* __cdecl GetDllInterface()
+	__declspec(dllexport) DLLInterface *__cdecl GetDllInterface()
 	{
 		return s_instance;
 	}
 
-	__declspec( dllexport ) unsigned long __cdecl GetDllVersion()
+	__declspec(dllexport) unsigned long __cdecl GetDllVersion()
 	{
-		return MODMAKE_VERSION( MajorVersion, MinorVersion );
+		return MODMAKE_VERSION(MajorVersion, MinorVersion);
 	}
 }

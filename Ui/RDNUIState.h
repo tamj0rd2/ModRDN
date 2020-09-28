@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNUIState.h
-// Desc    : 
+// Desc    :
 // Created : Friday, July 12, 2002
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2002 Relic Entertainment Inc.
 //
 
@@ -11,117 +11,111 @@
 
 #include <SimEngine/EntityGroup.h>
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Forward Declarations
 
 class IFF;
 class ChunkNode;
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
 class RDNUIState
 {
-// Singleton
+	// Singleton
 public:
+	static void Startup();
+	static void Shutdown();
 
-	static void				Startup();
-	static void				Shutdown();
+	static RDNUIState *i();
 
-	static RDNUIState*	i();
-
-// Ctor Dtor
+	// Ctor Dtor
 public:
 	RDNUIState();
 	~RDNUIState();
 
-// types
+	// types
 public:
-
-	enum 
+	enum
 	{
 		nHOTKEYGROUPS = 10
 	};
 
-// Interface
+	// Interface
 public:
+	inline bool IsLoaded() const;
 
-	inline bool					IsLoaded( ) const;
+	inline const Vec3f &GetCameraTarget() const;
+	inline float GetCameraDeclination() const;
+	inline float GetCameraRotation() const;
+	inline float GetCameraZoom() const;
 
-	inline const Vec3f&			GetCameraTarget( ) const;
-	inline float				GetCameraDeclination( ) const;
-	inline float				GetCameraRotation( ) const;
-	inline float				GetCameraZoom( ) const;
+	inline size_t GetGameSpeed() const;
 
-	inline size_t				GetGameSpeed( ) const;
+	inline const EntityGroup &GetSelection() const;
+	inline const EntityGroup &GetHotkeyGroup(size_t i) const;
 
-	inline const EntityGroup&	GetSelection( ) const;
-	inline const EntityGroup&	GetHotkeyGroup( size_t i ) const;
-
-	void Save( IFF& iff ) const;
-	void Load( IFF& iff );
+	void Save(IFF &iff) const;
+	void Load(IFF &iff);
 
 private:
+	static unsigned long HandleSUIS(IFF &iff, ChunkNode *, void *pContext1, void *);
 
-	static unsigned long HandleSUIS( IFF& iff, ChunkNode* , void* pContext1, void* );
-
-// data
+	// data
 private:
+	bool m_bIsLoaded;
 
-	bool	m_bIsLoaded;
+	Vec3f m_camTarget;
+	float m_camDecl;
+	float m_camRotate;
+	float m_camZoom;
 
-	Vec3f	m_camTarget;
-	float	m_camDecl;
-	float	m_camRotate;
-	float	m_camZoom;
+	size_t m_gameSpeed;
 
-	size_t	m_gameSpeed;
-
-	EntityGroup	m_HotkeyGroups[nHOTKEYGROUPS];
-	EntityGroup	m_Selection;
-
+	EntityGroup m_HotkeyGroups[nHOTKEYGROUPS];
+	EntityGroup m_Selection;
 };
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Inline Access to restored data
 
-inline bool RDNUIState::IsLoaded( ) const
+inline bool RDNUIState::IsLoaded() const
 {
 	return m_bIsLoaded;
 }
 
-inline const Vec3f& RDNUIState::GetCameraTarget( ) const
+inline const Vec3f &RDNUIState::GetCameraTarget() const
 {
 	return m_camTarget;
 }
 
-inline float RDNUIState::GetCameraDeclination( ) const
+inline float RDNUIState::GetCameraDeclination() const
 {
 	return m_camDecl;
 }
 
-inline float RDNUIState::GetCameraRotation( ) const
+inline float RDNUIState::GetCameraRotation() const
 {
 	return m_camRotate;
 }
 
-inline float RDNUIState::GetCameraZoom( ) const
+inline float RDNUIState::GetCameraZoom() const
 {
 	return m_camZoom;
 }
 
-inline size_t RDNUIState::GetGameSpeed( ) const
+inline size_t RDNUIState::GetGameSpeed() const
 {
 	return m_gameSpeed;
 }
 
-inline const EntityGroup& RDNUIState::GetSelection( ) const
+inline const EntityGroup &RDNUIState::GetSelection() const
 {
 	return m_Selection;
 }
 
-inline const EntityGroup& RDNUIState::GetHotkeyGroup( size_t i ) const
+inline const EntityGroup &RDNUIState::GetHotkeyGroup(size_t i) const
 {
-	dbAssert( i < nHOTKEYGROUPS );
-	return m_HotkeyGroups[ i ];
+	dbAssert(i < nHOTKEYGROUPS);
+	return m_HotkeyGroups[i];
 }

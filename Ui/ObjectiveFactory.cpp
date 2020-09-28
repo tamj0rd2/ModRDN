@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : ObjectiveFactory.cpp
-// Desc    : 
+// Desc    :
 // Created : Friday, September 21, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -21,7 +21,7 @@
 class ObjectiveFactory::Data
 {
 public:
-	std::list<Objective*>	m_objectives;
+	std::list<Objective *> m_objectives;
 };
 
 //------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ static ChunkHandlerFunc OF_HandleOBJT;
 //------------------------------------------------------------------------------------------------
 
 ObjectiveFactory::ObjectiveFactory()
-	: m_pimpl(new Data)
+		: m_pimpl(new Data)
 {
 }
 
@@ -45,32 +45,32 @@ ObjectiveFactory::ObjectiveFactory()
 
 ObjectiveFactory::~ObjectiveFactory()
 {
-	std::list<Objective*>::iterator oi = m_pimpl->m_objectives.begin();
-	std::list<Objective*>::iterator oe = m_pimpl->m_objectives.end();
+	std::list<Objective *>::iterator oi = m_pimpl->m_objectives.begin();
+	std::list<Objective *>::iterator oe = m_pimpl->m_objectives.end();
 
 	for (; oi != oe; oi++)
 	{
-		Objective* pObj = *oi;
-		DELETEZERO( pObj );
+		Objective *pObj = *oi;
+		DELETEZERO(pObj);
 	}
 
-	DELETEZERO( m_pimpl );
+	DELETEZERO(m_pimpl);
 }
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-Objective*	ObjectiveFactory::CreateObjective( int id )
+Objective *ObjectiveFactory::CreateObjective(int id)
 {
 	// check for duplicates
-	if ( GetObjective( id ) != 0 )
+	if (GetObjective(id) != 0)
 	{
 		dbPrintf("Duplicated objective number (%d)", id);
 		return NULL;
 	}
 
-	Objective* pObj = new Objective;
-	pObj->SetID( id );
+	Objective *pObj = new Objective;
+	pObj->SetID(id);
 
 	m_pimpl->m_objectives.push_back(pObj);
 
@@ -80,15 +80,15 @@ Objective*	ObjectiveFactory::CreateObjective( int id )
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-Objective*	ObjectiveFactory::GetObjective( int id )
+Objective *ObjectiveFactory::GetObjective(int id)
 {
 	// linear search through list of folders
-	std::list<Objective*>::iterator oi = m_pimpl->m_objectives.begin();
-	std::list<Objective*>::iterator oe = m_pimpl->m_objectives.end();
+	std::list<Objective *>::iterator oi = m_pimpl->m_objectives.begin();
+	std::list<Objective *>::iterator oe = m_pimpl->m_objectives.end();
 
 	for (; oi != oe; oi++)
 	{
-		Objective* pObj = *oi;
+		Objective *pObj = *oi;
 
 		if (pObj->GetID() == id)
 		{
@@ -102,16 +102,16 @@ Objective*	ObjectiveFactory::GetObjective( int id )
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-void ObjectiveFactory::DeleteObjective( Objective* pObj )
+void ObjectiveFactory::DeleteObjective(Objective *pObj)
 {
 	m_pimpl->m_objectives.remove(pObj);
-	DELETEZERO( pObj );
+	DELETEZERO(pObj);
 }
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-void ObjectiveFactory::GetAllObjectives( std::list<Objective*>& objectives )
+void ObjectiveFactory::GetAllObjectives(std::list<Objective *> &objectives)
 {
 	objectives = m_pimpl->m_objectives;
 }
@@ -119,31 +119,31 @@ void ObjectiveFactory::GetAllObjectives( std::list<Objective*>& objectives )
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-void ObjectiveFactory::Load( IFF& iff )
+void ObjectiveFactory::Load(IFF &iff)
 {
-	iff.AddParseHandler( OF_HandleOBJL, Type_Form, 'OBJL', (void*)this, NULL);
+	iff.AddParseHandler(OF_HandleOBJL, Type_Form, 'OBJL', (void *)this, NULL);
 }
 
 //------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------
 
-void ObjectiveFactory::Save( IFF& iff )
+void ObjectiveFactory::Save(IFF &iff)
 {
-	iff.PushChunk( Type_Form, 'OBJL', 1000L);
+	iff.PushChunk(Type_Form, 'OBJL', 1000L);
 
-		std::list<Objective*>::iterator oi = m_pimpl->m_objectives.begin();
-		std::list<Objective*>::iterator oe = m_pimpl->m_objectives.end();
+	std::list<Objective *>::iterator oi = m_pimpl->m_objectives.begin();
+	std::list<Objective *>::iterator oe = m_pimpl->m_objectives.end();
 
-		for (; oi != oe; oi++)
-		{
-			iff.PushChunk( Type_NormalVers, 'OBJT', 1000L);
+	for (; oi != oe; oi++)
+	{
+		iff.PushChunk(Type_NormalVers, 'OBJT', 1000L);
 
-				Objective* pObj = *oi;
-				IFFWrite( iff, pObj->GetID() );
-				pObj->Save( iff );
+		Objective *pObj = *oi;
+		IFFWrite(iff, pObj->GetID());
+		pObj->Save(iff);
 
-			iff.PopChunk();
-		}		
+		iff.PopChunk();
+	}
 
 	iff.PopChunk();
 }
@@ -153,7 +153,7 @@ void ObjectiveFactory::Save( IFF& iff )
 
 static unsigned long OF_HandleOBJL(IFF &iff, ChunkNode *, void *pContext1, void *)
 {
-	iff.AddParseHandler( OF_HandleOBJT, Type_NormalVers, 'OBJT', pContext1, NULL);
+	iff.AddParseHandler(OF_HandleOBJT, Type_NormalVers, 'OBJT', pContext1, NULL);
 	return iff.Parse();
 }
 
@@ -162,15 +162,15 @@ static unsigned long OF_HandleOBJL(IFF &iff, ChunkNode *, void *pContext1, void 
 
 static unsigned long OF_HandleOBJT(IFF &iff, ChunkNode *, void *pContext1, void *)
 {
-	ObjectiveFactory* pObjFac = (ObjectiveFactory*)(pContext1);
+	ObjectiveFactory *pObjFac = (ObjectiveFactory *)(pContext1);
 
 	int id;
-	IFFRead( iff, id );
+	IFFRead(iff, id);
 
-	Objective* pObj = pObjFac->CreateObjective(id);
+	Objective *pObj = pObjFac->CreateObjective(id);
 	if (pObj)
 	{
-		pObj->Load( iff );
+		pObj->Load(iff);
 	}
 
 	return 0;

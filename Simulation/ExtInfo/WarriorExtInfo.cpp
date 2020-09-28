@@ -1,13 +1,13 @@
 /////////////////////////////////////////////////////////////////////
 // File    : WarriorExtInfo.cpp
-// Desc    : 
+// Desc    :
 // Created : Monday, March 19, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
-#include "pch.h" 
-#include "WarriorExtInfo.h" 
+#include "pch.h"
+#include "WarriorExtInfo.h"
 
 // empty

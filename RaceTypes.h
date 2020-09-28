@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RaceTypes.h
-// Desc    : 
+// Desc    :
 // Created : 07 April, 2003
 // Author  : bcode
-// 
+//
 // (c) 2003 Relic Entertainment Inc.
 //
 

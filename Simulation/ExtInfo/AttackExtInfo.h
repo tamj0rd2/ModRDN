@@ -1,39 +1,39 @@
 /////////////////////////////////////////////////////////////////////
 // File    : AttackExtInfo.h
-// Desc    : 
-// Created : 
-// Author  : 
-// 
+// Desc    :
+// Created :
+// Author  :
+//
 // (c) 2003 Relic Entertainment Inc.
 //
 
 #pragma once
 
-#include "ModStaticInfo.h" 
+#include "ModStaticInfo.h"
 
 #include "../AttackTypes.h"
 #include "../AttackPackage.h"
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // AttackExtInfo
 
 class AttackExtInfo : public ModStaticInfo::ExtInfo
 {
-// types
+	// types
 public:
-	
-	enum { ExtensionID = ModStaticInfo::EXTINFOID_Attack };
+	enum
+	{
+		ExtensionID = ModStaticInfo::EXTINFOID_Attack
+	};
 
-// fields
+	// fields
 public:
-	
-	AttackInfoPackage			attackInfo;
+	AttackInfoPackage attackInfo;
 
-// construction
+	// construction
 public:
-	AttackExtInfo( const ControllerBlueprint* cbp );
+	AttackExtInfo(const ControllerBlueprint *cbp);
 
-// implementation
+	// implementation
 private:
 };
-

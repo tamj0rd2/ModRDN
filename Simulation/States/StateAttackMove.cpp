@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : StateAttackMove.cpp
-// Desc    : 
+// Desc    :
 // Created : Thursday, March 01, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 #include "pch.h"
@@ -34,8 +34,8 @@
 #include <Util/Iff.h>
 #include <Util/IffMath.h>
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 const long k_UnreachableMemoryLength = 24;
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -52,57 +52,57 @@ enum
 };
 
 const long SEARCH_INTERVAL = 2;
-const long BLOCK_INTERVAL = 20*8;
+const long BLOCK_INTERVAL = 20 * 8;
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-StateAttackMove::StateAttackMove( EntityDynamics *e_dynamics )
-:	State( e_dynamics ),
-	m_pStateMove( NULL ),
-	m_pStateAttack( NULL ),
-	m_pCurState( NULL ),
-	m_SearchTimer( 0 ),
-	m_State( AM_Invalid ),
-	m_lastsearchtime( 0 )
+StateAttackMove::StateAttackMove(EntityDynamics *e_dynamics)
+		: State(e_dynamics),
+			m_pStateMove(NULL),
+			m_pStateAttack(NULL),
+			m_pCurState(NULL),
+			m_SearchTimer(0),
+			m_State(AM_Invalid),
+			m_lastsearchtime(0)
 {
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void StateAttackMove::Init( StateMove* pMove, StateAttack* pAttack )
+void StateAttackMove::Init(StateMove *pMove, StateAttack *pAttack)
 {
-	m_pStateMove	= pMove;
-	m_pStateAttack	= pAttack;
+	m_pStateMove = pMove;
+	m_pStateAttack = pAttack;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void StateAttackMove::Enter( const Entity* entity, float AP )
+void StateAttackMove::Enter(const Entity *entity, float AP)
 {
-	dbAssert( entity );
+	dbAssert(entity);
 	const Vec3f &epos = entity->GetPosition();
-	Enter( epos, AP );
+	Enter(epos, AP);
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void StateAttackMove::Enter( const Vec3f& dest, float AP )
+void StateAttackMove::Enter(const Vec3f &dest, float AP)
 {
 	// Called upon entering the move state.
 	m_Destination = dest;
@@ -112,20 +112,20 @@ void StateAttackMove::Enter( const Vec3f& dest, float AP )
 	//
 	m_lastsearchtime = ModObj::i()->GetWorld()->GetGameTicks();
 
-	AttackExt* pAttackExt = QIExt<AttackExt>( GetEntity() );	
-	if ( !pAttackExt )
+	AttackExt *pAttackExt = QIExt<AttackExt>(GetEntity());
+	if (!pAttackExt)
 	{
 		// should this ever happen?
-		SetExitStatus( true );
+		SetExitStatus(true);
 		m_State = AM_Exiting;
 		return;
 	}
-	
+
 	m_SearchRad = pAttackExt->GetAttackSearchRadius();
 
-	if ( FindClosestEnemy( m_SearchRad ) )
+	if (FindClosestEnemy(m_SearchRad))
 	{
-		m_pStateAttack->Enter( m_Targets.front() );
+		m_pStateAttack->Enter(m_Targets.front());
 		m_pCurState = m_pStateAttack;
 		m_State = AM_StateAttack;
 	}
@@ -134,444 +134,440 @@ void StateAttackMove::Enter( const Vec3f& dest, float AP )
 		ToStateMove();
 	}
 
-	SetExitStatus( false );
+	SetExitStatus(false);
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
 bool StateAttackMove::Update()
 {
 	bool retval = false;
 
-	if ( IsExiting() )
+	if (IsExiting())
 	{
-		switch ( m_State )
+		switch (m_State)
 		{
-			case AM_StateAttack:
-				if ( m_pCurState->Update() )
-				{
-					retval = true;
-				}
-			break;
-			case AM_StateMove:
-			case AM_StateToAttack:
-			case AM_StateMoveToAttack:
+		case AM_StateAttack:
+			if (m_pCurState->Update())
 			{
-				if ( m_pCurState->Update() )
-				{
-					retval = true;
-				}
+				retval = true;
 			}
 			break;
-			case AM_Exiting:
+		case AM_StateMove:
+		case AM_StateToAttack:
+		case AM_StateMoveToAttack:
+		{
+			if (m_pCurState->Update())
+			{
 				retval = true;
+			}
+		}
+		break;
+		case AM_Exiting:
+			retval = true;
 			break;
 		}
 	}
 	else
 	{
-		switch ( m_State )
+		switch (m_State)
 		{
-			//
-			case AM_StateAttack:
+		//
+		case AM_StateAttack:
+		{
+			if (!RDNQuery::WasAttackedBy(GetEntity(), m_Targets.front(), 8 * 5))
 			{
- 				if ( !RDNQuery::WasAttackedBy( GetEntity(), m_Targets.front(), 8 * 5 ) )
-				{	
-					// not fighting -> search for a retaliation target
-					long gameTicks = ModObj::i()->GetWorld()->GetGameTicks();
+				// not fighting -> search for a retaliation target
+				long gameTicks = ModObj::i()->GetWorld()->GetGameTicks();
 
-					if ( gameTicks > m_lastsearchtime + 4)
-					{	
-						// time to search again
+				if (gameTicks > m_lastsearchtime + 4)
+				{
+					// time to search again
 
-						// don't need to search for a while
-						m_lastsearchtime = gameTicks;
-						
-						if ( FindRetaliationEnemy() )
-						{	
-							// found a better enemy to attack
-							m_State = AM_StateToAttack;
-							m_pCurState->RequestExit();
-							return false;
-						}
+					// don't need to search for a while
+					m_lastsearchtime = gameTicks;
+
+					if (FindRetaliationEnemy())
+					{
+						// found a better enemy to attack
+						m_State = AM_StateToAttack;
+						m_pCurState->RequestExit();
+						return false;
 					}
 				}
-
-
-				if ( m_pCurState->Update() )
-				{
-					// State attack has exited, why did it exit?
-					switch( m_pStateAttack->GetExitState() )
-					{
-						//
-						case StateAttack::AES_CantPathToTargetEntity:
-						{
-							// need to remember this target as blocked so that we don't immediately try to target it again
-							RememberBlockedTarget( m_Targets.front() );
-
-							// is there another enemy nearby?
-							if ( FindClosestEnemy( m_SearchRad ) )
-							{	
-								// FindClosestEnemy has found a new m_Target, bring it on!
-								m_pStateAttack->Enter( m_Targets.front() );
-								m_pCurState = m_pStateAttack;
-							}
-							else if ( FindAlternateEnemy() )
-							{
-								m_pStateAttack->Enter( m_Targets.front() );
-								m_pCurState = m_pStateAttack;
-							}
-							else
-							{								
-								// no one to attack, keep truckin' to destination
-								ToStateMove();	
-							}
-
-							break;
-						}
-						//
-						case StateAttack::AES_CantPathToTargetBuilding:
-						{	
-							// is the blocker an enemy? if so, attack it
-
-							SimEntity *pBlockingBuilding = GetDynamics()->GetBlockingBuilding();
-							if ( pBlockingBuilding && RDNQuery::CanAttack( GetEntity(), pBlockingBuilding ) )
-							{	
-								// blocked by an enemy wall or building -> attack it!
-								m_pStateAttack->Enter( pBlockingBuilding );
-								m_pCurState = m_pStateAttack;
-							}
-							else
-							{
-								// can't attack the blocking building
-
-								// need to remember this target as blocked so that we don't immediately try to target it again?
-								RememberBlockedTarget( m_Targets.front() );
-
-								// keep moving to destination
-								ToStateMove();
-							}
-
-							break;
-						}
-						//
-						case StateAttack::AES_CantPathToTargetTerrain:
-						case StateAttack::AES_Blocked:
-						case StateAttack::AES_ExitRequested:
-						{
-							// keep moving
-							ToStateMove();
-							break;
-						}
-						case StateAttack::AES_TargetDead:
-						{
-							// just killed a guy, search for another target
-							if ( FindClosestEnemy( m_SearchRad ) )
-							{
-								// found another target
-								m_pStateAttack->Enter( m_Targets.front() );
-								m_pCurState		= m_pStateAttack;
-								m_State	= AM_StateAttack;
-							}
-							else
-							{
-								// noone in the immediate vicinity to attack -> keep moving
-								ToStateMove();
-							}
-
-							// reset our search timer
-							m_SearchTimer = ModObj::i()->GetWorld()->GetGameTicks() + SEARCH_INTERVAL;
-
-							break;
-						}
-						//
-						default:
-							// should never hit this
-							dbBreak();
-							break;
-					}			
-				}
-				break;
 			}
-			//
-			case AM_StateToAttack:
+
+			if (m_pCurState->Update())
 			{
-				if ( m_pCurState->Update() != 0 )
+				// State attack has exited, why did it exit?
+				switch (m_pStateAttack->GetExitState())
 				{
-					// Tell the attack state to start with our selected targets
-					if ( m_Targets.front() )
+				//
+				case StateAttack::AES_CantPathToTargetEntity:
+				{
+					// need to remember this target as blocked so that we don't immediately try to target it again
+					RememberBlockedTarget(m_Targets.front());
+
+					// is there another enemy nearby?
+					if (FindClosestEnemy(m_SearchRad))
 					{
-						m_pStateAttack->Enter( m_Targets.front() );
-						m_pCurState		= m_pStateAttack;
-						m_State	= AM_StateAttack;
+						// FindClosestEnemy has found a new m_Target, bring it on!
+						m_pStateAttack->Enter(m_Targets.front());
+						m_pCurState = m_pStateAttack;
+					}
+					else if (FindAlternateEnemy())
+					{
+						m_pStateAttack->Enter(m_Targets.front());
+						m_pCurState = m_pStateAttack;
 					}
 					else
-					{	
-						// no target -> keep moving to goal
+					{
+						// no one to attack, keep truckin' to destination
 						ToStateMove();
 					}
+
+					break;
 				}
-			}
-			break;
-			//
-			case AM_StateMove:
-				if ( m_pCurState->Update() )
+				//
+				case StateAttack::AES_CantPathToTargetBuilding:
 				{
-					switch( m_pStateMove->GetExitState() )
+					// is the blocker an enemy? if so, attack it
+
+					SimEntity *pBlockingBuilding = GetDynamics()->GetBlockingBuilding();
+					if (pBlockingBuilding && RDNQuery::CanAttack(GetEntity(), pBlockingBuilding))
 					{
-						//
-						case StateMove::MES_StoppedBeforeTarget:
-							ToStateMove();
-							break;
-
-						//
-						case StateMove::MES_CantPathToTargetBuilding:					
-						{
-							// blocked by a building, is it an enemy's?
-							SimEntity *pBlockingBuilding = GetDynamics()->GetBlockingBuilding();
-							if ( pBlockingBuilding && RDNQuery::CanAttack( GetEntity(), pBlockingBuilding ) )
-							{	
-								// blocked by an enemy wall or building -> attack it!
-								m_pStateAttack->Enter( pBlockingBuilding );
-								m_pCurState = m_pStateAttack;
-								m_State = AM_StateAttack;
-							}
-							else
-							{
-								// blocked by friendly, nothing we can do
-								retval = true;
-							}
-							break;
-						}
-						//
-						case StateMove::MES_CantPathToTargetEntity:
-						{
-							// is there another enemy nearby?
-							if ( FindClosestEnemy( m_SearchRad ) )
-							{	
-								// FindClosestEnemy has found a new m_Target, bring it on!
-								m_pStateAttack->Enter( m_Targets.front() );
-								m_pCurState = m_pStateAttack;
-								m_State = AM_StateAttack;
-							}
-							else if ( FindAlternateEnemy() )
-							{
-								m_pStateAttack->Enter( m_Targets.front() );
-								m_pCurState = m_pStateAttack;
-								m_State = AM_StateAttack;
-							}
-							else
-							{				
-								// no alternate targets to destroy that might remove the blockage, must exit
-								//	todo : another layer of retry logic.  fuxk no.
-								retval = true;
-							}
-
-							break;
-						}
-						//
-						case StateMove::MES_ReachedTarget:
-						case StateMove::MES_NoTarget:
-						case StateMove::MES_CantPathToTargetTerrain:
-							retval = true;
-							break;
-						//
-						default:
-							// this should never happen
-							dbBreak();
-							retval = true;
-							break;
-
-					}				
-				}
-				else
-				{
-					if ( ModObj::i()->GetWorld()->GetGameTicks() > m_SearchTimer )
-					{
-						if ( FindClosestEnemy( m_SearchRad ) )
-						{
-							m_pStateMove->RequestExit();
-							m_State = AM_StateMoveToAttack;
-						}
-						// reset our search timer
-						m_SearchTimer = ModObj::i()->GetWorld()->GetGameTicks() + SEARCH_INTERVAL;
+						// blocked by an enemy wall or building -> attack it!
+						m_pStateAttack->Enter(pBlockingBuilding);
+						m_pCurState = m_pStateAttack;
 					}
-				}
-			break;
-			case AM_StateMoveToAttack:
-			{
-				if ( m_pCurState->Update() )
-				{
-					if ( FindClosestEnemy( m_SearchRad ) )
+					else
 					{
-						m_pStateAttack->Enter( m_Targets.front() );
+						// can't attack the blocking building
+
+						// need to remember this target as blocked so that we don't immediately try to target it again?
+						RememberBlockedTarget(m_Targets.front());
+
+						// keep moving to destination
+						ToStateMove();
+					}
+
+					break;
+				}
+				//
+				case StateAttack::AES_CantPathToTargetTerrain:
+				case StateAttack::AES_Blocked:
+				case StateAttack::AES_ExitRequested:
+				{
+					// keep moving
+					ToStateMove();
+					break;
+				}
+				case StateAttack::AES_TargetDead:
+				{
+					// just killed a guy, search for another target
+					if (FindClosestEnemy(m_SearchRad))
+					{
+						// found another target
+						m_pStateAttack->Enter(m_Targets.front());
 						m_pCurState = m_pStateAttack;
 						m_State = AM_StateAttack;
 					}
 					else
 					{
-						// State attack has exited, lets go onto the move state
+						// noone in the immediate vicinity to attack -> keep moving
 						ToStateMove();
 					}
+
+					// reset our search timer
+					m_SearchTimer = ModObj::i()->GetWorld()->GetGameTicks() + SEARCH_INTERVAL;
+
+					break;
+				}
+				//
+				default:
+					// should never hit this
+					dbBreak();
+					break;
 				}
 			}
 			break;
 		}
+		//
+		case AM_StateToAttack:
+		{
+			if (m_pCurState->Update() != 0)
+			{
+				// Tell the attack state to start with our selected targets
+				if (m_Targets.front())
+				{
+					m_pStateAttack->Enter(m_Targets.front());
+					m_pCurState = m_pStateAttack;
+					m_State = AM_StateAttack;
+				}
+				else
+				{
+					// no target -> keep moving to goal
+					ToStateMove();
+				}
+			}
+		}
+		break;
+		//
+		case AM_StateMove:
+			if (m_pCurState->Update())
+			{
+				switch (m_pStateMove->GetExitState())
+				{
+				//
+				case StateMove::MES_StoppedBeforeTarget:
+					ToStateMove();
+					break;
+
+				//
+				case StateMove::MES_CantPathToTargetBuilding:
+				{
+					// blocked by a building, is it an enemy's?
+					SimEntity *pBlockingBuilding = GetDynamics()->GetBlockingBuilding();
+					if (pBlockingBuilding && RDNQuery::CanAttack(GetEntity(), pBlockingBuilding))
+					{
+						// blocked by an enemy wall or building -> attack it!
+						m_pStateAttack->Enter(pBlockingBuilding);
+						m_pCurState = m_pStateAttack;
+						m_State = AM_StateAttack;
+					}
+					else
+					{
+						// blocked by friendly, nothing we can do
+						retval = true;
+					}
+					break;
+				}
+				//
+				case StateMove::MES_CantPathToTargetEntity:
+				{
+					// is there another enemy nearby?
+					if (FindClosestEnemy(m_SearchRad))
+					{
+						// FindClosestEnemy has found a new m_Target, bring it on!
+						m_pStateAttack->Enter(m_Targets.front());
+						m_pCurState = m_pStateAttack;
+						m_State = AM_StateAttack;
+					}
+					else if (FindAlternateEnemy())
+					{
+						m_pStateAttack->Enter(m_Targets.front());
+						m_pCurState = m_pStateAttack;
+						m_State = AM_StateAttack;
+					}
+					else
+					{
+						// no alternate targets to destroy that might remove the blockage, must exit
+						//	todo : another layer of retry logic.  fuxk no.
+						retval = true;
+					}
+
+					break;
+				}
+				//
+				case StateMove::MES_ReachedTarget:
+				case StateMove::MES_NoTarget:
+				case StateMove::MES_CantPathToTargetTerrain:
+					retval = true;
+					break;
+				//
+				default:
+					// this should never happen
+					dbBreak();
+					retval = true;
+					break;
+				}
+			}
+			else
+			{
+				if (ModObj::i()->GetWorld()->GetGameTicks() > m_SearchTimer)
+				{
+					if (FindClosestEnemy(m_SearchRad))
+					{
+						m_pStateMove->RequestExit();
+						m_State = AM_StateMoveToAttack;
+					}
+					// reset our search timer
+					m_SearchTimer = ModObj::i()->GetWorld()->GetGameTicks() + SEARCH_INTERVAL;
+				}
+			}
+			break;
+		case AM_StateMoveToAttack:
+		{
+			if (m_pCurState->Update())
+			{
+				if (FindClosestEnemy(m_SearchRad))
+				{
+					m_pStateAttack->Enter(m_Targets.front());
+					m_pCurState = m_pStateAttack;
+					m_State = AM_StateAttack;
+				}
+				else
+				{
+					// State attack has exited, lets go onto the move state
+					ToStateMove();
+				}
+			}
+		}
+		break;
+		}
 	}
 
-	if ( retval )
+	if (retval)
 		m_State = AM_Invalid;
-	
+
 	return retval;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
 void StateAttackMove::RequestExit()
 {
-	switch ( m_State )
+	switch (m_State)
 	{
-		case AM_StateAttack:
-			m_pStateAttack->RequestExit();
+	case AM_StateAttack:
+		m_pStateAttack->RequestExit();
 		break;
-		case AM_StateMove:
-		case AM_StateMoveToAttack:
-			m_pStateMove->RequestExit();
+	case AM_StateMove:
+	case AM_StateMoveToAttack:
+		m_pStateMove->RequestExit();
 		break;
 	}
-	
-	SetExitStatus( true );
+
+	SetExitStatus(true);
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: 
-//	Result	: 
-//	Param.	: 
+//	Desc.	:
+//	Result	:
+//	Param.	:
 //	Author	: dswinerd
 //
 void StateAttackMove::ReissueOrder() const
 {
 	const unsigned long playerID = GetEntity()->GetOwner() ? GetEntity()->GetOwner()->GetID() : 0;
 	const unsigned long entityID = GetEntity()->GetID();
-	
-	ModObj::i()->GetWorld()->DoCommandEntityPoint
-		( 
-		CMD_AttackMove,
-		0, 
-		CMDF_Queue, 
-		playerID, 
-		&entityID,
-		1,
-		&m_Destination,
-		1
-		);
+
+	ModObj::i()->GetWorld()->DoCommandEntityPoint(
+			CMD_AttackMove,
+			0,
+			CMDF_Queue,
+			playerID,
+			&entityID,
+			1,
+			&m_Destination,
+			1);
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
 void StateAttackMove::ForceExit()
 {
-	switch ( m_State )
+	switch (m_State)
 	{
-		case AM_StateAttack:
-			m_pStateAttack->ForceExit();
+	case AM_StateAttack:
+		m_pStateAttack->ForceExit();
 		break;
-		case AM_StateMove:
-		case AM_StateMoveToAttack:
-			m_pStateMove->ForceExit();
+	case AM_StateMove:
+	case AM_StateMoveToAttack:
+		m_pStateMove->ForceExit();
 		break;
 	}
 
 	m_State = AM_Invalid;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-State::StateIDType StateAttackMove::GetStateID( ) const
+State::StateIDType StateAttackMove::GetStateID() const
 {
 	return (State::StateIDType)StateID;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void StateAttackMove::SaveState( BiFF& biff ) const
+void StateAttackMove::SaveState(BiFF &biff) const
 {
-	IFF& iff = *biff.GetIFF();
+	IFF &iff = *biff.GetIFF();
 
 	unsigned long ver = 3;
-	IFFWrite( iff, ver );
+	IFFWrite(iff, ver);
 
-	IFFWrite( iff, m_AP );
-	
-	IFFWrite( iff, m_Destination );
+	IFFWrite(iff, m_AP);
+
+	IFFWrite(iff, m_Destination);
 
 	return;
 }
 
-///////////////////////////////////////////////////////////////////// 
-// Desc.     : 
-// Result    : 
-// Param.    : 
-// Author    : 
+/////////////////////////////////////////////////////////////////////
+// Desc.     :
+// Result    :
+// Param.    :
+// Author    :
 //
-void StateAttackMove::LoadState( IFF& iff )
+void StateAttackMove::LoadState(IFF &iff)
 {
 	unsigned long ver;
-	IFFRead( iff, ver );
+	IFFRead(iff, ver);
 
 	float ap, searchrad;
-	IFFRead( iff, ap );
+	IFFRead(iff, ap);
 
-	if ( ver == 1 )
+	if (ver == 1)
 	{
-		IFFRead( iff, searchrad );
+		IFFRead(iff, searchrad);
 	}
-	
+
 	Vec3f temp;
-	IFFRead( iff, temp );
+	IFFRead(iff, temp);
 
 	// Re-Initialize the state
-	Enter( temp, ap );
+	Enter(temp, ap);
 }
 
-State* StateAttackMove::GetSubState( unsigned char id )
+State *StateAttackMove::GetSubState(unsigned char id)
 {
-	if ( IsExiting() )
+	if (IsExiting())
 	{
 		return NULL;
 	}
 
-	if ( id == StateID )
+	if (id == StateID)
 	{
 		return this;
 	}
-	else if ( id == State::SID_Attack && m_State == AM_StateAttack )
+	else if (id == State::SID_Attack && m_State == AM_StateAttack)
 	{
-		return m_pStateAttack->GetSubState( id );
+		return m_pStateAttack->GetSubState(id);
 	}
-	else if ( id == State::SID_Move && m_State == AM_StateMove)
+	else if (id == State::SID_Move && m_State == AM_StateMove)
 	{
-		return m_pStateMove->GetSubState( id );
+		return m_pStateMove->GetSubState(id);
 	}
 
 	return NULL;
@@ -583,9 +579,9 @@ State* StateAttackMove::GetSubState( unsigned char id )
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: call to transition to AM_StateMove
 //
-void StateAttackMove::ToStateMove( )
+void StateAttackMove::ToStateMove()
 {
-	m_pStateMove->Enter( m_Destination, m_AP );
+	m_pStateMove->Enter(m_Destination, m_AP);
 	m_pCurState = m_pStateMove;
 
 	m_State = AM_StateMove;
@@ -595,79 +591,79 @@ void StateAttackMove::ToStateMove( )
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: call to mark an entity as blocked, so we don't choose it as a target again.
 //
-void StateAttackMove::RememberBlockedTarget( Entity *pBlockedTarget )
+void StateAttackMove::RememberBlockedTarget(Entity *pBlockedTarget)
 {
-	if ( !pBlockedTarget )
+	if (!pBlockedTarget)
 	{
 		return;
 	}
 
-	AttackExt* pAttackExt = QIExt< AttackExt >( GetEntity() );
-	if ( pAttackExt )
+	AttackExt *pAttackExt = QIExt<AttackExt>(GetEntity());
+	if (pAttackExt)
 	{
-		pAttackExt->GetUnreachableMemory().AddMemory( pBlockedTarget, ModObj::i()->GetWorld()->GetGameTicks() );
+		pAttackExt->GetUnreachableMemory().AddMemory(pBlockedTarget, ModObj::i()->GetWorld()->GetGameTicks());
 	}
 }
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Desc.     : uses the prioritizer to find a close enemy
-// Result    : 
-// Param.    : 
-// Author    : 
+// Result    :
+// Param.    :
+// Author    :
 //
-bool StateAttackMove::FindClosestEnemy( float SearchRad )
+bool StateAttackMove::FindClosestEnemy(float SearchRad)
 {
-	Entity* pClosestCreature = NULL;	
+	Entity *pClosestCreature = NULL;
 
 	//
 	EntityGroup unreachables;
-	AttackExt* pAttackExt = QIExt< AttackExt >( GetEntity() );
-	if ( pAttackExt )
+	AttackExt *pAttackExt = QIExt<AttackExt>(GetEntity());
+	if (pAttackExt)
 	{
 		const long currentTime = ModObj::i()->GetWorld()->GetGameTicks();
-		pAttackExt->GetUnreachableMemory().GetMemories( unreachables, currentTime - k_UnreachableMemoryLength );
+		pAttackExt->GetUnreachableMemory().GetMemories(unreachables, currentTime - k_UnreachableMemoryLength);
 	}
 
 	// check if this unit is a flyer
-	ThreatPrioritizerAll prioritizer( GetEntity()->GetOwner());
-	pClosestCreature = const_cast<Entity*>(RDNQuery::FindClosestEnemy( GetEntity(), GetEntity()->GetPosition(), SearchRad, prioritizer, &unreachables ));	
-			
+	ThreatPrioritizerAll prioritizer(GetEntity()->GetOwner());
+	pClosestCreature = const_cast<Entity *>(RDNQuery::FindClosestEnemy(GetEntity(), GetEntity()->GetPosition(), SearchRad, prioritizer, &unreachables));
+
 	m_Targets.clear();
-	
-	if ( pClosestCreature )
+
+	if (pClosestCreature)
 	{
 		// is this unit closer than
-		m_Targets.push_back( pClosestCreature );
+		m_Targets.push_back(pClosestCreature);
 		return true;
 	}
 
-	return false;	
+	return false;
 }
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: Tries to find a higher priority Entity to attack.  It will bias towards Entitys that are damaging self
 //	Result	: returns true if found a higher priority Entity
-//	Param.	: 
+//	Param.	:
 //	Author	: dswinerd
 //
 bool StateAttackMove::FindRetaliationEnemy()
 {
 	Entity *pSelf = GetEntity();
 
-	AttackExt *pAttackExt = QIExt< AttackExt >( pSelf );
-	if ( !pAttackExt )
+	AttackExt *pAttackExt = QIExt<AttackExt>(pSelf);
+	if (!pAttackExt)
 	{
 		return false;
 	}
 
 	// find an enemy to retaliate against, no matter how far away (as long as they are visible in the FoW)
-	float searchRadius = FLT_MAX;	// was pAttackExt->GetAttackSearchRadius();
-	const Entity *pAttacker = RDNQuery::FindRetaliationEnemy( pSelf, searchRadius, 8 );
+	float searchRadius = FLT_MAX; // was pAttackExt->GetAttackSearchRadius();
+	const Entity *pAttacker = RDNQuery::FindRetaliationEnemy(pSelf, searchRadius, 8);
 
 	if (pAttacker)
 	{
 		m_Targets.clear();
-		m_Targets.push_back( const_cast<Entity*>( pAttacker ) );
+		m_Targets.push_back(const_cast<Entity *>(pAttacker));
 
 		return true;
 	}
@@ -677,42 +673,39 @@ bool StateAttackMove::FindRetaliationEnemy()
 	}
 }
 
-
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Desc.     : if we were blocked we will find an alternate enemy
 // Result    : return true if we found an enemy
 // Author    : dswinerd
 //
-bool StateAttackMove::FindAlternateEnemy( )
-{	
+bool StateAttackMove::FindAlternateEnemy()
+{
 
 	//
 	EntityGroup unreachables;
-	AttackExt* pAttackExt = QIExt< AttackExt >( GetEntity() );
-	if ( pAttackExt )
+	AttackExt *pAttackExt = QIExt<AttackExt>(GetEntity());
+	if (pAttackExt)
 	{
 		const long currentTime = ModObj::i()->GetWorld()->GetGameTicks();
-		pAttackExt->GetUnreachableMemory().GetMemories( unreachables, currentTime - k_UnreachableMemoryLength );
+		pAttackExt->GetUnreachableMemory().GetMemories(unreachables, currentTime - k_UnreachableMemoryLength);
 	}
 
-	FindClosestDetectionFilter filter
-	(
-		GetEntity(),
-		GetEntity()->GetOwner(),
-		&unreachables,
-		NULL
-	);
+	FindClosestDetectionFilter filter(
+			GetEntity(),
+			GetEntity()->GetOwner(),
+			&unreachables,
+			NULL);
 
 	// find closest enemy
 	EntityGroup tempGroup;
-	ModObj::i()->GetWorld()->FindClosest( tempGroup, filter, 1, GetEntity()->GetPosition(), pAttackExt->GetAttackSearchRadius(), GetEntity() );
+	ModObj::i()->GetWorld()->FindClosest(tempGroup, filter, 1, GetEntity()->GetPosition(), pAttackExt->GetAttackSearchRadius(), GetEntity());
 
-	Entity* pClosestCreature = tempGroup.front();
+	Entity *pClosestCreature = tempGroup.front();
 
-	if ( pClosestCreature )
+	if (pClosestCreature)
 	{
 		// is this unit closer than
-		m_Targets.push_back( pClosestCreature );
+		m_Targets.push_back(pClosestCreature);
 		return true;
 	}
 

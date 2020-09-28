@@ -1,13 +1,13 @@
 /////////////////////////////////////////////////////////////////////
 // File    : CostExtInfo.cpp
-// Desc    : 
+// Desc    :
 // Created : Monday, March 19, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
-#include "pch.h" 
-#include "CostExtInfo.h" 
+#include "pch.h"
+#include "CostExtInfo.h"
 
 // empty

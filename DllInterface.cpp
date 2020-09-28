@@ -1,41 +1,41 @@
 /////////////////////////////////////////////////////////////////////
 //	File	: DLLInterface
-//	Desc.	: 
+//	Desc.	:
 //		17.Nov.00 (c) Relic Entertainment Inc.
 //
 
 #include "pch.h"
 
-#include "RDNDll.h" 
+#include "RDNDll.h"
 
 #define WIN32_LEAN_AND_MEAN
 #define STRICT
 
-	#include <windows.h>
+#include <windows.h>
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	: Entry point for the ModRDN DLL
-//	Result	: 
-//	Param.	: 
-//	Author	: 
+//	Result	:
+//	Param.	:
+//	Author	:
 //
-BOOL WINAPI DllMain( HMODULE h, ULONG reason, LPVOID )
+BOOL WINAPI DllMain(HMODULE h, ULONG reason, LPVOID)
 {
-    switch( reason )
-    {
-        case DLL_PROCESS_ATTACH:
-			//
-			DisableThreadLibraryCalls( h );
+	switch (reason)
+	{
+	case DLL_PROCESS_ATTACH:
+		//
+		DisableThreadLibraryCalls(h);
 
-			//
-			RDNDllInterfaceInitialize();
-			break;
+		//
+		RDNDllInterfaceInitialize();
+		break;
 
-        case DLL_PROCESS_DETACH:
-			// 
-			RDNDllInterfaceShutdown();
-            break;
-    }
+	case DLL_PROCESS_DETACH:
+		//
+		RDNDllInterfaceShutdown();
+		break;
+	}
 
-    return true;
+	return true;
 }

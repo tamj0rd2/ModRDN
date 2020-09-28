@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNHUD.h
-// Desc    : 
+// Desc    :
 // Created : Friday, February 16, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -39,91 +39,88 @@ namespace Plat
 	struct InputEvent;
 };
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // RDNHUD
 
 class RDNHUD : public ModUIEvent, public ModSimVis
 {
-// construction
-private:				
-	 RDNHUD();
+	// construction
+private:
+	RDNHUD();
 	~RDNHUD();
 
 public:
 	// singleton
-	static RDNHUD*	i();
-	static bool			IsInitialized();
+	static RDNHUD *i();
+	static bool IsInitialized();
 
-	static void			Initialize
-							(
-							const RDNPlayer*	localplayer,
-							RTSHud*				hud,
-							CommandInterface*	command,
-							SelectionInterface*	selection,
-							CameraInterface*	camera,
-							UIInterface*		ui,
-							SoundInterface*		sound,
-							FXInterface*	    fx,
-							MessageInterface*	message
-							);
-	static void			Shutdown();
+	static void Initialize(
+			const RDNPlayer *localplayer,
+			RTSHud *hud,
+			CommandInterface *command,
+			SelectionInterface *selection,
+			CameraInterface *camera,
+			UIInterface *ui,
+			SoundInterface *sound,
+			FXInterface *fx,
+			MessageInterface *message);
+	static void Shutdown();
 
-// interface
+	// interface
 public:
-
 	//
-	void			OnEntityCreate( const Entity* );
+	void OnEntityCreate(const Entity *);
 
 	// call this every frame
-	void			Update( float elapsedSeconds);
+	void Update(float elapsedSeconds);
 
 	// call this to process input
-		// returns false if the event should be passed on
-	bool			Input( const Plat::InputEvent &ie );
+	// returns false if the event should be passed on
+	bool Input(const Plat::InputEvent &ie);
 
 	// name of cursor to display
-	const char*		GetCursor( const Entity* );
+	const char *GetCursor(const Entity *);
 
 	// default actions
-	void			DoCommand( const EntityGroup& );
-	void			DoCommand( const Vec3f*, unsigned long num );
+	void DoCommand(const EntityGroup &);
+	void DoCommand(const Vec3f *, unsigned long num);
 
 	// retrieve the RDN taskbar
-	RDNTaskbar*		GetTaskbar();
+	RDNTaskbar *GetTaskbar();
 
 	// retrieve the event cue system
-	RDNEventCue*	GetEventCue();
+	RDNEventCue *GetEventCue();
 
 	// retrieve the ghost system
-	RDNGhost*		GetGhost();
+	RDNGhost *GetGhost();
 
-	void			UIPause( bool bPause );
+	void UIPause(bool bPause);
 
-	void			ShowModOptions();
+	void ShowModOptions();
 
-// inherited -- ModUIEvent
+	// inherited -- ModUIEvent
 public:
-	virtual void OnHostMigrated ( unsigned long idplayer );
-	virtual void OnPlayerDrops  ( unsigned long idplayer );
-	virtual void OnCinematicMode( bool bCinematic );
-	virtual void OnShowTeamColour( bool bShow );
-	virtual void OnResetSM		();
-	virtual void OnCharacterTalk( unsigned long entityID, bool bTalk );
+	virtual void OnHostMigrated(unsigned long idplayer);
+	virtual void OnPlayerDrops(unsigned long idplayer);
+	virtual void OnCinematicMode(bool bCinematic);
+	virtual void OnShowTeamColour(bool bShow);
+	virtual void OnResetSM();
+	virtual void OnCharacterTalk(unsigned long entityID, bool bTalk);
 
-// inherited -- ModSimVis
+	// inherited -- ModSimVis
 public:
-	virtual void EntityVisUpdate( const Entity* , const Vec3f& interpPos, bool bSelected );
-	virtual bool EntityVisible( const Entity* e ) const;
+	virtual void EntityVisUpdate(const Entity *, const Vec3f &interpPos, bool bSelected);
+	virtual bool EntityVisible(const Entity *e) const;
 	virtual void Draw();
-	virtual const Array2D< unsigned long >* GetFOWInfo( unsigned long& visiblemask, unsigned long& exploredmask );
-	
-// fields
+	virtual const Array2D<unsigned long> *GetFOWInfo(unsigned long &visiblemask, unsigned long &exploredmask);
+
+	// fields
 private:
 	class Data;
-	Data* m_pimpl;
+	Data *m_pimpl;
 
-// copy -- do not define
+	// copy -- do not define
 private:
-	RDNHUD( const RDNHUD& );
-	RDNHUD& operator= ( const RDNHUD& );
+	RDNHUD(const RDNHUD &);
+	RDNHUD &operator=(const RDNHUD &);
 };

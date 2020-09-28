@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNEBPs.h
-// Desc    : 
+// Desc    :
 // Created : Thursday, March 08, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -12,16 +12,16 @@
 // forward declaration
 class ControllerBlueprint;
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
 class RDNEBP
 {
 public:
 	struct EBPName
 	{
-		const char*		folder;
-		const char*		file;
+		const char *folder;
+		const char *file;
 	};
 
 	static const EBPName HQ;
@@ -32,5 +32,5 @@ public:
 
 	static void Preload();
 
-	static const ControllerBlueprint* Get( const EBPName& );
+	static const ControllerBlueprint *Get(const EBPName &);
 };

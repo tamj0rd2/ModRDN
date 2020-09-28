@@ -1,23 +1,23 @@
 /////////////////////////////////////////////////////////////////////
 // File    : Modifier.h
-// Desc    : 
+// Desc    :
 // Created : Wednesday, June 27, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
 #pragma once
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // The order of this list is VERY important for the savegame.
 // Make sure to not to modify this
 
 enum ModifierType
 {
-	MID_Begin				= 1,
+	MID_Begin = 1,
 
-	MID_Frenzy				= 1,
+	MID_Frenzy = 1,
 	MID_Leap,
 	MID_Charge,
 	MID_Plague,

@@ -1,13 +1,13 @@
 /////////////////////////////////////////////////////////////////////
 // File    : GameEventDefs.cpp
-// Desc    : 
+// Desc    :
 // Created : Tuesday, June 26, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
-#include "pch.h" 
-#include "GameEventDefs.h" 
+#include "pch.h"
+#include "GameEventDefs.h"
 
 // empty

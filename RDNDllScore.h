@@ -1,17 +1,17 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNDllScore.h
-// Desc    : 
+// Desc    :
 // Created : Sunday, August 26, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
 // forward declaration
 class DLLScoreInterface;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // SigmaDllScore
 
-DLLScoreInterface*	RDNDllScoreCreate ();
-void				RDNDllScoreDestroy( DLLScoreInterface* );
+DLLScoreInterface *RDNDllScoreCreate();
+void RDNDllScoreDestroy(DLLScoreInterface *);

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : GuyController.h
-// Desc    : 
-// Created : 
-// Author  : 
-// 
+// Desc    :
+// Created :
+// Author  :
+//
 // (c) 2003 Relic Entertainment Inc.
 //
 
@@ -35,7 +35,7 @@
 #include "../ExtInfo/UIExtInfo.h"
 
 #include "../UnitConversion.h"
-#include "../RDNWorld.h"		// for k_SimStepsPerSecond
+#include "../RDNWorld.h" // for k_SimStepsPerSecond
 
 // forward declarations
 class Entity;
@@ -48,97 +48,90 @@ class Vec3f;
 ///////////////////////////////////////////////////////////////////////////////
 // GuyController
 
-class GuyController : 
-	private HealthExt,
-	private ModifierExt,
-	private MovingExt,
-	private SightExt,
-	private AttackExt,
-	public ModController
+class GuyController : private HealthExt,
+											private ModifierExt,
+											private MovingExt,
+											private SightExt,
+											private AttackExt,
+											public ModController
 {
-// types
+	// types
 public:
-	class StaticInfo : 
-		private MovingExtInfo,
-		private AttackExtInfo,
-		private HealthExtInfo,
-		private SightExtInfo,
-		private CostExtInfo,
-		private UIExtInfo,
-		public ModStaticInfo
+	class StaticInfo : private MovingExtInfo,
+										 private AttackExtInfo,
+										 private HealthExtInfo,
+										 private SightExtInfo,
+										 private CostExtInfo,
+										 private UIExtInfo,
+										 public ModStaticInfo
 	{
 	public:
-		StaticInfo( const ControllerBlueprint* );
+		StaticInfo(const ControllerBlueprint *);
 
 	public:
-		virtual const ModStaticInfo::ExtInfo* QInfo( unsigned char id ) const;
+		virtual const ModStaticInfo::ExtInfo *QInfo(unsigned char id) const;
 	};
 
-// construction
+	// construction
 public:
-	GuyController( Entity *pEntity, const ECStaticInfo* );
+	GuyController(Entity *pEntity, const ECStaticInfo *);
 	virtual ~GuyController();
 
-// inherited -- EntityController
+	// inherited -- EntityController
 public:
+	virtual bool Update(const EntityCommand *currentCommand);
 
-	virtual bool					Update ( const EntityCommand* currentCommand );
+	virtual void Execute();
 
-	virtual void					Execute();
+	virtual Extension *QI(unsigned char InterfaceID);
 
-	virtual Extension*				QI( unsigned char InterfaceID );
+	virtual State *QIActiveState(unsigned char StateID);
 
-	virtual State*					QIActiveState( unsigned char StateID );
-
-// inherited -- ModController
+	// inherited -- ModController
 private:
+	virtual Extension *QIAll(unsigned char);
 
-	virtual Extension*				QIAll( unsigned char );
+	virtual State *QIStateAll(unsigned char StateID);
 
-	virtual State*					QIStateAll( unsigned char StateID );
+	virtual void SetActiveState(unsigned char StateID);
 
-	virtual void					SetActiveState( unsigned char StateID );
-
-// Save and Load functions
+	// Save and Load functions
 public:
+	virtual void Save(BiFF &) const;
+	virtual void Load(IFF &);
 
-	virtual void Save( BiFF& ) const;
-	virtual void Load( IFF& );
-
-// Data
+	// Data
 private:
-
 	// State stuff for Guy.
-	State*					m_CurrentState;
+	State *m_CurrentState;
 
-	StateIdle				m_stateidle;
-	StateMove				m_statemove;
-	StateAttack				m_stateattack;
-	StateDead				m_statedead;
-	StateAttackMove			m_stateattackmove;
-	StateGroupMove			m_stategroupmove;
-	StatePause				m_statepause;
+	StateIdle m_stateidle;
+	StateMove m_statemove;
+	StateAttack m_stateattack;
+	StateDead m_statedead;
+	StateAttackMove m_stateattackmove;
+	StateGroupMove m_stategroupmove;
+	StatePause m_statepause;
 
-	CommandProcessor		m_commandproc;
+	CommandProcessor m_commandproc;
 
-	bool					m_bFirstUpdate;
+	bool m_bFirstUpdate;
 
-// Chunk Handlers
+	// Chunk Handlers
 private:
+	static unsigned long HandleGYEC(IFF &, ChunkNode *, void *, void *);
 
-	static unsigned long HandleGYEC( IFF&, ChunkNode*, void*, void* );
-
-// inherited -- Extension
+	// inherited -- Extension
 private:
-	virtual ModController* GetSelf();
+	virtual ModController *GetSelf();
 
-// inherited -- AttackExt
+	// inherited -- AttackExt
 private:
-	virtual void	OnDoDamageTo( float damagePerHit, float damageBonus, const AttackPackage& attack, Entity* pTarget );
-	virtual void	OnDoTriggeredAttack( const AttackPackage& attack, Entity* pTarget );
+	virtual void OnDoDamageTo(float damagePerHit, float damageBonus, const AttackPackage &attack, Entity *pTarget);
+	virtual void OnDoTriggeredAttack(const AttackPackage &attack, Entity *pTarget);
 
-// inherited -- HealthExt
+	// inherited -- HealthExt
 private:
-	virtual void	NotifyHealthGone();
-    virtual void    OnApplyDamage ( const float amountdone, const DamageType type );
+	virtual void NotifyHealthGone();
+	virtual void OnApplyDamage(const float amountdone, const DamageType type);
 };

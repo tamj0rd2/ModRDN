@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RenderHelpers.cpp
-// Desc    : 
+// Desc    :
 // Created : Tuesday, February 13, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -22,8 +22,8 @@
 
 #include <Util/DebugRender.h>
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
 void DrawCircleOnTerrain(const Vec3f &pos, const float radius)
 {
@@ -33,52 +33,48 @@ void DrawCircleOnTerrain(const Vec3f &pos, const float radius)
 	DrawCircleOnTerrain(pos, radius, Colour(255, 255, 255, 255), 16, 0);
 }
 
-
-void DrawCircleOnTerrain
-	(
-	const Vec3f &pos, 
-	const float radius, 
-	const Colour col,
-	const size_t divs, 
-	const bool // currently ignored. Was used in a previous version of this function.
-	)
+void DrawCircleOnTerrain(
+		const Vec3f &pos,
+		const float radius,
+		const Colour col,
+		const size_t divs,
+		const bool // currently ignored. Was used in a previous version of this function.
+)
 {
 	// Draws a circle on the terrain.
 	//	Shelby's standard value for "divs" was 32.
 
 	// Get the terrain pointer.
-	const TerrainHMBase *pTer = ModObj::i()->GetWorld()->GetTerrain(); 
-
+	const TerrainHMBase *pTer = ModObj::i()->GetWorld()->GetTerrain();
 
 	// Draw the circle as a series of lines around the circumference.
 	Vec3f vstart, v1, v2;
 
 	float theta = (TWOPI);
-	vstart.x = pos.x + radius*cosf(theta);
-	vstart.z = pos.z + radius*sinf(theta);
-	vstart.y = pTer->GetSurfaceHeight(vstart.x, vstart.z)+0.3f;
+	vstart.x = pos.x + radius * cosf(theta);
+	vstart.z = pos.z + radius * sinf(theta);
+	vstart.y = pTer->GetSurfaceHeight(vstart.x, vstart.z) + 0.3f;
 
 	v1 = vstart;
 
-	for(size_t i=1; i<divs; ++i)
+	for (size_t i = 1; i < divs; ++i)
 	{
-		float theta = (TWOPI)*(divs-i)/divs;
-		v2.x = pos.x + radius*cosf(theta);
-		v2.z = pos.z + radius*sinf(theta);
-		v2.y = pTer->GetSurfaceHeight(v2.x, v2.z)+0.3f;
+		float theta = (TWOPI) * (divs - i) / divs;
+		v2.x = pos.x + radius * cosf(theta);
+		v2.z = pos.z + radius * sinf(theta);
+		v2.y = pTer->GetSurfaceHeight(v2.x, v2.z) + 0.3f;
 
-		DebugRender::Draw(DebugRender::Line(v1,v2,col), "TerrainLine");
+		DebugRender::Draw(DebugRender::Line(v1, v2, col), "TerrainLine");
 
 		v1 = v2;
 	}
-	
-	DebugRender::Draw(DebugRender::Line(v2,vstart,col), "TerrainLine");
-}
 
+	DebugRender::Draw(DebugRender::Line(v2, vstart, col), "TerrainLine");
+}
 
 void DrawRectOnTerrain(const Vec3f &pos, const Vec2f &extents, const float rads)
 {
-	DrawRectOnTerrain(pos, extents, rads, Colour(255,255,255,255));
+	DrawRectOnTerrain(pos, extents, rads, Colour(255, 255, 255, 255));
 }
 
 void DrawRectOnTerrain(const Vec3f &pos, const Vec2f &extents, const float rads, const Colour &col)
@@ -102,7 +98,7 @@ void DrawRectOnTerrain(const Vec3f &pos, const Vec2f &extents, const Matrix2f &r
 {
 	// Draw a rotated rectangle on the terrain.
 
-	DrawRectOnTerrain(pos, extents, rot, Colour(255,255,255,255));
+	DrawRectOnTerrain(pos, extents, rot, Colour(255, 255, 255, 255));
 }
 
 // SHOULD write a DrawRectOnTerrain that takes a OBB2f instead of all threat vars...
@@ -112,28 +108,25 @@ void DrawRectOnTerrain(const Vec3f &pos, const Vec2f &extents, const Matrix2f &r
 	// Draw a rotated rectangle on the terrain.
 
 	// Get the terrain pointer.
-	const TerrainHMBase *pTer = ModObj::i()->GetWorld()->GetTerrain(); 
+	const TerrainHMBase *pTer = ModObj::i()->GetWorld()->GetTerrain();
 
 	Vec2f vtemp = Vec2f(extents.x, extents.y) * rot + Vec2f(pos.x, pos.z);
-	Vec3f v1(vtemp.x, pTer->GetHeight(vtemp.x, vtemp.y)+0.2f, vtemp.y);
+	Vec3f v1(vtemp.x, pTer->GetHeight(vtemp.x, vtemp.y) + 0.2f, vtemp.y);
 
 	vtemp = Vec2f(extents.x, -extents.y) * rot + Vec2f(pos.x, pos.z);
-	Vec3f v2(vtemp.x, pTer->GetHeight(vtemp.x, vtemp.y)+0.2f, vtemp.y);
+	Vec3f v2(vtemp.x, pTer->GetHeight(vtemp.x, vtemp.y) + 0.2f, vtemp.y);
 
 	vtemp = Vec2f(-extents.x, -extents.y) * rot + Vec2f(pos.x, pos.z);
-	Vec3f v3(vtemp.x, pTer->GetHeight(vtemp.x, vtemp.y)+0.2f, vtemp.y);
+	Vec3f v3(vtemp.x, pTer->GetHeight(vtemp.x, vtemp.y) + 0.2f, vtemp.y);
 
 	vtemp = Vec2f(-extents.x, extents.y) * rot + Vec2f(pos.x, pos.z);
-	Vec3f v4(vtemp.x, pTer->GetHeight(vtemp.x, vtemp.y)+0.2f, vtemp.y);
+	Vec3f v4(vtemp.x, pTer->GetHeight(vtemp.x, vtemp.y) + 0.2f, vtemp.y);
 
-	DebugRender::Draw(DebugRender::Line(v1,v2,col), "TerrainLine");
-	DebugRender::Draw(DebugRender::Line(v2,v3,col), "TerrainLine");
-	DebugRender::Draw(DebugRender::Line(v3,v4,col), "TerrainLine");
-	DebugRender::Draw(DebugRender::Line(v4,v1,col), "TerrainLine");
+	DebugRender::Draw(DebugRender::Line(v1, v2, col), "TerrainLine");
+	DebugRender::Draw(DebugRender::Line(v2, v3, col), "TerrainLine");
+	DebugRender::Draw(DebugRender::Line(v3, v4, col), "TerrainLine");
+	DebugRender::Draw(DebugRender::Line(v4, v1, col), "TerrainLine");
 }
-
-
-
 
 /*
 void DrawRectOnTerrain(const TerrainHMBase *pTer, const Vec3f &pos, const float x, const float z, const float rads)
@@ -519,62 +512,60 @@ void TerrainLine::CreatePrimitives( void ) const
 
 */
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // debug terrain overlay stuff
 
-static std::vector<unsigned char>	s_grid;
-static std::vector<Colour>	s_palette;
+static std::vector<unsigned char> s_grid;
+static std::vector<Colour> s_palette;
 static int s_gridW = 0;
 static int s_gridH = 0;
-
 
 void DrawTerrainOverlayFill(size_t palIndex)
 {
 	// area
-	Vec3f tl( FLT_MIN, FLT_MIN, FLT_MIN );
-	Vec3f br( FLT_MAX, FLT_MAX, FLT_MAX );
+	Vec3f tl(FLT_MIN, FLT_MIN, FLT_MIN);
+	Vec3f br(FLT_MAX, FLT_MAX, FLT_MAX);
 
-	ModObj::i()->GetWorld()->ClampPointToWorld( tl );
-	ModObj::i()->GetWorld()->ClampPointToWorld( br );
+	ModObj::i()->GetWorld()->ClampPointToWorld(tl);
+	ModObj::i()->GetWorld()->ClampPointToWorld(br);
 
 	//
-	DrawTerrainOverlayRect( palIndex, Rect2f( tl.x, br.x, tl.z, br.z ) );
+	DrawTerrainOverlayRect(palIndex, Rect2f(tl.x, br.x, tl.z, br.z));
 
 	return;
 }
 
 bool DrawTerrainOverlayUpdate()
 {
-	if( s_grid.empty() || s_palette.empty() )
+	if (s_grid.empty() || s_palette.empty())
 		return false;
 
 	//
-	return ModObj::i()->GetTerrainOverlayInterface()->DrawGrid
-		(
+	return ModObj::i()->GetTerrainOverlayInterface()->DrawGrid(
 			&s_grid[0],
 			s_gridW,
 			s_gridH,
-			&s_palette[0], 
-			s_palette.size()
-		);
+			&s_palette[0],
+			s_palette.size());
 }
 
-void DrawTerrainOverlayPalette(size_t palIndex, const Colour& col)
+void DrawTerrainOverlayPalette(size_t palIndex, const Colour &col)
 {
 	// validate parm
-	if( palIndex > UCHAR_MAX )
+	if (palIndex > UCHAR_MAX)
 	{
-		dbBreak(); return;
+		dbBreak();
+		return;
 	}
 
 	// allocate palette
-	if( s_palette.empty() )
+	if (s_palette.empty())
 	{
-		s_palette.resize( UCHAR_MAX, Colour::BuildFrom( 1.0f, 1.0f, 1.0f, 0.0f ) );
+		s_palette.resize(UCHAR_MAX, Colour::BuildFrom(1.0f, 1.0f, 1.0f, 0.0f));
 	}
 
 	//
-	s_palette[ palIndex ] = col;
+	s_palette[palIndex] = col;
 
 	return;
 }
@@ -582,126 +573,124 @@ void DrawTerrainOverlayPalette(size_t palIndex, const Colour& col)
 static void CreateOverlay()
 {
 	// creates overlay based on world coords
-	const float islandW = ModObj::i()->GetWorld()->GetTerrain()->GetIslandWidth ();
+	const float islandW = ModObj::i()->GetWorld()->GetTerrain()->GetIslandWidth();
 	const float islandH = ModObj::i()->GetWorld()->GetTerrain()->GetIslandLength();
 
-	s_gridW = (int)(islandW*2.0f);
-	s_gridH = (int)(islandH*2.0f);
+	s_gridW = (int)(islandW * 2.0f);
+	s_gridH = (int)(islandH * 2.0f);
 
-	s_grid.resize( s_gridW * s_gridH, 0 );
+	s_grid.resize(s_gridW * s_gridH, 0);
 }
 
-void DrawTerrainOverlayRect(size_t palIndex, const Rect2f& area )
+void DrawTerrainOverlayRect(size_t palIndex, const Rect2f &area)
 {
 	// allocate grid
-	if( s_grid.empty() )
+	if (s_grid.empty())
 	{
 		CreateOverlay();
 	}
 
 	//
-	Rect2f r( area );
+	Rect2f r(area);
 	r.Sort();
 
 	// offset
-	const float islandW = ModObj::i()->GetWorld()->GetTerrain()->GetIslandWidth ();
+	const float islandW = ModObj::i()->GetWorld()->GetTerrain()->GetIslandWidth();
 	const float islandH = ModObj::i()->GetWorld()->GetTerrain()->GetIslandLength();
 
-	r.xmin += ( islandW / 2.0f );
-	r.xmax += ( islandW / 2.0f );
-	r.ymin += ( islandH / 2.0f );
-	r.ymax += ( islandH / 2.0f );
+	r.xmin += (islandW / 2.0f);
+	r.xmax += (islandW / 2.0f);
+	r.ymin += (islandH / 2.0f);
+	r.ymax += (islandH / 2.0f);
 
 	// scale
-	r.xmax *= float( s_gridW ) / islandW;
-	r.ymax *= float( s_gridH ) / islandH;
+	r.xmax *= float(s_gridW) / islandW;
+	r.ymax *= float(s_gridH) / islandH;
 	// clamp area to world coord
-	if( r.xmin < 0.0f )
+	if (r.xmin < 0.0f)
 		r.xmin = 0.0f;
 
-	if( r.ymin < 0.0f )
+	if (r.ymin < 0.0f)
 		r.ymin = 0.0f;
 
-	if( r.xmax >= float( s_gridW ) )
-		r.xmax  = float( s_gridW ) - 1;
+	if (r.xmax >= float(s_gridW))
+		r.xmax = float(s_gridW) - 1;
 
-	if( r.ymax >= float( s_gridH ) )
-		r.ymax  = float( s_gridH ) - 1;
+	if (r.ymax >= float(s_gridH))
+		r.ymax = float(s_gridH) - 1;
 
-	// 
-	const Rect2i rInt
-		( 
-		int(floorf(r.xmin)), int(floorf(r.xmax)), 
-		int(floorf(r.ymin)), int(floorf(r.ymax)) 
-		);
+	//
+	const Rect2i rInt(
+			int(floorf(r.xmin)), int(floorf(r.xmax)),
+			int(floorf(r.ymin)), int(floorf(r.ymax)));
 
 	// fill area
-	for( int y = rInt.ymin; y != rInt.ymax; ++y )
+	for (int y = rInt.ymin; y != rInt.ymax; ++y)
 	{
-		unsigned char* p = &s_grid[0] + ( y * s_gridW ) + rInt.xmin;
-		std::fill( p, p + rInt.xmax - rInt.xmin, static_cast<unsigned char>( palIndex ) );
+		unsigned char *p = &s_grid[0] + (y * s_gridW) + rInt.xmin;
+		std::fill(p, p + rInt.xmax - rInt.xmin, static_cast<unsigned char>(palIndex));
 	}
 
 	return;
 }
 
-void DrawTerrainOverlayPixel( size_t palIndex, const long x, const long z )
+void DrawTerrainOverlayPixel(size_t palIndex, const long x, const long z)
 {
 	// allocate grid
-	if( s_grid.empty() )
+	if (s_grid.empty())
 	{
 		CreateOverlay();
 	}
 
-	dbAssert( x >= 0 && x < s_gridW );
-	dbAssert( z >= 0 && z < s_gridH );
-	dbAssert( palIndex <= UCHAR_MAX );
+	dbAssert(x >= 0 && x < s_gridW);
+	dbAssert(z >= 0 && z < s_gridH);
+	dbAssert(palIndex <= UCHAR_MAX);
 
-	s_grid[ x + z*s_gridW ] = static_cast<unsigned char>( palIndex );
+	s_grid[x + z * s_gridW] = static_cast<unsigned char>(palIndex);
 }
 
-void DrawTerrainOverlayPixel( size_t palIndex, const float worldx, const float worldz )
+void DrawTerrainOverlayPixel(size_t palIndex, const float worldx, const float worldz)
 {
 	// convert world xz to texture xz
-	const float islandW = ModObj::i()->GetWorld()->GetTerrain()->GetIslandWidth () * 0.5f;
+	const float islandW = ModObj::i()->GetWorld()->GetTerrain()->GetIslandWidth() * 0.5f;
 	const float islandH = ModObj::i()->GetWorld()->GetTerrain()->GetIslandLength() * 0.5f;
-	
-	long x = static_cast<long>((worldx+islandW)*2.0f);
-	long z = static_cast<long>((worldz+islandH)*2.0f);
 
-	DrawTerrainOverlayPixel( palIndex, x, z );
+	long x = static_cast<long>((worldx + islandW) * 2.0f);
+	long z = static_cast<long>((worldz + islandH) * 2.0f);
+
+	DrawTerrainOverlayPixel(palIndex, x, z);
 
 	return;
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Desc.	: draws a pixel on the terrain as if it were a given resolution.  
-//	Result	: 
-//	Param.	: 
+//	Desc.	: draws a pixel on the terrain as if it were a given resolution.
+//	Result	:
+//	Param.	:
 //	Author	: dswinerd
 //
-void DrawTerrainOverlayPixelAtResolution( size_t palIndex, const long x, const long z, const long resX, const long resZ )
+void DrawTerrainOverlayPixelAtResolution(size_t palIndex, const long x, const long z, const long resX, const long resZ)
 {
 	// allocate grid
-	if( s_grid.empty() )
+	if (s_grid.empty())
 	{
 		CreateOverlay();
 	}
 
-	dbAssert( x >= 0 && x < s_gridW );
-	dbAssert( z >= 0 && z < s_gridH );
-	dbAssert( palIndex <= UCHAR_MAX );
+	dbAssert(x >= 0 && x < s_gridW);
+	dbAssert(z >= 0 && z < s_gridH);
+	dbAssert(palIndex <= UCHAR_MAX);
 
 	int fillW = s_gridW / resX;
 	int fillH = s_gridH / resZ;
 
-	for (int h=0; h<fillH; h++)
+	for (int h = 0; h < fillH; h++)
 	{
-		int row = z*fillH + h;
-		for (int w=0; w<fillW; w++)
+		int row = z * fillH + h;
+		for (int w = 0; w < fillW; w++)
 		{
-			int col = x*fillW + w;
-			s_grid[ row*s_gridW + col ] =(unsigned char) palIndex;
+			int col = x * fillW + w;
+			s_grid[row * s_gridW + col] = (unsigned char)palIndex;
 		}
 	}
 }

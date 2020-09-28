@@ -1,46 +1,44 @@
 /////////////////////////////////////////////////////////////////////
 // File    : RDNUIOptions.h
-// Desc    : 
+// Desc    :
 // Created : Saturday, March 23, 2002
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2002 Relic Entertainment Inc.
 //
-#pragma once 
+#pragma once
 
 #include <Lua/LuaConfig.h>
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Forward Declarations
 
 class UIInterface;
 class CameraInterface;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // RDNUIOptions
 
 class RDNUIOptions
 {
-// types
+	// types
 public:
+public:
+	RDNUIOptions(UIInterface *pUIInterface, CameraInterface *pCameraInterface);
+	~RDNUIOptions();
 
+	// Interface
 public:
-	RDNUIOptions( UIInterface* pUIInterface, CameraInterface* pCameraInterface );
-	~RDNUIOptions( );
-
-// Interface
-public:
+	//
+	void Load();
+	void Save();
 
 	//
-	void	Load( );
-	void	Save( );
-
-	//
-	void	ApplyOptions( );
+	void ApplyOptions();
 
 	// Options Interface
 
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// Boolean Options Interface
 
 	enum BooleanOptions
@@ -61,10 +59,10 @@ public:
 		BO_Last
 	};
 
-	void	SetBoolOption( BooleanOptions Option, bool bValue );
-	bool	GetBoolOption( BooleanOptions Option ) const;
+	void SetBoolOption(BooleanOptions Option, bool bValue);
+	bool GetBoolOption(BooleanOptions Option) const;
 
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// Boolean Options Interface
 
 	enum FloatOptions
@@ -78,19 +76,17 @@ public:
 		FO_Last
 	};
 
-	void	SetFloatOption( FloatOptions Option, float value );
-	float	GetFloatOption( FloatOptions Option ) const;
+	void SetFloatOption(FloatOptions Option, float value);
+	float GetFloatOption(FloatOptions Option) const;
 
-// Implementation
+	// Implementation
 private:
-
-// Data Members
+	// Data Members
 private:
-
 	// the LuaConfig object is mutable becase the Get Functions are Non-Const, they modify the Lua State
-	mutable LuaConfig			m_LuaConfig;
+	mutable LuaConfig m_LuaConfig;
 
 	// Weak Pointers to Interfaces
-	UIInterface*		m_pUIInterface;
-	CameraInterface*	m_pCameraInterface;
+	UIInterface *m_pUIInterface;
+	CameraInterface *m_pCameraInterface;
 };

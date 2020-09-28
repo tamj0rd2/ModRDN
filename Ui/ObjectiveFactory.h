@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : ObjectiveFactory.h
-// Desc    : 
+// Desc    :
 // Created : Friday, September 21, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -28,18 +28,18 @@ public:
 
 public:
 	// interface
-	Objective*					CreateObjective( int id );
-	Objective*					GetObjective( int id );
-	void						DeleteObjective( Objective* pObj );
-	void						GetAllObjectives( std::list<Objective*>& objectives );
+	Objective *CreateObjective(int id);
+	Objective *GetObjective(int id);
+	void DeleteObjective(Objective *pObj);
+	void GetAllObjectives(std::list<Objective *> &objectives);
 
 	// load and save objectives
-	void						Load( IFF& iff );
-	void						Save( IFF& iff );
+	void Load(IFF &iff);
+	void Save(IFF &iff);
 
-// fields
+	// fields
 private:
 	// pimple idiom
 	class Data;
-	Data* m_pimpl;
+	Data *m_pimpl;
 };

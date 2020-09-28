@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : DllInterface.h
-// Desc    : 
+// Desc    :
 // Created : November 17, 2000
 // Author  : Drew
-// 
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -11,10 +11,10 @@
 
 #pragma once
 
-///////////////////////////////////////////////////////////////////// 
-// 
+/////////////////////////////////////////////////////////////////////
+//
 
-void		RDNDllInterfaceInitialize();
-void		RDNDllInterfaceShutdown  ();
+void RDNDllInterfaceInitialize();
+void RDNDllInterfaceShutdown();
 
-const char* RDNDLLVersion();
+const char *RDNDLLVersion();

@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : SightExt.h
-// Desc    : 
+// Desc    :
 // Created : Thursday, June 28, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -19,70 +19,69 @@ class SightExtInfo;
 
 class SightExt : public Extension
 {
-// types
+	// types
 public:
 	enum
 	{
 		ExtensionID = EXTID_Sight,
 	};
 
-// interface
+	// interface
 public:
 	//
-	virtual float	GetSightRadius() const;
+	virtual float GetSightRadius() const;
 
-	bool			SameAsLastFOWPos( size_t cx, size_t cz ) const;
-	size_t			GetLastFOWXPos( ) const;
-	size_t			GetLastFOWZPos( ) const;
-	void			SetLastFOWPos( size_t cx, size_t cz );
+	bool SameAsLastFOWPos(size_t cx, size_t cz) const;
+	size_t GetLastFOWXPos() const;
+	size_t GetLastFOWZPos() const;
+	void SetLastFOWPos(size_t cx, size_t cz);
 
-	float			GetLastFOWRad() const;
-	void			SetLastFOWRad( const float );
+	float GetLastFOWRad() const;
+	void SetLastFOWRad(const float);
 
-	bool			GetInFOW() const;
-	void			SetInFOW( bool inFOW );
+	bool GetInFOW() const;
+	void SetInFOW(bool inFOW);
 
-// inherited interface: Extension
+	// inherited interface: Extension
 private:
-
-	virtual void SaveExt( BiFF& ) const;
-	virtual void LoadExt( IFF& );
+	virtual void SaveExt(BiFF &) const;
+	virtual void LoadExt(IFF &);
 
 	// Chunk Handlers
-	static unsigned long HandleESGT( IFF&, ChunkNode*, void*, void* );
+	static unsigned long HandleESGT(IFF &, ChunkNode *, void *, void *);
 
-// construction
+	// construction
 protected:
-	SightExt( const SightExtInfo* );
+	SightExt(const SightExtInfo *);
 
-// fields
+	// fields
 private:
-	float			m_sightRadius;
+	float m_sightRadius;
 
-	size_t			m_FOWPosX, m_FOWPosZ;
-	float			m_FOWRad;
-	bool			m_bInFOW;
+	size_t m_FOWPosX, m_FOWPosZ;
+	float m_FOWRad;
+	bool m_bInFOW;
 };
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Inline functions
 
-inline bool SightExt::SameAsLastFOWPos( size_t cx, size_t cz ) const
+inline bool SightExt::SameAsLastFOWPos(size_t cx, size_t cz) const
 {
-	return ( cx == m_FOWPosX && cz == m_FOWPosZ );
+	return (cx == m_FOWPosX && cz == m_FOWPosZ);
 }
 
-inline size_t SightExt::GetLastFOWXPos( ) const
+inline size_t SightExt::GetLastFOWXPos() const
 {
 	return m_FOWPosX;
 }
 
-inline size_t SightExt::GetLastFOWZPos( ) const
+inline size_t SightExt::GetLastFOWZPos() const
 {
 	return m_FOWPosZ;
 }
 
-inline void SightExt::SetLastFOWPos( size_t cx, size_t cz )
+inline void SightExt::SetLastFOWPos(size_t cx, size_t cz)
 {
 	m_FOWPosX = cx;
 	m_FOWPosZ = cz;
@@ -93,7 +92,7 @@ inline float SightExt::GetLastFOWRad() const
 	return m_FOWRad;
 }
 
-inline void SightExt::SetLastFOWRad( const float newRad )
+inline void SightExt::SetLastFOWRad(const float newRad)
 {
 	m_FOWRad = newRad;
 }
@@ -103,7 +102,7 @@ inline bool SightExt::GetInFOW() const
 	return m_bInFOW;
 }
 
-inline void SightExt::SetInFOW( bool inFOW )
+inline void SightExt::SetInFOW(bool inFOW)
 {
 	m_bInFOW = inFOW;
 }

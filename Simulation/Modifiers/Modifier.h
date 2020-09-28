@@ -1,37 +1,36 @@
 /////////////////////////////////////////////////////////////////////
 // File    : Modifier.h
-// Desc    : 
+// Desc    :
 // Created : Wednesday, June 27, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
 #pragma once
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Forward Declarations
 
 class ModController;
 class IFF;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // Modifier base class, pure virtual
 
 class Modifier
 {
-// types
+	// types
 public:
-
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// The order of this list is VERY important for the savegame.
 	// Make sure to not
 
 	enum ModifierType
 	{
-		MID_Begin				= 1,
+		MID_Begin = 1,
 
-		MID_Frenzy				= 1,
+		MID_Frenzy = 1,
 		MID_Leap,
 		MID_Charge,
 		MID_Plague,
@@ -54,28 +53,25 @@ public:
 		MID_Count,
 	};
 
-// overides for new and delete, all modifiers are allocated using a small pool
+	// overides for new and delete, all modifiers are allocated using a small pool
 public:
+	static void *operator new(size_t size);
+	static void operator delete(void *ptr, size_t size);
 
-	static void*	operator new	( size_t size );
-	static void 	operator delete	( void* ptr, size_t size );
-
-// interface
+	// interface
 public:
+	virtual ~Modifier();
 
-	virtual					~Modifier();
-
-	virtual ModifierType	GetModifierType( ) const = 0;
+	virtual ModifierType GetModifierType() const = 0;
 
 	// returns true when the modifier is finished it's stuff
-	virtual bool			Execute( ModController* ) = 0;
+	virtual bool Execute(ModController *) = 0;
 
 	// these functions are called each time a Modifier is activated or deactivated
-	virtual void			Init( ModController* ) = 0;
-	virtual void			Shut( ModController* ) = 0;
+	virtual void Init(ModController *) = 0;
+	virtual void Shut(ModController *) = 0;
 
 	// these functions are called each time a Modifier is activated or deactivated
-	virtual void			Save( IFF& ) const = 0;
-	virtual void			Load( IFF&, ModController* ) = 0;
-
+	virtual void Save(IFF &) const = 0;
+	virtual void Load(IFF &, ModController *) = 0;
 };
