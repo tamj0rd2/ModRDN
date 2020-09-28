@@ -3,10 +3,11 @@
     {
       "name": "Win32",
       "includePath": [
-        "${workspaceFolder}\\Pch\\**",
-        "${workspaceFolder}\\..\\Include\\**",
-        "${workspaceFolder}\\..\\Include\\stl\\**",
-        "${workspaceFolder}\\**"
+        "${workspaceFolder}/Pch/**",
+        "${workspaceFolder}/../Include/**",
+        "${workspaceFolder}/../Include/stl/**",
+        "${workspaceFolder}/**",
+        "D:/icdev/Microsoft_Visual_Studio_2002_64_fixed/Program Files/Microsoft Visual Studio .NET/Vc7/include"
       ],
       "defines": [
         "RELIC_PC",
@@ -21,9 +22,7 @@
       ],
       "intelliSenseMode": "msvc-x64",
       "cppStandard": "c++03",
-      "forcedInclude": [
-        "${workspaceFolder}\\..\\Obj\\Target\\ModRDN\\ModRDN.pch"
-      ]
+      "forcedInclude": ["${workspaceFolder}/../Obj/Target/ModRDN/ModRDN.pch"]
     }
   ],
   "version": 4
