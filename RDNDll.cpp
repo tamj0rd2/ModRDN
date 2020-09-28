@@ -609,6 +609,8 @@ namespace
 			{
 				wcscpy( m_name, L"Impossible Creatures" );
 			}
+
+			dbTracef("Hello world!");
 		}
 
 		~RDNDllInterface()
