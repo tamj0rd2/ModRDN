@@ -13,7 +13,7 @@ I'm having a mess around with the RockPaperScissors mod included with the Imposs
 - [Mod help](#mod-help)
 - [The fun coding bits](#the-fun-coding-bits)
   - [Using this code](#using-this-code)
-  - [Compiling via the commandline](#compiling-via-the-commandline)
+  - [Compiling conveniently from your host](#compiling-via-the-commandline)
 
 ## Getting started
 
@@ -85,16 +85,18 @@ If your mod is called `ModName`, you'd need these files
 
 ### Compiling via the commandline
 
-THe below steps need to be done inside your windows xp vm
+Here's a very nice little workflow to compile the code all from your host machine. There's just a tiny bit of setup
+first.
 
-1. CD into SDK/ModRDN
+1. Enable logging into the VM without a password:
+    1. open the group policy editor on the command line by typing `gpedit.msc`
+    2. open the key `Computer Configuration\Windows Settings\Security Settings\Local Policies\Security Options`
+    3. change the value of `Accounts: Limit local account use of blank passwords to console logon only` to `Disabled`.
+2. Allow logging into the VM without having to enter a password
+    1. Go to Start > Run
+    2. Type `control userpasswords2` and click ok
+    3. Untick `Users must enter a user name and password to use this computer`
+3. Add `VBoxManage.exe` to your host machine PATH. It is located in the VirtualBox installation folder
 
-`cd Z:\ModRDN && Z:` (In my case I've mounted the SDK folder to the Z drive)
-
-2. Initialise the visual studio command line prompt
-
-`%comspec% /k "C:\Program Files\Microsoft Visual Studio .NET\Common7\Tools\vsvars32.bat"`
-
-3. Build the solution in release mode
-
-`devenv RDNRelease.sln /build Release`
+All done! Now any time you want to build the code, you just need to run `./build.ps1` from powershell on
+your host machine, assuming you are already CD'd into this ModRDNDevelopment directory
