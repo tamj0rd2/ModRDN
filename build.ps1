@@ -1,8 +1,10 @@
-$getVmState = '& VBoxManage.exe showvminfo "windows xp" | Select-String -Pattern "State:" | Out-String'
+$vmName = "windows xp"
+$getVmState = "& VBoxManage.exe showvminfo '$vmName' | Select-String -Pattern 'State:' | Out-String"
+$guestBuildScriptLocation = "Z:\ModRDNDevelopment\build-guest-code.bat"
 
 function OnBuildComplete {
   Write-Host 'Pausing the vm' -ForegroundColor 'blue'
-  & 'D:\Program Files\Oracle\VirtualBox\VBoxManage.exe' controlvm "windows xp" pause
+  & VBoxManage.exe controlvm $vmName pause
   
   Write-Host 'Script complete!' -ForegroundColor 'green'
 }
@@ -12,23 +14,23 @@ $initialVmState = Invoke-Expression $getVmState
 
 if ($initialVmState.Contains('paused')) {
   Write-Host "Resuming the VM" -ForegroundColor 'blue'
-  & 'D:\Program Files\Oracle\VirtualBox\VBoxManage.exe' controlvm "windows xp" resume
+  & VBoxManage.exe controlvm $vmName resume
 }
 
 if ($(Invoke-Expression $getVmState).Contains('running')) {
   Write-Host "Trying to build the code..." -ForegroundColor 'blue'
-  VBoxManage.exe guestcontrol "windows xp" run -- "Z:\ModRDN\build-guest-code.bat"
+  VBoxManage.exe guestcontrol $vmName run -- $guestBuildScriptLocation
   OnBuildComplete
   exit 0
 }
 
 if ($initialVmState.Contains('powered off')) {
-  # disable password requirement: control userpasswords2 > untick checkbox
   Write-Host "Powering on the VM" -ForegroundColor 'blue'
-  & 'D:\Program Files\Oracle\VirtualBox\VBoxManage.exe' startvm "windows xp" --type headless
-  Write-Host "Going to connect to the VM and build the code. Be patient." -ForegroundColor 'blue'
+  & VBoxManage.exe startvm $vmName --type headless
+
+  Write-Host "Going to connect to the VM and build the code. This can take a minute or two because the VM is cold booting" -ForegroundColor 'blue'
   for ($attemptNo = 0; $attemptNo -lt 21; $attemptNo++) {
-    $output = & VBoxManage.exe guestcontrol "windows xp" run -- "Z:\ModRDN\build-guest-code.bat" 2>&1 | Out-String
+    $output = & VBoxManage.exe guestcontrol $vmName run -- $guestBuildScriptLocation 2>&1 | Out-String
   
     if (!$output.Contains('VBoxManage.exe: error')) {
       Write-Host $output
