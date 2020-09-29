@@ -85,8 +85,8 @@ If your mod is called `ModName`, you'd need these files
 
 ### Compiling via the commandline
 
-Here's a very nice little workflow to compile the code all from your host machine. There's just a tiny bit of setup
-first.
+Here's a very nice little workflow to compile the code all from your host machine. There's just a bit of
+setup that you need to do the very first time.
 
 1. Enable logging into the VM without a password:
     1. open the group policy editor on the command line by typing `gpedit.msc`
@@ -96,7 +96,15 @@ first.
     1. Go to Start > Run
     2. Type `control userpasswords2` and click ok
     3. Untick `Users must enter a user name and password to use this computer`
-3. Add `VBoxManage.exe` to your host machine PATH. It is located in the VirtualBox installation folder
+3. Add a permanent shared folder to the VM
+    1. Go to your VM's settings > Shared folders
+    2. Click the Add button
+    3. Set the folder path to <ICInstallationDirectory>/SDK
+    4. Tick `Auto-mount`
+    5. Set the Mount Point to `z:\`
+    6. Tick `Make Permanent`
+    7. Make sure that within the VM you are able to browse to `Z:\ModRDNDevelopment`
+4. Add `VBoxManage.exe` to your host machine PATH. It is located in the VirtualBox installation folder
 
 All done! Now any time you want to build the code, you just need to run `./build.ps1` from powershell on
 your host machine, assuming you are already CD'd into this ModRDNDevelopment directory
