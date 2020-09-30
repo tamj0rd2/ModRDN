@@ -1,15 +1,18 @@
 $vmName = "windows xp"
 $getVmState = "& VBoxManage.exe showvminfo '$vmName' | Select-String -Pattern 'State:' | Out-String"
 $guestBuildScriptLocation = "Z:\ModRDNDevelopment\build-guest-code.bat"
+$icInstallDirectory = "../.."
+$icSdkDirectory = "$icInstallDirectory/SDK"
 
 function OnBuildComplete {
   Write-Host 'Pausing the vm' -ForegroundColor 'blue'
   & VBoxManage.exe controlvm $vmName pause
   
-  Write-Host 'Script complete!' -ForegroundColor 'green'
+  del $icInstallDirectory/RDNMod.dll
+  mv $icSdkDirectory/Obj/bin/RDNMod.dll $icInstallDirectory/RDNMod.dll
+  Write-Host 'Mod installed!' -ForegroundColor 'green'
 }
 
-Write-Host "Connecting to VirtualBox..." -ForegroundColor 'blue'
 $initialVmState = Invoke-Expression $getVmState
 
 if ($initialVmState.Contains('paused')) {
@@ -24,8 +27,7 @@ if ($(Invoke-Expression $getVmState).Contains('running')) {
   exit 0
 }
 
-if ($initialVmState.Contains('powered off')) {
-  Write-Host "Powering on the VM" -ForegroundColor 'blue'
+if ($initialVmState.Contains('powered off') -or $initialVmState.Contains('aborted')) {
   & VBoxManage.exe startvm $vmName --type headless
 
   Write-Host "Going to connect to the VM and build the code. This can take a minute or two because the VM is cold booting" -ForegroundColor 'blue'
@@ -38,7 +40,7 @@ if ($initialVmState.Contains('powered off')) {
     }
   
     if ($attemptNo -eq 20) {
-      Write-Host "Problem start/connecting to the VM" -ForegroundColor 'red'
+      Write-Host "Problem starting/connecting to the VM" -ForegroundColor 'red'
       Write-Host $output -ForegroundColor 'red'
       exit 1
     }

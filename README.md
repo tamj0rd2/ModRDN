@@ -1,4 +1,4 @@
-# ModRDN
+# ModRDNDevelopment
 
 I'm having a mess around with the RockPaperScissors mod included with the Impossible Creatures SDK. I thought I'd document all the steps required to set up a development environment, compile and get the mod working in-game. This documentation is WIP
 
@@ -108,3 +108,12 @@ setup that you need to do the very first time.
 
 All done! Now any time you want to build the code, you just need to run `./build.ps1` from powershell on
 your host machine, assuming you are already CD'd into this ModRDNDevelopment directory
+
+
+## Glossary
+
+IC installation directory: The folder where IC is installed
+
+EBP: Entity blueprint
+
+Root: <ICInstallationDirectory>\data

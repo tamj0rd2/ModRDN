@@ -7,5 +7,9 @@
       "path": "..\\Include"
     }
   ],
-  "settings": {}
+  "settings": {
+    "triggerTaskOnSave.tasks": {
+      "build": ["*.h", "*.cpp"]
+    }
+  }
 }
