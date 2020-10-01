@@ -3,12 +3,17 @@ $getVmState = "& VBoxManage.exe showvminfo '$vmName' | Select-String -Pattern 'S
 $guestBuildScriptLocation = "Z:\ModRDNDevelopment\build-guest-code.bat"
 $icInstallDirectory = "../.."
 $icSdkDirectory = "$icInstallDirectory/SDK"
+$dllInstalledPath = "$icInstallDirectory/RDNMod.dll"
+$dllOutputPath = "$icSdkDirectory/Obj/bin/RDNMod.dll"
 
 function OnBuildComplete {
   Write-Host 'Pausing the vm' -ForegroundColor 'blue'
   & VBoxManage.exe controlvm $vmName pause
   
-  del $icInstallDirectory/RDNMod.dll
+  if (Test-Path $dllInstalledPath) {
+    Remove-Item $dllInstalledPath
+  }
+
   mv $icSdkDirectory/Obj/bin/RDNMod.dll $icInstallDirectory/RDNMod.dll
   Write-Host 'Mod installed!' -ForegroundColor 'green'
 }
