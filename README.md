@@ -109,6 +109,21 @@ setup that you need to do the very first time.
 All done! Now any time you want to build the code, you just need to run `./build.ps1` from powershell on
 your host machine, assuming you are already CD'd into this ModRDNDevelopment directory
 
+## Lessons learned
+
+### Playing maps other than test_map
+
+In the beginning, only test_map was playable using this mod. test_map is comprised of 2 HQs and some cashpiles.
+The HQ allows you to spawn Rock, Paper and Scissor units which use the henchmen model. Standing next to cashpiles gives
+you cash.
+
+Playing on other maps didn't seem to work. "Not enough labs" would be shown in warnings.log. Attempted solutions:
+
+- Creating a custom map with 2 HQs on it was successful. The map showed in game and could be played.
+- Creating a custom map with 2 labs on it was not successful. The game still complain about not having enough labs
+- The previous bullet point + changing the HQ ControllerType to 5 (which is the correct controller
+  type for the lab ebp) did not work. The map would not show up in the map selection dropdown list
+- Changing HQ (`RDNEBPs.cpp`) to point to structures\lab instead of structures\HQ worked :D
 
 ## Glossary
 

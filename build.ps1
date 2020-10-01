@@ -15,7 +15,7 @@ function OnBuildComplete {
   }
 
   mv $icSdkDirectory/Obj/bin/RDNMod.dll $icInstallDirectory/RDNMod.dll
-  Write-Host 'Mod installed!' -ForegroundColor 'green'
+  Write-Host "Mod installed to $dllInstalledPath" -ForegroundColor 'green'
 }
 
 $initialVmState = Invoke-Expression $getVmState
