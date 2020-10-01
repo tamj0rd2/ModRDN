@@ -123,12 +123,27 @@ Playing on other maps didn't seem to work. "Not enough labs" would be shown in w
 - Creating a custom map with 2 labs on it was not successful. The game still complain about not having enough labs
 - The previous bullet point + changing the HQ ControllerType to 5 (which is the correct controller
   type for the lab ebp) did not work. The map would not show up in the map selection dropdown list
-- Changing HQ (`RDNEBPs.cpp`) to point to structures\lab instead of structures\HQ worked :D
+- The previous bullet point + changing HQ (`RDNEBPs.cpp`) to point to structures\lab instead of structures\HQ worked :D
+
+And of course, the map will never load successfully unless all of the required EBPs are inside of
+RDNMod\Data\art\ebps\structures etc
+
+I went through a similar process with coal
+
+- added coal to the map
+- map would not show in selector
+- added ebps for coal to the mod
+- map showed but pwaited
+- changed cashpile controller type and set the correct EBP path - all good!
 
 ## Glossary
 
-IC installation directory: The folder where IC is installed
+ICInstallationDirectory: The folder where IC is installed
 
 EBP: Entity blueprint
 
+EC: Entity Controller
+
 Root: <ICInstallationDirectory>\data
+
+Ted: Object Editor

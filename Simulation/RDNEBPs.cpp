@@ -18,7 +18,7 @@
 // RDNEBP
 
 const RDNEBP::EBPName RDNEBP::HQ = {"structures", "lab"};
-const RDNEBP::EBPName RDNEBP::CashPile = {"structures", "cashpile"};
+const RDNEBP::EBPName RDNEBP::CashPile = {"nature", "coal_01"};
 const RDNEBP::EBPName RDNEBP::Rock = {"units", "rock"};
 const RDNEBP::EBPName RDNEBP::Paper = {"units", "paper"};
 const RDNEBP::EBPName RDNEBP::Scissor = {"units", "scissor"};
