@@ -5,9 +5,40 @@
     },
     {
       "path": "..\\Include"
+    },
+    {
+      "path": "..\\..\\RDNMod",
+      "name": "RDNMod Folder"
+    },
+    {
+      "path": "..\\..\\ExtractedEngine\\Data",
+      "name": "ExtractedEngine Data"
     }
   ],
   "settings": {
+    "files.exclude": {
+      "**/*.tga": true,
+      "**/*.rcf": true,
+      "**/*.spt": true,
+      "**/*.jpg": true,
+      "**/*.sgb": true,
+      "**/*.sga": true,
+      "**/*.sgm": true,
+      "**/*.dlg": true,
+      "**/*.trg": true,
+      "**/*.na": true,
+      "**/*.luc": true,
+      "**/*.bmp": true,
+      "**/*.scb": true,
+      "**/*.ebp": true,
+      "**/*.army": true,
+      "**/*.scr": true,
+      "**/*.lsc": true,
+      "**/*.pat": true,
+      "**/*.smp": true,
+      "**/*.wav": true,
+      "**/*.events": true
+    },
     "triggerTaskOnSave.tasks": {
       "build": ["*.h", "*.cpp"]
     }

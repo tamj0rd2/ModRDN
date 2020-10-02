@@ -267,7 +267,6 @@ void LuaModControllerLib::Initialize(LuaConfig *lc)
 
 	BINDCONSTANT(Guy_EC);
 	BINDCONSTANT(HQ_EC);
-	BINDCONSTANT(CashPile_EC);
 
 #undef BINDCONSTANT
 }

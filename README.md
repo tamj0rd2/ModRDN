@@ -73,6 +73,14 @@ If your mod is called `ModName`, you'd need these files
   
 #### The content of <ModName.module>
 
+#### How files for the game get searched for:
+
+- The mod's Data folder
+- 1st referenced sga
+- 2nd referenced sga
+- 3rd and so on...
+- Engine sga
+
 ## The fun coding bits
 
 ### Using this code

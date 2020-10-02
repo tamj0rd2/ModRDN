@@ -25,7 +25,6 @@ public:
 	};
 
 	static const EBPName HQ;
-	static const EBPName CashPile;
 	static const EBPName Rock;
 	static const EBPName Paper;
 	static const EBPName Scissor;

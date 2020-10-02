@@ -71,20 +71,16 @@ static void LoadInfo(RDNTuning::HQInfo &inf, LuaConfig &lc)
 {
 	lc.PushTableEx("HQ");
 
+	/** 
+	 * LCGetValW - As far as I can tell, the interface for this is:
+	 * lc
+	 * <filename>: <podname>,
+	 * RDNM
+	 * <propertyname>
+	 * default value
+	 * value container
+	 **/
 	LCGetValW(lc, "tuning: hq,", 'RDNM', "health", 1.0f, inf.healthMax);
-
-	lc.PopTable();
-}
-
-/////////////////////////////////////////////////////////////////////
-//
-
-static void LoadInfo(RDNTuning::CashPileInfo &inf, LuaConfig &lc)
-{
-	lc.PushTableEx("CashPile");
-
-	LCGetValW(lc, "tuning: cashpile,", 'RDNM', "cashRate", 1.0f, inf.cashRate);
-	LCGetValW(lc, "tuning: cashpile,", 'RDNM', "cashRadius", 1.0f, inf.cashRadius);
 
 	lc.PopTable();
 }
@@ -223,7 +219,6 @@ void RDNTuning::LoadFrom(const char *file)
 	LOADINFO(PlayerInfo)
 	LOADINFO(RaceInfo)
 	LOADINFO(HQInfo)
-	LOADINFO(CashPileInfo)
 	LOADINFO(EffectInfo)
 	LOADINFO(FogOfWarInfo)
 
@@ -250,7 +245,6 @@ unsigned long RDNTuning::GetSyncToken() const
 	ADDTUNINGSTRUCT(PlayerInfo)
 	ADDTUNINGSTRUCT(RaceInfo)
 	ADDTUNINGSTRUCT(HQInfo)
-	ADDTUNINGSTRUCT(CashPileInfo)
 	//	ADDTUNINGSTRUCT( EffectInfo )
 	ADDTUNINGSTRUCT(FogOfWarInfo)
 

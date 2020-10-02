@@ -1000,11 +1000,7 @@ UnitSpawnerExt::RallyType UnitSpawnerExt::ClassifyRallyEntity(const Entity *pTar
 	}
 
 	//
-	if (pTarget->GetControllerBP()->GetControllerType() == CashPile_EC)
-	{
-		return RALLY_ResourceGather;
-	}
-	else if (pTarget->GetControllerBP()->GetControllerType() == Guy_EC)
+	if (pTarget->GetControllerBP()->GetControllerType() == Guy_EC)
 	{
 		return RALLY_Creature;
 	}

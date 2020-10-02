@@ -69,14 +69,6 @@ public:
 	};
 
 	/////////////////////////////////////////////////////////////////////
-	// CashPile
-	struct CashPileInfo
-	{
-		float cashRate;
-		float cashRadius;
-	};
-
-	/////////////////////////////////////////////////////////////////////
 	// Effect Information
 	struct EffectInfo
 	{
@@ -113,7 +105,6 @@ private:                                    \
 	ADDTUNINGSET(PlayerInfo);
 	ADDTUNINGSET(RaceInfo)
 	ADDTUNINGSET(HQInfo)
-	ADDTUNINGSET(CashPileInfo)
 	ADDTUNINGSET(EffectInfo)
 	ADDTUNINGSET(FogOfWarInfo)
 

@@ -1,12 +1,3 @@
-/////////////////////////////////////////////////////////////////////
-// File    : RDNEBPs.cpp
-// Desc    :
-// Created : Thursday, March 08, 2001
-// Author  :
-//
-// (c) 2001 Relic Entertainment Inc.
-//
-
 #include "pch.h"
 #include "RDNEBPs.h"
 
@@ -14,11 +5,14 @@
 
 #include <EngineAPI/EntityFactory.h>
 
-/////////////////////////////////////////////////////////////////////
-// RDNEBP
-
+/**
+ * == RDNEBP ==
+ * As far as I can tell, we only preload these specific EBPs because they are
+ * used directly in our code. i.e for conditions about whether there are enough
+ * labs etc. I imagine Rock, Paper and Scissor are here because they need
+ * specific RDN controllers applied to them
+ * */
 const RDNEBP::EBPName RDNEBP::HQ = {"structures", "lab"};
-const RDNEBP::EBPName RDNEBP::CashPile = {"structures", "cashpile"};
 const RDNEBP::EBPName RDNEBP::Rock = {"units", "rock"};
 const RDNEBP::EBPName RDNEBP::Paper = {"units", "paper"};
 const RDNEBP::EBPName RDNEBP::Scissor = {"units", "scissor"};
@@ -29,7 +23,6 @@ void RDNEBP::Preload()
 	ModObj::i()->GetEntityFactory()->GetControllerBP(t.folder, t.file);
 
 	LOAD(HQ);
-	LOAD(CashPile);
 	LOAD(Rock);
 	LOAD(Paper);
 	LOAD(Scissor);

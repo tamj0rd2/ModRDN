@@ -115,8 +115,6 @@ public:
 	void SaveStaticData(IFF &, const ImpassEditArray *);
 	void LoadStaticData(IFF &);
 
-	const EntityGroup &GetCashPileList() const;
-
 	long GetPlayerIDWon() const;
 
 	// Chunk Handlers

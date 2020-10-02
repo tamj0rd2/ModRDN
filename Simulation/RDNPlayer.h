@@ -227,8 +227,6 @@ private:
 private:
 	void CmdCheatCash(Player *sender, unsigned long);
 	void CmdCheatKillSelf(Player *sender);
-
-	float CalcRateForAllCashPilePerTick() const;
 };
 
 inline const PlayerFOW *RDNPlayer::GetFogOfWar() const

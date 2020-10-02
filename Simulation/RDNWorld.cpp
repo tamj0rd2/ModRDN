@@ -95,8 +95,6 @@ public:
 	// statgraph & performance
 	PerfBlock m_timingState;
 
-	EntityGroup m_cashPileList;
-
 	long m_playerIDWon; // the player id of the player who won. -1 for no one.
 											// assumes only one player can win (no support for teams)
 
@@ -210,7 +208,6 @@ void RDNWorld::CreateWorld(SimEngineInterface *p, bool missionEd)
 //
 void RDNWorld::SimulatePre()
 {
-	//
 	dbAssert(m_pimpl->m_simulated == 0);
 
 	// flag
@@ -232,19 +229,6 @@ void RDNWorld::SimulatePre()
 
 	// fow
 	UpdateFoW();
-
-	//	Collect all the cash piles
-	m_pimpl->m_cashPileList.clear();
-	int nEntities = GetNumEntities();
-	const EntityList &entities = GetEntities();
-	for (int i = 0; i < nEntities; ++i)
-	{
-		Entity *pEntity = entities[i];
-		if (pEntity->GetControllerBP()->GetControllerType() == CashPile_EC)
-		{
-			m_pimpl->m_cashPileList.push_back(pEntity);
-		}
-	}
 
 	if (!m_pimpl->m_missionEdFlag)
 	{
@@ -1060,11 +1044,6 @@ void RDNWorld::CumulateStateTimeEnd()
 	m_pimpl->m_timingState.Pause();
 
 	return;
-}
-
-const EntityGroup &RDNWorld::GetCashPileList() const
-{
-	return m_pimpl->m_cashPileList;
 }
 
 long RDNWorld::GetPlayerIDWon() const

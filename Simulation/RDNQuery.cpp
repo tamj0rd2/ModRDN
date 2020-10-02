@@ -301,7 +301,6 @@ namespace
 			{
 					{Guy_EC, 100},
 					{HQ_EC, 100},
-					{CashPile_EC, ControllerPriority::IGNORE_ME},
 	};
 } // namespace
 
