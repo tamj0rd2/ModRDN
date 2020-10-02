@@ -134,7 +134,7 @@ I went through a similar process with coal
 - map would not show in selector
 - added ebps for coal to the mod
 - map showed but pwaited
-- changed cashpile controller type and set the correct EBP path - all good!
+- increased MAX_EC ControllerType to 6. (it was prevoiusly 4, but the controller type for coal is 4. problems ocurred)
 
 ## Glossary
 

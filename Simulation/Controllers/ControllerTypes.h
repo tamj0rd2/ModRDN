@@ -12,7 +12,7 @@ enum ControllerType
 
 	Guy_EC = 1,
 	HQ_EC = 5,
-	CashPile_EC = 4,
+	CashPile_EC = 3,
 
 	MAX_EC = 6 // needs to be bigger than all the other values
 };
