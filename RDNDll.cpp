@@ -86,8 +86,16 @@ static void EntityCreate(const Entity *pEntity)
 	const EntityController *pEC = pEntity->GetController();
 
 	// Make sure entity has animator and controller blueprint
-	if (!pAnimator || !pEC)
+	if (!pEC)
+		dbTracef(">>>DEBUG missing controller blueprint for %s", pEntity->GetControllerBP()->GetFileName());
+
+	if (!pAnimator)
+		dbTracef(">>>DEBUG missing animator for %s", pEntity->GetControllerBP()->GetFileName());
+
+	if (!pEC || !pAnimator)
+	{
 		return;
+	}
 
 	// Set up the Selection Intersection method for this entity
 
@@ -274,6 +282,7 @@ namespace
 
 		virtual World *CreateNewWorld(bool bMissionEd)
 		{
+			dbTracef(">>>DEBUG creating a new world");
 			ModObj::i()->CreateWorld(bMissionEd);
 
 			// set random seed
@@ -288,6 +297,7 @@ namespace
 
 		virtual Player *CreateNewPlayer()
 		{
+			dbTracef(">>>DEBUG creating a new player");
 			return ModObj::i()->GetWorld()->CreateNewPlayer();
 		}
 
@@ -298,6 +308,7 @@ namespace
 
 		virtual unsigned long MapPlayerToSimulation(size_t playerIndex) const
 		{
+			dbTracef(">>>DEBUG mapping player to simulation");
 			return RDNDllSetup::Instance()->MapPlayerToSimulation(ModObj::i()->GetWorld(), playerIndex);
 		}
 
@@ -324,6 +335,7 @@ namespace
 
 		virtual bool IsScenarioSuccess(unsigned long idPlayer) const
 		{
+			dbTracef(">>>DEBUG checking if scenario is a success");
 			// check if game is over
 			if (ModObj::i()->GetWorld()->IsGameOver() == 0)
 				return false;
@@ -641,6 +653,7 @@ namespace
 
 		virtual bool IsScenarioCompatible(const char *modname) const
 		{
+			dbTracef(">>>DEBUG checking is scenario is compatible");
 			bool isCompatible = (strcmp("RDNMod", modname) == 0);
 
 			return isCompatible;
@@ -722,6 +735,7 @@ namespace
 
 		virtual DLLGameInterface *GameCreate(SimEngineInterface *sim)
 		{
+			dbTracef(">>>DEBUG creating a game");
 			dbAssert(m_init);
 			dbAssert(m_game == 0);
 			dbAssert(m_score == 0); // shouldn't create a game until score is released

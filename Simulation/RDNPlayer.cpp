@@ -149,10 +149,14 @@ void RDNPlayer::SetName(const wchar_t *name)
 //
 void RDNPlayer::AddEntity(Entity *e)
 {
+	dbTracef("Adding an entity");
+
 	// inherited
 	Player::AddEntity(e);
 
 	int ctype = e->GetControllerBP()->GetControllerType();
+
+	dbTracef("Type for that entity is %d", ctype);
 
 	// add this entity to this controller group
 	if (ctype < MAX_EC)

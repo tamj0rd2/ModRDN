@@ -671,6 +671,7 @@ int RDNSimProxy::ScissorEBP() const
 
 int RDNSimProxy::BuildingEBPFromType(int type)
 {
+	dbTracef(">>>DEBUG trying to get building EBP from type %d", type);
 	const RDNEBP::EBPName *ebp = 0;
 
 	switch (type)
@@ -694,6 +695,7 @@ int RDNSimProxy::BuildingEBPFromType(int type)
 
 int RDNSimProxy::TypeFromEBP(int ebpid)
 {
+	dbTracef("Getting a type from ebp with id %s", ebpid);
 	const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
 	const ControllerBlueprint *cbp = ef->GetControllerBP(ebpid);
 
