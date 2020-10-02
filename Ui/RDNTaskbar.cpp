@@ -446,7 +446,7 @@ static bool IsControllerTypeBuilding(unsigned long ctype)
 
 	switch (ctype)
 	{
-	case HQ_EC:
+	case Lab_EC:
 		r = true;
 		break;
 

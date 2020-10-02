@@ -855,7 +855,7 @@ void RDNUIProxy::SelectHQ()
 {
 	EntityGroup group;
 	CollectAll(m_pimpl->m_sim->GetPlayer(),
-						 ControllerMatchPred(HQ_EC),
+						 ControllerMatchPred(Lab_EC),
 						 group);
 	if (group.empty())
 		return;

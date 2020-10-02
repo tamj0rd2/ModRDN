@@ -284,7 +284,7 @@ void RDNWorld::Simulate()
 				RDNPlayer *pPlayer = static_cast<RDNPlayer *>(GetPlayerAt(i));
 				if (!pPlayer->IsPlayerDead())
 				{
-					const EntityGroup &eg = pPlayer->GetEntityGroup(HQ_EC);
+					const EntityGroup &eg = pPlayer->GetEntityGroup(Lab_EC);
 					if (eg.empty())
 					{
 						// no hq, so kill this player

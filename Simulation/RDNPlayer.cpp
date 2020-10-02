@@ -173,7 +173,7 @@ void RDNPlayer::AddEntity(Entity *e)
 
 	switch (ctype)
 	{
-	case HQ_EC:
+	case Lab_EC:
 		// save starting position
 		m_hqPosition = e->GetPosition();
 		break;
@@ -551,10 +551,10 @@ const Entity *RDNPlayer::GetHQEntity() const
 //
 Entity *RDNPlayer::GetHQEntity()
 {
-	if (m_groupController[HQ_EC].size() == 0)
+	if (m_groupController[Lab_EC].size() == 0)
 		return 0;
 
-	return *m_groupController[HQ_EC].begin();
+	return *m_groupController[Lab_EC].begin();
 }
 
 const Vec3f &RDNPlayer::GetStartingPosition() const

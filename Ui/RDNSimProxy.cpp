@@ -219,7 +219,7 @@ void RDNSimProxy::LuaSetup()
 	BINDCONSTANT(FC_TooManyUnit);
 	BINDCONSTANT(FC_Other);
 
-	BINDCONSTANT(HQ_EC);
+	BINDCONSTANT(Lab_EC);
 	BINDCONSTANT(Guy_EC);
 
 	BINDCONSTANT(ATTACKTYPE_Melee);
@@ -675,7 +675,7 @@ int RDNSimProxy::BuildingEBPFromType(int type)
 
 	switch (type)
 	{
-	case HQ_EC:
+	case Lab_EC:
 		ebp = &RDNEBP::HQ;
 		break;
 

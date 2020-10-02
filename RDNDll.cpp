@@ -63,7 +63,7 @@ static void RegisterControllers(SimEngineInterface *p)
 #define RC(name, type, classtype) \
 	pEntityFactory->RegisterController(name, type, new EntityFactory_ControllerCreator_Templ<classtype::StaticInfo, classtype>);
 
-	RC("HQ", HQ_EC, HQController);
+	RC("HQ", Lab_EC, HQController);
 	RC("Guy", Guy_EC, GuyController);
 
 #undef RC

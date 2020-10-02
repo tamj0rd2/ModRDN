@@ -11,7 +11,7 @@ enum ControllerType
 	NULL_EC = 0,
 
 	Guy_EC = 1,
-	HQ_EC = 5,
+	Lab_EC = 5,
 
 	MAX_EC = 6 // needs to be bigger than all the other values
 };

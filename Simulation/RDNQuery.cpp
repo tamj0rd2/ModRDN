@@ -300,7 +300,7 @@ namespace
 	ControllerPriority CONTROLLER_PRIORITY[] =
 			{
 					{Guy_EC, 100},
-					{HQ_EC, 100},
+					{Lab_EC, 100},
 	};
 } // namespace
 

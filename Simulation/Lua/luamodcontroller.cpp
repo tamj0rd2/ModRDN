@@ -266,7 +266,7 @@ void LuaModControllerLib::Initialize(LuaConfig *lc)
 	lc->SetNumber(#c, double(c))
 
 	BINDCONSTANT(Guy_EC);
-	BINDCONSTANT(HQ_EC);
+	BINDCONSTANT(Lab_EC);
 
 #undef BINDCONSTANT
 }
