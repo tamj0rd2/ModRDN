@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////
-// File    : GuyController.h
+// File    : HenchmenController.h
 // Desc    :
 // Created :
 // Author  :
@@ -46,14 +46,14 @@ class ChunkNode;
 class Vec3f;
 
 ///////////////////////////////////////////////////////////////////////////////
-// GuyController
+// HenchmenController
 
-class GuyController : private HealthExt,
-											private ModifierExt,
-											private MovingExt,
-											private SightExt,
-											private AttackExt,
-											public ModController
+class HenchmenController : private HealthExt,
+													 private ModifierExt,
+													 private MovingExt,
+													 private SightExt,
+													 private AttackExt,
+													 public ModController
 {
 	// types
 public:
@@ -74,8 +74,8 @@ public:
 
 	// construction
 public:
-	GuyController(Entity *pEntity, const ECStaticInfo *);
-	virtual ~GuyController();
+	HenchmenController(Entity *pEntity, const ECStaticInfo *);
+	virtual ~HenchmenController();
 
 	// inherited -- EntityController
 public:

@@ -220,7 +220,7 @@ void RDNSimProxy::LuaSetup()
 	BINDCONSTANT(FC_Other);
 
 	BINDCONSTANT(Lab_EC);
-	BINDCONSTANT(Guy_EC);
+	BINDCONSTANT(Henchmen_EC);
 
 	BINDCONSTANT(ATTACKTYPE_Melee);
 
@@ -1025,7 +1025,7 @@ int RDNSimProxy::DoBuildUnit(int ebpid)
 	const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
 
 	const ControllerBlueprint *cbp = ef->GetControllerBP(ebpid);
-	if (cbp == 0 || (cbp->GetControllerType() != Guy_EC))
+	if (cbp == 0 || (cbp->GetControllerType() != Henchmen_EC))
 	{
 		dbBreak();
 		return FC_Other;

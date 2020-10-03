@@ -463,7 +463,7 @@ static bool IsControllerTypeUnit(unsigned long ctype)
 
 	switch (ctype)
 	{
-	case Guy_EC:
+	case Henchmen_EC:
 		r = true;
 		break;
 
@@ -1058,7 +1058,7 @@ void RDNTaskbar::BindButtonToEntity(
 		return;
 	}
 
-	if (e->GetControllerBP()->GetControllerType() != Guy_EC)
+	if (e->GetControllerBP()->GetControllerType() != Henchmen_EC)
 	{
 		// units only
 		dbBreak();

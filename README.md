@@ -151,6 +151,16 @@ we won't be able to interact with it. After adding `RC("Henchmen", Henchmen_EC, 
 the log about there being no controller blueprint for Henchmen went away. Ofc we should either create a new controller
 or repurpose GuyController into Henchmen controller.
 
+### Variable prefix meanings
+
+- m for members
+- c for constants/readonlys
+- p for pointer (and pp for pointer to pointer)
+- v for volatile
+- s for static
+- i for indexes and iterators
+- e for events
+
 ## Glossary
 
 ICInstallationDirectory: The folder where IC is installed

@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////
-// File    : GuyController.cpp
+// File    : HenchmenController.cpp
 // Desc    :
 // Created : Wednesday, February 21, 2001
 // Author  :
@@ -8,7 +8,7 @@
 //
 
 #include "pch.h"
-#include "GuyController.h"
+#include "HenchmenController.h"
 
 #include "../../ModObj.h"
 #include "../GameEventDefs.h"
@@ -41,7 +41,7 @@
 //	Param.	:
 //	Author	:
 //
-GuyController::StaticInfo::StaticInfo(const ControllerBlueprint *cbp)
+HenchmenController::StaticInfo::StaticInfo(const ControllerBlueprint *cbp)
 		: MovingExtInfo(cbp),
 			AttackExtInfo(cbp),
 			HealthExtInfo(cbp),
@@ -53,7 +53,7 @@ GuyController::StaticInfo::StaticInfo(const ControllerBlueprint *cbp)
 }
 
 const ModStaticInfo::ExtInfo *
-GuyController::StaticInfo::QInfo(unsigned char id) const
+HenchmenController::StaticInfo::QInfo(unsigned char id) const
 {
 	if (id == MovingExtInfo ::ExtensionID)
 		return static_cast<const MovingExtInfo *>(this);
@@ -77,7 +77,7 @@ GuyController::StaticInfo::QInfo(unsigned char id) const
 //	Param.	:
 //	Author	:
 //
-GuyController::GuyController(Entity *pEntity, const ECStaticInfo *pStaticInfo)
+HenchmenController::HenchmenController(Entity *pEntity, const ECStaticInfo *pStaticInfo)
 		: ModController(pEntity, new GroundDynamics(static_cast<SimEntity *>(pEntity)), pStaticInfo),
 			HealthExt(static_cast<Entity *>(pEntity), QIExtInfo<HealthExtInfo>(pStaticInfo)),
 			MovingExt(pEntity),
@@ -121,7 +121,7 @@ GuyController::GuyController(Entity *pEntity, const ECStaticInfo *pStaticInfo)
 //	Param.	:
 //	Author	:
 //
-GuyController::~GuyController()
+HenchmenController::~HenchmenController()
 {
 }
 
@@ -131,7 +131,7 @@ GuyController::~GuyController()
 // Param.    :
 // Author    :
 //
-bool GuyController::Update(const EntityCommand *pEntCmd)
+bool HenchmenController::Update(const EntityCommand *pEntCmd)
 {
 	// we can override the default behaviour of ModController if we like here
 
@@ -198,7 +198,7 @@ bool GuyController::Update(const EntityCommand *pEntCmd)
 // Param.    :
 // Author    :
 //
-void GuyController::Execute()
+void HenchmenController::Execute()
 {
 	// forward to base class
 	ModController::Execute();
@@ -226,7 +226,7 @@ void GuyController::Execute()
 // Param.    :
 // Author    :
 //
-void GuyController::NotifyHealthGone()
+void HenchmenController::NotifyHealthGone()
 {
 	// forward to ModController
 	m_commandproc.MakeDead();
@@ -238,7 +238,7 @@ void GuyController::NotifyHealthGone()
 //	Param.	:
 //	Author	:
 //
-void GuyController::OnApplyDamage(const float amountdone, const DamageType type)
+void HenchmenController::OnApplyDamage(const float amountdone, const DamageType type)
 {
 	UNREF_P(type);
 
@@ -268,7 +268,7 @@ void GuyController::OnApplyDamage(const float amountdone, const DamageType type)
 //	Param.	:
 //	Author	:
 //
-ModController *GuyController::GetSelf()
+ModController *HenchmenController::GetSelf()
 {
 	return this;
 }
@@ -279,14 +279,14 @@ ModController *GuyController::GetSelf()
 //	Param.	:
 //	Author	:
 //
-Extension *GuyController::QI(unsigned char id)
+Extension *HenchmenController::QI(unsigned char id)
 {
 	if (m_commandproc.IsDead())
 	{
 		return NULL;
 	}
 
-	return GuyController::QIAll(id);
+	return HenchmenController::QIAll(id);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -295,7 +295,7 @@ Extension *GuyController::QI(unsigned char id)
 // Param.    :
 // Author    :
 //
-Extension *GuyController::QIAll(unsigned char id)
+Extension *HenchmenController::QIAll(unsigned char id)
 {
 	if (id == HealthExt ::ExtensionID)
 		return static_cast<HealthExt *>(this);
@@ -317,7 +317,7 @@ Extension *GuyController::QIAll(unsigned char id)
 // Param.    :
 // Author    :
 //
-State *GuyController::QIActiveState(unsigned char StateID)
+State *HenchmenController::QIActiveState(unsigned char StateID)
 {
 	// check if there is a current state
 	if (m_CurrentState == NULL)
@@ -344,7 +344,7 @@ State *GuyController::QIActiveState(unsigned char StateID)
 // Param.    :
 // Author    :
 //
-State *GuyController::QIStateAll(unsigned char StateID)
+State *HenchmenController::QIStateAll(unsigned char StateID)
 {
 	if (StateID == State ::SID_Current)
 		return m_CurrentState;
@@ -372,7 +372,7 @@ State *GuyController::QIStateAll(unsigned char StateID)
 // Param.    :
 // Author    :
 //
-void GuyController::SetActiveState(unsigned char stateid)
+void HenchmenController::SetActiveState(unsigned char stateid)
 {
 	dbAssert(stateid != State::SID_Current);
 
@@ -396,7 +396,7 @@ void GuyController::SetActiveState(unsigned char stateid)
 // Param.    :
 // Author    :
 //
-void GuyController::Save(BiFF &biff) const
+void HenchmenController::Save(BiFF &biff) const
 {
 	ModController::Save(biff);
 
@@ -415,7 +415,7 @@ void GuyController::Save(BiFF &biff) const
 // Param.    :
 // Author    :
 //
-void GuyController::Load(IFF &iff)
+void HenchmenController::Load(IFF &iff)
 {
 	ModController::Load(iff);
 
@@ -430,12 +430,12 @@ void GuyController::Load(IFF &iff)
 // Param.    :
 // Author    :
 //
-unsigned long GuyController::HandleGYEC(IFF &iff, ChunkNode *, void *pContext1, void *)
+unsigned long HenchmenController::HandleGYEC(IFF &iff, ChunkNode *, void *pContext1, void *)
 {
 	UNREF_P(iff);
 
-	GuyController *pGuyController = static_cast<GuyController *>(pContext1);
-	dbAssert(pGuyController);
+	HenchmenController *pHenchmenController = static_cast<HenchmenController *>(pContext1);
+	dbAssert(pHenchmenController);
 
 	return 0;
 }
@@ -446,7 +446,7 @@ unsigned long GuyController::HandleGYEC(IFF &iff, ChunkNode *, void *pContext1, 
 // Param.    :
 // Author    :
 //
-void GuyController::OnDoDamageTo(float damagePerHit, float damageBonus, const AttackPackage &attack, Entity *pTarget)
+void HenchmenController::OnDoDamageTo(float damagePerHit, float damageBonus, const AttackPackage &attack, Entity *pTarget)
 {
 	// validate parm
 	dbAssert(pTarget);
@@ -478,7 +478,7 @@ void GuyController::OnDoDamageTo(float damagePerHit, float damageBonus, const At
 // Param.    :
 // Author    :
 //
-void GuyController::OnDoTriggeredAttack(const AttackPackage &, Entity *)
+void HenchmenController::OnDoTriggeredAttack(const AttackPackage &, Entity *)
 {
 	// do nothing
 }

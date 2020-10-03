@@ -373,10 +373,10 @@
 						RelativePath="Simulation\Controllers\ControllerTypes.h">
 					</File>
 					<File
-						RelativePath="Simulation\Controllers\GuyController.cpp">
+						RelativePath="Simulation\Controllers\HenchmenController.cpp">
 					</File>
 					<File
-						RelativePath="Simulation\Controllers\GuyController.h">
+						RelativePath="Simulation\Controllers\HenchmenController.h">
 					</File>
 					<File
 						RelativePath="Simulation\Controllers\LabController.cpp">

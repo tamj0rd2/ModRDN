@@ -16,7 +16,7 @@
 #include "../RDNWorld.h"
 
 #include "../Controllers/ModController.h"
-#include "../Controllers/GuyController.h"
+#include "../Controllers/HenchmenController.h"
 #include "../Controllers/LabController.h"
 
 #include "../States/State.h"
@@ -265,7 +265,7 @@ void LuaModControllerLib::Initialize(LuaConfig *lc)
 #define BINDCONSTANT(c) \
 	lc->SetNumber(#c, double(c))
 
-	BINDCONSTANT(Guy_EC);
+	BINDCONSTANT(Henchmen_EC);
 	BINDCONSTANT(Lab_EC);
 
 #undef BINDCONSTANT

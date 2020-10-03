@@ -299,8 +299,8 @@ namespace
 
 	ControllerPriority CONTROLLER_PRIORITY[] =
 			{
-					{Guy_EC, 100},
 					{Lab_EC, 100},
+					{Henchmen_EC, 100},
 	};
 } // namespace
 

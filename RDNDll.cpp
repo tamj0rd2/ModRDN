@@ -26,7 +26,7 @@
 
 #include "Simulation/Controllers/ControllerTypes.h"
 #include "Simulation/Controllers/LabController.h"
-#include "Simulation/Controllers/GuyController.h"
+#include "Simulation/Controllers/HenchmenController.h"
 
 #include "UI/RDNHud.h"
 #include "UI/RDNUIState.h"
@@ -64,7 +64,7 @@ static void RegisterControllers(SimEngineInterface *p)
 	pEntityFactory->RegisterController(name, type, new EntityFactory_ControllerCreator_Templ<classtype::StaticInfo, classtype>);
 
 	RC("Lab", Lab_EC, LabController);
-	RC("Guy", Guy_EC, GuyController);
+	RC("Henchmen", Henchmen_EC, HenchmenController);
 
 #undef RC
 
@@ -85,15 +85,13 @@ static void EntityCreate(const Entity *pEntity)
 	EntityAnimator *pAnimator = pEntity->GetAnimator();
 	const EntityController *pEC = pEntity->GetController();
 
-	// Make sure entity has animator and controller blueprint
-	if (!pEC)
-		dbTracef(">>>DEBUG missing controller blueprint for %s", pEntity->GetControllerBP()->GetFileName());
-
-	if (!pAnimator)
-		dbTracef(">>>DEBUG missing animator for %s", pEntity->GetControllerBP()->GetFileName());
-
+	/**
+	 * These aren't necessarily required for every entity in the game. Just the ones that we specifically
+	 * want to be able to control (like henchmen for instance)
+	*/
 	if (!pEC || !pAnimator)
 	{
+		dbTracef(">>>WARN no controller blueprint or animator for %s", pEntity->GetControllerBP()->GetFileName());
 		return;
 	}
 

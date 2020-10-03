@@ -75,7 +75,7 @@ namespace
 				return false;
 
 			//	Only check for 'Guys'
-			if (pEntity->GetControllerBP()->GetControllerType() != Guy_EC)
+			if (pEntity->GetControllerBP()->GetControllerType() != Henchmen_EC)
 				return false;
 
 			m_bFound = true;
@@ -178,7 +178,7 @@ void RDNPlayer::AddEntity(Entity *e)
 		m_hqPosition = e->GetPosition();
 		break;
 
-	case Guy_EC:
+	case Henchmen_EC:
 		++m_population;
 		break;
 	}
@@ -201,7 +201,7 @@ void RDNPlayer::RemoveEntity(Entity *e)
 
 	switch (ctype)
 	{
-	case Guy_EC:
+	case Henchmen_EC:
 		--m_population;
 		break;
 	}
@@ -454,81 +454,18 @@ size_t RDNPlayer::GetRace() const
 float RDNPlayer::GetRaceBonusCost(const ControllerBlueprint *pCBP) const
 {
 	float cost = 1.0f;
-
-	if (pCBP->GetControllerType() == Guy_EC)
-	{
-		const RDNTuning::RaceInfo &raceInfo = RDNTuning::Instance()->GetRaceInfo();
-		switch (m_race)
-		{
-		case RACE_Faster:
-			cost *= raceInfo.faster.costMultiplier;
-			break;
-		case RACE_Stronger:
-			cost *= raceInfo.stronger.costMultiplier;
-			break;
-		case RACE_Cheaper:
-			cost *= raceInfo.cheaper.costMultiplier;
-			break;
-		default:
-			dbBreak();
-			break;
-		}
-	}
-
 	return cost;
 }
 
 float RDNPlayer::GetRaceBonusHealthMax(const ControllerBlueprint *pCBP) const
 {
 	float health = 1.0f;
-
-	if (pCBP->GetControllerType() == Guy_EC)
-	{
-		const RDNTuning::RaceInfo &raceInfo = RDNTuning::Instance()->GetRaceInfo();
-		switch (m_race)
-		{
-		case RACE_Faster:
-			health *= raceInfo.faster.healthMultiplier;
-			break;
-		case RACE_Stronger:
-			health *= raceInfo.stronger.healthMultiplier;
-			break;
-		case RACE_Cheaper:
-			health *= raceInfo.cheaper.healthMultiplier;
-			break;
-		default:
-			dbBreak();
-			break;
-		}
-	}
-
 	return health;
 }
 
 float RDNPlayer::GetRaceBonusSpeed(const ControllerBlueprint *pCBP) const
 {
 	float speed = 1.0f;
-
-	if (pCBP->GetControllerType() == Guy_EC)
-	{
-		const RDNTuning::RaceInfo &raceInfo = RDNTuning::Instance()->GetRaceInfo();
-		switch (m_race)
-		{
-		case RACE_Faster:
-			speed *= raceInfo.faster.speedMultiplier;
-			break;
-		case RACE_Stronger:
-			speed *= raceInfo.stronger.speedMultiplier;
-			break;
-		case RACE_Cheaper:
-			speed *= raceInfo.cheaper.speedMultiplier;
-			break;
-		default:
-			dbBreak();
-			break;
-		}
-	}
-
 	return speed;
 }
 

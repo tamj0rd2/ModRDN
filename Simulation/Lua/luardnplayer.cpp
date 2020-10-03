@@ -128,7 +128,7 @@ static int player_numguys(lua_State *state)
 	}
 
 	// add renewable resources
-	int num = s_currentPlayer->GetNumEntity(Guy_EC);
+	int num = s_currentPlayer->GetNumEntity(Henchmen_EC);
 	lua_pushnumber(state, double(num));
 
 	return 1;

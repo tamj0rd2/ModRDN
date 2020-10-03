@@ -218,11 +218,9 @@ private:
 	// do not save that value
 	EntityGroup m_groupController[MAX_EC];
 
-	typedef std::set<Observer *>
-			PlayerObserverList;
+	typedef std::set<Observer *> PlayerObserverList;
 
-	mutable PlayerObserverList
-			m_observers;
+	mutable PlayerObserverList m_observers;
 	// implementation
 private:
 	void CmdCheatCash(Player *sender, unsigned long);
