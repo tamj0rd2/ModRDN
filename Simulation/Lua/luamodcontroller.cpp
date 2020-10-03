@@ -17,7 +17,7 @@
 
 #include "../Controllers/ModController.h"
 #include "../Controllers/GuyController.h"
-#include "../Controllers/HQController.h"
+#include "../Controllers/LabController.h"
 
 #include "../States/State.h"
 

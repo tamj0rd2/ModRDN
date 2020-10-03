@@ -83,8 +83,8 @@ public:
 	float GetRaceBonusSpeed(const ControllerBlueprint *pCBP) const;
 
 	// hq
-	const Entity *GetHQEntity() const;
-	Entity *GetHQEntity();
+	const Entity *GetLabEntity() const;
+	Entity *GetLabEntity();
 	const Vec3f &GetStartingPosition() const;
 
 	PlayerFOW *GetFogOfWar();

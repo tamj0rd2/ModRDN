@@ -256,7 +256,7 @@ void RDNSimProxy::LuaSetup()
 	BINDFUNC(BuildingEBPFromType);
 	BINDFUNC(TypeFromEBP);
 
-	BINDFUNC(LocalPlayerHQId);
+	BINDFUNC(LocalPlayerLabId);
 
 	BINDFUNC(DoBuildUnit);
 	BINDFUNC(DoCancelBuildUnit);
@@ -676,7 +676,7 @@ int RDNSimProxy::BuildingEBPFromType(int type)
 	switch (type)
 	{
 	case Lab_EC:
-		ebp = &RDNEBP::HQ;
+		ebp = &RDNEBP::Lab;
 		break;
 
 	default:
@@ -715,7 +715,7 @@ int RDNSimProxy::LocalPlayer() const
 	return m_pimpl->m_player->GetID();
 }
 
-int RDNSimProxy::LocalPlayerHQId() const
+int RDNSimProxy::LocalPlayerLabId() const
 {
 	// check player
 	if (m_pimpl->m_player == 0 ||
@@ -723,7 +723,7 @@ int RDNSimProxy::LocalPlayerHQId() const
 		return 0;
 
 	// check lab
-	const Entity *lab = m_pimpl->m_player->GetHQEntity();
+	const Entity *lab = m_pimpl->m_player->GetLabEntity();
 
 	if (lab == 0)
 		return 0;

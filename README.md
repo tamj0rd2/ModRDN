@@ -144,6 +144,13 @@ I went through a similar process with coal
 - map showed but pwaited
 - increased MAX_EC ControllerType to 6. (it was prevoiusly 4, but the controller type for coal is 4. problems ocurred)
 
+### Adding missing controllers
+
+In RDNDll.cpp EntityCreate, it's not necessarily an error if a blueprint doesn't have a controller. It just means that
+we won't be able to interact with it. After adding `RC("Henchmen", Henchmen_EC, GuyController);` to RegisterControllers,
+the log about there being no controller blueprint for Henchmen went away. Ofc we should either create a new controller
+or repurpose GuyController into Henchmen controller.
+
 ## Glossary
 
 ICInstallationDirectory: The folder where IC is installed

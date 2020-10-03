@@ -35,19 +35,19 @@
 #include <SimEngine/SpatialBucketSystem.h>
 
 //------------------------------------------------------------------
-// HQDeadCondition
+// LabDeadCondition
 //------------------------------------------------------------------
 
-class HQDeadCondition : public TExpression
+class LabDeadCondition : public TExpression
 {
 public:
 	//------------------------------------------
-	TEXPRESSION_CLONE(HQDeadCondition);
+	TEXPRESSION_CLONE(LabDeadCondition);
 	//------------------------------------------
 	virtual bool Evaluate(TExpression::EvaluateParms &ep);
 	virtual bool Deterministic() { return true; }
 	//------------------------------------------
-	static TExpression *Create() { return new HQDeadCondition; }
+	static TExpression *Create() { return new LabDeadCondition; }
 };
 
 //----------------------------------------------------------------------------------------------
@@ -337,14 +337,14 @@ private:
 //==============================================================================================
 
 //----------------------------------------------------------------------------------------------
-// HQDeadCondition
+// LabDeadCondition
 //----------------------------------------------------------------------------------------------
 
-bool HQDeadCondition::Evaluate(TExpression::EvaluateParms &ep)
+bool LabDeadCondition::Evaluate(TExpression::EvaluateParms &ep)
 {
 	RDNPlayer *splayer = static_cast<RDNPlayer *>(ep.player);
 
-	if (splayer->GetHQEntity() == NULL && splayer->IsPlayerDead() == false)
+	if (splayer->GetLabEntity() == NULL && splayer->IsPlayerDead() == false)
 	{
 		return true;
 	}
@@ -966,7 +966,7 @@ bool PlayerSpawnedNewEntityCondition::Evaluate(TExpression::EvaluateParms &ep)
 
 void RegisterModConditions()
 {
-	ModObj::i()->GetTriggerFactory()->RegisterExpressionCB("HQDead", HQDeadCondition::Create);
+	ModObj::i()->GetTriggerFactory()->RegisterExpressionCB("LabDead", LabDeadCondition::Create);
 	ModObj::i()->GetTriggerFactory()->RegisterExpressionCB("EnemiesDead", EnemiesDeadCondition::Create);
 	ModObj::i()->GetTriggerFactory()->RegisterExpressionCB("EntityHealth", EntityHealthCondition::Create);
 	ModObj::i()->GetTriggerFactory()->RegisterExpressionCB("GroupHealth", GroupHealthCondition::Create);

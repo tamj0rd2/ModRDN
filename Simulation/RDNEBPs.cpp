@@ -12,7 +12,7 @@
  * labs etc. I imagine Rock, Paper and Scissor are here because they need
  * specific RDN controllers applied to them
  * */
-const RDNEBP::EBPName RDNEBP::HQ = {"structures", "lab"};
+const RDNEBP::EBPName RDNEBP::Lab = {"structures", "lab"};
 const RDNEBP::EBPName RDNEBP::Rock = {"units", "rock"};
 const RDNEBP::EBPName RDNEBP::Paper = {"units", "paper"};
 const RDNEBP::EBPName RDNEBP::Scissor = {"units", "scissor"};
@@ -22,7 +22,7 @@ void RDNEBP::Preload()
 #define LOAD(t) \
 	ModObj::i()->GetEntityFactory()->GetControllerBP(t.folder, t.file);
 
-	LOAD(HQ);
+	LOAD(Lab);
 	LOAD(Rock);
 	LOAD(Paper);
 	LOAD(Scissor);

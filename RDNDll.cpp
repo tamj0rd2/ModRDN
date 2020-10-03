@@ -25,7 +25,7 @@
 #include "Simulation/CommandTypes.h"
 
 #include "Simulation/Controllers/ControllerTypes.h"
-#include "Simulation/Controllers/HQController.h"
+#include "Simulation/Controllers/LabController.h"
 #include "Simulation/Controllers/GuyController.h"
 
 #include "UI/RDNHud.h"
@@ -63,7 +63,7 @@ static void RegisterControllers(SimEngineInterface *p)
 #define RC(name, type, classtype) \
 	pEntityFactory->RegisterController(name, type, new EntityFactory_ControllerCreator_Templ<classtype::StaticInfo, classtype>);
 
-	RC("HQ", Lab_EC, HQController);
+	RC("Lab", Lab_EC, LabController);
 	RC("Guy", Guy_EC, GuyController);
 
 #undef RC
@@ -416,7 +416,7 @@ namespace
 						{
 							Entity *ent = (*iter);
 							// found a lab
-							if (ent->GetControllerBP() == RDNEBP::Get(RDNEBP::HQ))
+							if (ent->GetControllerBP() == RDNEBP::Get(RDNEBP::Lab))
 							{
 								playerCount++;
 								break;

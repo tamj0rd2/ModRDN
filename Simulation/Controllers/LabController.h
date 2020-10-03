@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////
-// File    : HQController.h
+// File    : LabController.h
 // Desc    :
 // Created :
 // Author  :
@@ -35,13 +35,13 @@ class EntityGroup;
 class Vec3f;
 
 ///////////////////////////////////////////////////////////////////////////////
-// HQController
+// LabController
 
-class HQController : private HealthExt,
-										 private UnitSpawnerExt,
-										 private SightExt,
-										 private ModifierExt,
-										 public ModController
+class LabController : private HealthExt,
+											private UnitSpawnerExt,
+											private SightExt,
+											private ModifierExt,
+											public ModController
 {
 	// types
 public:
@@ -61,8 +61,8 @@ public:
 
 	// construction
 public:
-	HQController(Entity *pEntity, const ECStaticInfo *);
-	virtual ~HQController();
+	LabController(Entity *pEntity, const ECStaticInfo *);
+	virtual ~LabController();
 
 	// inherited -- ModController
 public:

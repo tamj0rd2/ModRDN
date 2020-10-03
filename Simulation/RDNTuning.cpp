@@ -67,9 +67,9 @@ static void LoadInfo(RDNTuning::RaceInfo &inf, LuaConfig &lc)
 /////////////////////////////////////////////////////////////////////
 //
 
-static void LoadInfo(RDNTuning::HQInfo &inf, LuaConfig &lc)
+static void LoadInfo(RDNTuning::LabInfo &inf, LuaConfig &lc)
 {
-	lc.PushTableEx("HQ");
+	lc.PushTableEx("Lab");
 
 	/** 
 	 * LCGetValW - As far as I can tell, the interface for this is:
@@ -218,7 +218,7 @@ void RDNTuning::LoadFrom(const char *file)
 
 	LOADINFO(PlayerInfo)
 	LOADINFO(RaceInfo)
-	LOADINFO(HQInfo)
+	LOADINFO(LabInfo)
 	LOADINFO(EffectInfo)
 	LOADINFO(FogOfWarInfo)
 
@@ -244,7 +244,7 @@ unsigned long RDNTuning::GetSyncToken() const
 
 	ADDTUNINGSTRUCT(PlayerInfo)
 	ADDTUNINGSTRUCT(RaceInfo)
-	ADDTUNINGSTRUCT(HQInfo)
+	ADDTUNINGSTRUCT(LabInfo)
 	//	ADDTUNINGSTRUCT( EffectInfo )
 	ADDTUNINGSTRUCT(FogOfWarInfo)
 

@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////
-// File    : HQController.cpp
+// File    : LabController.cpp
 // Desc    :
 // Created : Wednesday, February 21, 2001
 // Author  :
@@ -9,7 +9,7 @@
 
 #include "pch.h"
 
-#include "HQController.h"
+#include "LabController.h"
 
 #include "../../ModObj.h"
 #include "../RDNPlayer.h"
@@ -32,7 +32,7 @@
 //	Param.	:
 //	Author	:
 //
-HQController::StaticInfo::StaticInfo(const ControllerBlueprint *cbp)
+LabController::StaticInfo::StaticInfo(const ControllerBlueprint *cbp)
 		: HealthExtInfo(cbp),
 			SightExtInfo(cbp),
 			SiteExtInfo(cbp),
@@ -43,7 +43,7 @@ HQController::StaticInfo::StaticInfo(const ControllerBlueprint *cbp)
 }
 
 const ModStaticInfo::ExtInfo *
-HQController::StaticInfo::QInfo(unsigned char id) const
+LabController::StaticInfo::QInfo(unsigned char id) const
 {
 	if (id == HealthExtInfo ::ExtensionID)
 		return static_cast<const HealthExtInfo *>(this);
@@ -65,13 +65,13 @@ HQController::StaticInfo::QInfo(unsigned char id) const
 //	Param.	:
 //	Author	:
 //
-HQController::HQController(Entity *pEntity, const ECStaticInfo *si) : ModController(pEntity, SiteExtInfo::CreateDynamics(pEntity, QIExtInfo<SiteExtInfo>(si)), si),
-																																			HealthExt(pEntity, QIExtInfo<HealthExtInfo>(si)),
-																																			UnitSpawnerExt(UnitSpawnerExt::BT_Spawn),
-																																			SightExt(QIExtInfo<SightExtInfo>(si)),
-																																			m_stateidle(GetEntityDynamics()),
-																																			m_statedead(GetEntityDynamics()),
-																																			m_pCurrentState(NULL)
+LabController::LabController(Entity *pEntity, const ECStaticInfo *si) : ModController(pEntity, SiteExtInfo::CreateDynamics(pEntity, QIExtInfo<SiteExtInfo>(si)), si),
+																																				HealthExt(pEntity, QIExtInfo<HealthExtInfo>(si)),
+																																				UnitSpawnerExt(UnitSpawnerExt::BT_Spawn),
+																																				SightExt(QIExtInfo<SightExtInfo>(si)),
+																																				m_stateidle(GetEntityDynamics()),
+																																				m_statedead(GetEntityDynamics()),
+																																				m_pCurrentState(NULL)
 {
 	//
 	SetHealth(GetHealthMax());
@@ -92,7 +92,7 @@ HQController::HQController(Entity *pEntity, const ECStaticInfo *si) : ModControl
 //	Param.	:
 //	Author	:
 //
-HQController::~HQController()
+LabController::~LabController()
 {
 }
 
@@ -102,7 +102,7 @@ HQController::~HQController()
 //	Param.	:
 //	Author	:
 //
-bool HQController::CommandDoProcessNow(const EntityCommand *ec)
+bool LabController::CommandDoProcessNow(const EntityCommand *ec)
 {
 	// check for dead
 	if (m_commandproc.IsDead())
@@ -125,7 +125,7 @@ bool HQController::CommandDoProcessNow(const EntityCommand *ec)
 	return true;
 }
 
-void HQController::Execute()
+void LabController::Execute()
 {
 	// forward to base class
 	ModController::Execute();
@@ -147,7 +147,7 @@ void HQController::Execute()
 //	Param.	:
 //	Author	:
 //
-ModController *HQController::GetSelf()
+ModController *LabController::GetSelf()
 {
 	return this;
 }
@@ -158,7 +158,7 @@ ModController *HQController::GetSelf()
 // Param.    :
 // Author    :
 //
-void HQController::OnUnitSpawn(Entity *entity)
+void LabController::OnUnitSpawn(Entity *entity)
 {
 	// make the henchmen conform to terrain
 	SimController *pSimController = static_cast<SimController *>(entity->GetController());
@@ -188,13 +188,13 @@ void HQController::OnUnitSpawn(Entity *entity)
 //	Param.	:
 //	Author	:
 //
-Extension *HQController::QI(unsigned char id)
+Extension *LabController::QI(unsigned char id)
 {
 	// If we do any dynamic detachment of an extension put that logic here
 	if (m_commandproc.IsDead())
 		return NULL;
 
-	return HQController::QIAll(id);
+	return LabController::QIAll(id);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -203,7 +203,7 @@ Extension *HQController::QI(unsigned char id)
 // Param.    :
 // Author    :
 //
-Extension *HQController::QIAll(unsigned char id)
+Extension *LabController::QIAll(unsigned char id)
 {
 	if (id == HealthExt::ExtensionID)
 		return static_cast<HealthExt *>(this);
@@ -221,7 +221,7 @@ Extension *HQController::QIAll(unsigned char id)
 // Param.    :
 // Author    :
 //
-State *HQController::QIActiveState(unsigned char stateid)
+State *LabController::QIActiveState(unsigned char stateid)
 {
 	// check if there is a current state
 	if (m_pCurrentState == NULL)
@@ -248,7 +248,7 @@ State *HQController::QIActiveState(unsigned char stateid)
 // Param.    :
 // Author    :
 //
-State *HQController::QIStateAll(unsigned char stateid)
+State *LabController::QIStateAll(unsigned char stateid)
 {
 	if (stateid == State ::SID_Current)
 		return m_pCurrentState;
@@ -267,7 +267,7 @@ State *HQController::QIStateAll(unsigned char stateid)
 // Param.    :
 // Author    :
 //
-void HQController::SetActiveState(unsigned char stateid)
+void LabController::SetActiveState(unsigned char stateid)
 {
 	if (stateid == State::SID_NULLState)
 	{
@@ -287,7 +287,7 @@ void HQController::SetActiveState(unsigned char stateid)
 // Param.    :
 // Author    :
 //
-void HQController::Save(BiFF &biff) const
+void LabController::Save(BiFF &biff) const
 {
 	// call base class
 	ModController::Save(biff);
@@ -299,7 +299,7 @@ void HQController::Save(BiFF &biff) const
 // Param.    :
 // Author    :
 //
-void HQController::Load(IFF &iff)
+void LabController::Load(IFF &iff)
 {
 	// call base class
 	ModController::Load(iff);
@@ -311,7 +311,7 @@ void HQController::Load(IFF &iff)
 // Param.    :
 // Author    :
 //
-unsigned long HQController::HandleLECD(IFF &, ChunkNode *, void *, void *)
+unsigned long LabController::HandleLECD(IFF &, ChunkNode *, void *, void *)
 {
 	return 0;
 }
@@ -322,7 +322,7 @@ unsigned long HQController::HandleLECD(IFF &, ChunkNode *, void *, void *)
 // Param.    :
 // Author    :
 //
-void HQController::CancelBuildUnit(unsigned long unitIndex)
+void LabController::CancelBuildUnit(unsigned long unitIndex)
 {
 	// validate parm
 	if (unitIndex >= BuildQueueSize())
@@ -341,7 +341,7 @@ void HQController::CancelBuildUnit(unsigned long unitIndex)
 // Param.    :
 // Author    :
 //
-void HQController::NotifyHealthGone()
+void LabController::NotifyHealthGone()
 {
 	m_commandproc.MakeDead();
 }

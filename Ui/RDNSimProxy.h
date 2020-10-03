@@ -121,7 +121,7 @@ public:
 public:
 	// player
 	int LocalPlayer() const;
-	int LocalPlayerHQId() const;
+	int LocalPlayerLabId() const;
 
 	// entity queries
 	// returns a *_EC value

@@ -24,7 +24,7 @@ public:
 		const char *file;
 	};
 
-	static const EBPName HQ;
+	static const EBPName Lab;
 	static const EBPName Rock;
 	static const EBPName Paper;
 	static const EBPName Scissor;

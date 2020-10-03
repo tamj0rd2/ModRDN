@@ -538,9 +538,9 @@ float RDNPlayer::GetRaceBonusSpeed(const ControllerBlueprint *pCBP) const
 //	Param.	:
 //	Author	:
 //
-const Entity *RDNPlayer::GetHQEntity() const
+const Entity *RDNPlayer::GetLabEntity() const
 {
-	return const_cast<RDNPlayer *>(this)->GetHQEntity();
+	return const_cast<RDNPlayer *>(this)->GetLabEntity();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -549,7 +549,7 @@ const Entity *RDNPlayer::GetHQEntity() const
 //	Param.	:
 //	Author	:
 //
-Entity *RDNPlayer::GetHQEntity()
+Entity *RDNPlayer::GetLabEntity()
 {
 	if (m_groupController[Lab_EC].size() == 0)
 		return 0;
@@ -560,10 +560,10 @@ Entity *RDNPlayer::GetHQEntity()
 const Vec3f &RDNPlayer::GetStartingPosition() const
 {
 	// if the lab is dead return the position of where it was
-	if (GetHQEntity() == NULL)
+	if (GetLabEntity() == NULL)
 		return m_hqPosition;
 
-	return GetHQEntity()->GetPosition();
+	return GetLabEntity()->GetPosition();
 }
 
 /////////////////////////////////////////////////////////////////////

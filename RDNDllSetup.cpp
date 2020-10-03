@@ -143,7 +143,7 @@ static void AssignPlayers(
 	else
 	{
 		// list all players on the map with lab
-		std::smallvector<unsigned long, MAXPLAYERS> HQs;
+		std::smallvector<unsigned long, MAXPLAYERS> Labs;
 
 		size_t i = 0;
 		size_t e = world->GetPlayerCount();
@@ -152,15 +152,15 @@ static void AssignPlayers(
 		{
 			const RDNPlayer *p = static_cast<const RDNPlayer *>(world->GetPlayerAt(i));
 
-			if (p->GetHQEntity())
+			if (p->GetLabEntity())
 			{
-				HQs.push_back(p->GetID());
+				Labs.push_back(p->GetID());
 			}
 		}
 
 		// shuffle list (defaults to random)
 		ShuffleRandomGen rg(random);
-		std::random_shuffle(HQs.begin(), HQs.end(), rg);
+		std::random_shuffle(Labs.begin(), Labs.end(), rg);
 
 		// match each player
 		size_t mi = 0;
@@ -169,7 +169,7 @@ static void AssignPlayers(
 		for (; mi != me; ++mi)
 		{
 			// validate
-			if (HQs.empty())
+			if (Labs.empty())
 			{
 				// oops! invalid map
 				dbTracef("MOD -- Not enough labs on this map");
@@ -177,8 +177,8 @@ static void AssignPlayers(
 			}
 
 			// take the first one
-			players[mi] = HQs.front();
-			HQs.erase(HQs.begin());
+			players[mi] = Labs.front();
+			Labs.erase(Labs.begin());
 		}
 	}
 

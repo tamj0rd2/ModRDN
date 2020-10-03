@@ -357,7 +357,7 @@ void RDNUIProxy::LuaSetup()
 
 	BINDFUNC(SelectAllUnitsOnScreen);
 	BINDFUNC(SelectAllUnitsInWorld);
-	BINDFUNC(SelectHQ);
+	BINDFUNC(SelectLab);
 	BINDFUNC(SelectNextSubSelect);
 
 	BINDFUNC(PauseMenuShow);
@@ -851,7 +851,7 @@ void RDNUIProxy::SelectAllUnitsInWorld()
 	m_pimpl->m_selection->SetSelection(group);
 }
 
-void RDNUIProxy::SelectHQ()
+void RDNUIProxy::SelectLab()
 {
 	EntityGroup group;
 	CollectAll(m_pimpl->m_sim->GetPlayer(),

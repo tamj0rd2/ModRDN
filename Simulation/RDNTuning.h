@@ -62,8 +62,8 @@ public:
 	};
 
 	/////////////////////////////////////////////////////////////////////
-	// HQ
-	struct HQInfo
+	// Lab
+	struct LabInfo
 	{
 		float healthMax;
 	};
@@ -104,7 +104,7 @@ private:                                    \
 	// fields
 	ADDTUNINGSET(PlayerInfo);
 	ADDTUNINGSET(RaceInfo)
-	ADDTUNINGSET(HQInfo)
+	ADDTUNINGSET(LabInfo)
 	ADDTUNINGSET(EffectInfo)
 	ADDTUNINGSET(FogOfWarInfo)
 

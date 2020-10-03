@@ -101,7 +101,7 @@ public:
 
 	void SelectAllUnitsOnScreen();
 	void SelectAllUnitsInWorld();
-	void SelectHQ();
+	void SelectLab();
 	void SelectNextSubSelect();
 
 	// ui functions
