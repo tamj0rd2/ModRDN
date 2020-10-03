@@ -133,6 +133,8 @@ HenchmenController::~HenchmenController()
 //
 bool HenchmenController::Update(const EntityCommand *pEntCmd)
 {
+	dbTracef(">>>CONTROLLER DEBUG: received command for henchmen");
+
 	// we can override the default behaviour of ModController if we like here
 
 	// set the unit health on the first update

@@ -2,6 +2,7 @@ import os
 import glob
 import sys
 import argparse
+import settings
 
 
 class Result:
@@ -57,10 +58,13 @@ def getEbpControllerTypeResults(searchDir, allowZero, orderBy, matchFilename, ma
 
 def parseArgs():
     icDevDirEnvName = "IC_DEV_DIR"
+    icDevDir = os.environ.get(icDevDirEnvName)
+    defaultSearchDir = icDevDir if icDevDir is not None else settings.parseSettingsFile(
+    ).get("icInstallDirectory")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--searchDir", type=str,
-                        help="A folder to search for EBPs within", default=os.environ.get(icDevDirEnvName))
+                        help="A folder to search for EBPs within", default=defaultSearchDir)
     parser.add_argument("--allowZero", action="store_true",
                         help="Show files whose controller type is 0")
     parser.add_argument(
@@ -81,4 +85,5 @@ def parseArgs():
     return args.__dict__
 
 
-getEbpControllerTypeResults(**parseArgs())
+if __name__ == "__main__":
+    getEbpControllerTypeResults(**parseArgs())

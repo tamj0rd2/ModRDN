@@ -40,8 +40,10 @@
       "**/*.events": true
     },
     "triggerTaskOnSave.tasks": {
-      "build": ["*.h", "*.cpp"]
+      "buildAndInstallMod": ["*.h", "*.cpp"],
+      "buildAndInstallLocale": ["ModText.rc"]
     },
+    "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "Lua.diagnostics.disable": ["undefined-global", "lowercase-global"]
   }
 }

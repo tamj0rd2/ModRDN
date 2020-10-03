@@ -4,13 +4,48 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build",
+      "label": "buildCpp",
       "type": "shell",
-      "command": "./build.ps1",
+      "command": "./scripts/build-mod.ps1",
+      "group": "build"
+    },
+    {
+      "label": "buildAndInstallMod",
+      "type": "shell",
+      "command": "./scripts/install-mod.ps1",
+      "dependsOn": ["buildCpp"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "buildModText",
+      "type": "shell",
+      "command": "./scripts/build-locale.ps1",
+      "group": "build",
+      "problemMatcher": ["$msCompile"]
+    },
+    {
+      "label": "buildAndInstallLocale",
+      "type": "shell",
+      "command": "./scripts/install-locale.ps1",
+      "dependsOn": ["buildModText"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "build",
+      "dependsOn": ["buildAndInstallMod", "buildAndInstallLocale"],
       "group": {
         "kind": "build",
         "isDefault": true
-      }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "launchIC",
+      "type": "shell",
+      "command": "./scripts/launch-ic.ps1",
+      "problemMatcher": []
     }
   ]
 }

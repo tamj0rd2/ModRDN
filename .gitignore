@@ -1,2 +1,12 @@
 *.ncb
 *.suo
+
+scripts/settings.json
+__pycache__
+
+Locale/ModText.aps
+Locale/.vs
+Locale/Debug
+Locale/Release
+Locale/Locale.vcxproj.user
+Locale/Locale.vcxproj.filters
