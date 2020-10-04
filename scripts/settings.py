@@ -20,8 +20,10 @@ class Settings:
         self.modTextSln = "{0}/Locale.sln".format(localeProjectFolder)
         self.modTextDllOutputPath = "{0}/Release/Locale.dll".format(
             localeProjectFolder)
-        self.modTextInstallPath = "{0}/Locale/english/{1}/ModText.dll".format(
+        localeInstallFolder = "{0}/Locale/english/{1}".format(
             icInstallDirectory, modName)
+        self.modTextInstallPath = "{0}/ModText.dll".format(localeInstallFolder)
+        self.modlocInstallPath = "{0}/modloc.sga".format(localeInstallFolder)
 
         self.vmName = vmName
         guestProjectFolder = "{0}/{1}".format(guestMount, modName)
@@ -36,6 +38,7 @@ class Settings:
         self.moduleTemplatePath = "{}/template.module".format(assetsFolder)
         self.moduleInstallPath = "{}/{}.module".format(
             icInstallDirectory, modName.lower())
+        self.emptySgaPath = "{}/empty.sga".format(assetsFolder)
 
 
 def writeTemplateSettingsFile(filePath):
