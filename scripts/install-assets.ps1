@@ -10,6 +10,10 @@ $moduleContent = (Get-Content $settings.moduleTemplatePath | Out-String) `
 [System.IO.File]::WriteAllLines($settings.moduleInstallPath, $moduleContent)
 Write-Host $settings.moduleInstallPath "installed" -ForegroundColor "green"
 
+# install mod sga file in the ic directory
+Copy-Item $settings.emptySgaPath $settings.modSgaInstallPath -Force -Recurse
+Write-Host $settings.modSgaInstallPath "installed" -ForegroundColor "green"
+
 # install Locale/english/RDNMod/modloc.sga
 New-Item "$($settings.modTextInstallPath)/.." -Force -Type Directory | Out-Null
 Copy-Item $settings.emptySgaPath $settings.modlocInstallPath -Force

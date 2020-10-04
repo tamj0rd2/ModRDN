@@ -14,4 +14,4 @@ PatcherUrl		=
 ;; List of archives to load for this MOD order is important
 ;; The first Archives registered will be scanned for files first
 
-ArchiveFile_1= RDNModData.sga
+ArchiveFile_1= {{modName}}Data.sga

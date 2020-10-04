@@ -42,6 +42,8 @@ class Settings:
         self.dataFolder = "{}/Data".format(assetsFolder)
         self.dataInstallFolder = "{}/{}/Data".format(
             icInstallDirectory, modName)
+        self.modSgaInstallPath = "{}/{}Data.sga".format(
+            icInstallDirectory, modName)
 
 
 def writeTemplateSettingsFile(filePath):
