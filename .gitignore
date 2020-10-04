@@ -1,7 +1,7 @@
 *.ncb
 *.suo
 
-scripts/settings.json
+script-settings.json
 __pycache__
 
 locale-project/ModText.aps

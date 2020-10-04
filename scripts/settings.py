@@ -42,7 +42,7 @@ def writeTemplateSettingsFile(filePath):
 
 def parseSettingsFile():
     repoFolder = os.getcwd().replace("\\", "/")
-    settingsFilePath = "{}/scripts/settings.json".format(repoFolder)
+    settingsFilePath = "{}/script-settings.json".format(repoFolder)
 
     if not os.path.isfile(settingsFilePath):
         writeTemplateSettingsFile(settingsFilePath)
