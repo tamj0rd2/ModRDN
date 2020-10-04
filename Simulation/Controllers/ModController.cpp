@@ -338,6 +338,11 @@ bool ModController::CommandIsClearQueue(const EntityCommand *pEC) const
 //
 bool ModController::Update(const EntityCommand *pEC)
 {
+	if (pEC)
+	{
+		dbTracef("ModController::Update");
+	}
+
 	if (m_pCommandProc)
 		return m_pCommandProc->Update(pEC);
 

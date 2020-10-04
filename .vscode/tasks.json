@@ -7,7 +7,16 @@
       "label": "buildCpp",
       "type": "shell",
       "command": "./scripts/build-mod.ps1",
-      "group": "build"
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
     },
     {
       "label": "buildAndInstallMod",
@@ -15,14 +24,30 @@
       "command": "./scripts/install-mod.ps1",
       "dependsOn": ["buildCpp"],
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
     },
     {
       "label": "buildModText",
       "type": "shell",
       "command": "./scripts/build-locale.ps1",
       "group": "build",
-      "problemMatcher": ["$msCompile"]
+      "problemMatcher": ["$msCompile"],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
     },
     {
       "label": "buildAndInstallLocale",
@@ -30,7 +55,15 @@
       "command": "./scripts/install-locale.ps1",
       "dependsOn": ["buildModText"],
       "group": "build",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
     },
     {
       "label": "build",
@@ -39,13 +72,29 @@
         "kind": "build",
         "isDefault": true
       },
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
     },
     {
       "label": "launchIC",
       "type": "shell",
       "command": "./scripts/launch-ic.ps1",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
     }
   ]
 }

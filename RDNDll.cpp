@@ -25,6 +25,7 @@
 #include "Simulation/CommandTypes.h"
 
 #include "Simulation/Controllers/ControllerTypes.h"
+#include "Simulation/Controllers/CoalController.h"
 #include "Simulation/Controllers/LabController.h"
 #include "Simulation/Controllers/HenchmenController.h"
 
@@ -65,6 +66,7 @@ static void RegisterControllers(SimEngineInterface *p)
 
 	RC("Lab", Lab_EC, LabController);
 	RC("Henchmen", Henchmen_EC, HenchmenController);
+	RC("Coal", Coal_EC, CoalController);
 
 #undef RC
 
@@ -77,7 +79,7 @@ static void EntityCreate(const Entity *pEntity)
 {
 	//	Give the RDNHud a chance to see the entity spawning
 	if (RDNHUD::IsInitialized())
-		RDNHUD::i()->OnEntityCreate(pEntity);
+		RDNHUD::instance()->OnEntityCreate(pEntity);
 
 	//
 	RDNWorld *pRDNWorld = ModObj::i()->GetWorld();
@@ -91,7 +93,7 @@ static void EntityCreate(const Entity *pEntity)
 	*/
 	if (!pEC || !pAnimator)
 	{
-		dbTracef(">>>WARN no controller blueprint or animator for %s", pEntity->GetControllerBP()->GetFileName());
+		// dbTracef(">>>WARN no controller blueprint or animator for %s", pEntity->GetControllerBP()->GetFileName());
 		return;
 	}
 
@@ -489,14 +491,14 @@ namespace
 		virtual ModSimVis *GetModSimVis()
 		{
 			if (RDNHUD::IsInitialized())
-				return RDNHUD::i();
+				return RDNHUD::instance();
 
 			return NULL;
 		}
 
 		virtual ModUIEvent *GetModUIEvent()
 		{
-			return RDNHUD::i();
+			return RDNHUD::instance();
 		}
 
 		virtual NISletInterface *GetNISletInterface()
@@ -506,22 +508,22 @@ namespace
 
 		virtual void DoCommand(const EntityGroup &g)
 		{
-			RDNHUD::i()->DoCommand(g);
+			RDNHUD::instance()->DoCommand(g);
 		}
 
 		virtual void DoCommand(const Vec3f *v, unsigned long n)
 		{
-			RDNHUD::i()->DoCommand(v, n);
+			RDNHUD::instance()->DoCommand(v, n);
 		}
 
 		virtual bool ProcessInput(const Plat::InputEvent &ie)
 		{
-			return RDNHUD::i()->Input(ie);
+			return RDNHUD::instance()->Input(ie);
 		}
 
 		virtual const char *GetCursor(const Entity *mouseOverEntity)
 		{
-			return RDNHUD::i()->GetCursor(mouseOverEntity);
+			return RDNHUD::instance()->GetCursor(mouseOverEntity);
 		}
 
 		virtual void CreateHUD(
@@ -563,12 +565,12 @@ namespace
 
 		virtual void UpdateHUD(float elapsedSeconds)
 		{
-			RDNHUD::i()->Update(elapsedSeconds);
+			RDNHUD::instance()->Update(elapsedSeconds);
 		}
 
 		virtual void UIPause(bool bPause)
 		{
-			RDNHUD::i()->UIPause(bPause);
+			RDNHUD::instance()->UIPause(bPause);
 		}
 
 		virtual void Save(IFF &iff)
@@ -583,7 +585,7 @@ namespace
 
 		virtual void ShowModOptions(void)
 		{
-			RDNHUD::i()->ShowModOptions();
+			RDNHUD::instance()->ShowModOptions();
 		}
 	};
 

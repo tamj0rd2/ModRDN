@@ -14,8 +14,24 @@ if ($initialVmState.Contains('paused')) {
 }
 
 if ($(Invoke-Expression $getVmState).Contains('running')) {
-  Write-Host "Trying to build the code..." -ForegroundColor 'blue'
-  VBoxManage.exe guestcontrol $settings.vmName run -- $settings.guestBuildScriptLocation
+  Write-Host "Trying to build the code...`n" -ForegroundColor 'blue'
+  $output = & VBoxManage.exe guestcontrol $settings.vmName run -- $settings.guestBuildScriptLocation 2>&1
+  $buildWasSuccessful = $?
+
+  $errors = ($output | Select-String -Pattern ": (fatal )?error") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace 'z:\\ModRDNDevelopment\\',''
+  $warnings = ($output | Select-String -Pattern ": warning" -SimpleMatch) -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace 'z:\\ModRDNDevelopment\\',''
+  $summary = $output | Select-string -Pattern "ModRDNRelease - "
+
+  if (!$buildWasSuccessful) {
+    Write-Output $errors
+    Write-Output $summary
+    Write-Host "Build failed" -ForegroundColor "red"
+    exit 1
+  }
+
+  Write-Output $warnings
+  Write-Output $summary
+  Write-Host "Build succeeded" -ForegroundColor "green"
   OnBuildComplete
   exit 0
 }
@@ -26,18 +42,24 @@ if ($initialVmState.Contains('powered off') -or $initialVmState.Contains('aborte
   Write-Host "Going to connect to the VM and build the code. This can take a minute or two because the VM is cold booting" -ForegroundColor 'blue'
   for ($attemptNo = 0; $attemptNo -lt 21; $attemptNo++) {
     $output = & VBoxManage.exe guestcontrol $settings.vmName run -- $settings.guestBuildScriptLocation 2>&1 | Out-String
-  
+    $buildWasSuccessful = $?
+
     if (!$output.Contains('VBoxManage.exe: error')) {
+      if (!$buildWasSuccessful) {
+        Write-Host "Build failed" -ForegroundColor "red"
+        exit 1
+      }
+
       Write-Host $output
       break
     }
-  
+
     if ($attemptNo -eq 20) {
       Write-Host "Problem starting/connecting to the VM" -ForegroundColor 'red'
       Write-Host $output -ForegroundColor 'red'
       exit 1
     }
-  
+
     Start-Sleep -Seconds 1
   }
 

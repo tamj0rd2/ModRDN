@@ -504,6 +504,11 @@ bool CommandProcessor::CommandIsClearQueue(const EntityCommand *pEntCmd) const
 //
 bool CommandProcessor::Update(const EntityCommand *pEntCmd)
 {
+	if (pEntCmd)
+	{
+		dbTracef("CommandProcessor::Update");
+	}
+
 	// grab the current state
 	State *pCurState = m_pMC->QIActiveState();
 	dbAssert(pCurState);
@@ -962,8 +967,14 @@ void CommandProcessor::LeaveStatePause()
 //
 unsigned long CommandProcessor::GetDefaultEntityEntityCommand(const Entity *pMe, const Entity *pTe)
 {
+	dbTracef("Controller 1: %s | Controller 2: %s", pMe->GetControllerBP()->GetFileName(), pTe->GetControllerBP()->GetFileName());
+
 	if (!pMe->GetController() || !pTe->GetController())
+	{
 		return CMD_DefaultAction;
+	}
+
+	dbTracef("Determining which action to use");
 
 	if (RDNQuery::CanAttack(pMe, pTe))
 	{

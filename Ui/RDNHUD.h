@@ -51,7 +51,7 @@ private:
 
 public:
 	// singleton
-	static RDNHUD *i();
+	static RDNHUD *instance();
 	static bool IsInitialized();
 
 	static void Initialize(

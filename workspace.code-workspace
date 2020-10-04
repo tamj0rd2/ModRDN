@@ -9,10 +9,6 @@
     {
       "path": "..\\..\\RDNMod",
       "name": "RDNMod Folder"
-    },
-    {
-      "path": "..\\..\\ExtractedEngine\\Data",
-      "name": "ExtractedEngine Data"
     }
   ],
   "settings": {
@@ -40,7 +36,7 @@
       "**/*.events": true
     },
     "triggerTaskOnSave.tasks": {
-      "buildAndInstallMod": ["*.h", "*.cpp"],
+      "buildAndInstallMod": ["**/*.h", "**/*.cpp"],
       "buildAndInstallLocale": ["ModText.rc"]
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled",

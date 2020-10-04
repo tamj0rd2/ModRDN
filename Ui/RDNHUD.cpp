@@ -93,7 +93,7 @@ RDNHUD::~RDNHUD()
 	return;
 }
 
-RDNHUD *RDNHUD::i()
+RDNHUD *RDNHUD::instance()
 {
 	dbAssert(s_instance); // Shelby - I need to test for NULL cuz the ME has no HUD
 	return s_instance;
@@ -311,11 +311,13 @@ const char *RDNHUD::GetCursor(const Entity *mouseOverEntity)
 
 void RDNHUD::DoCommand(const EntityGroup &eg)
 {
+	dbTracef("RDNHUD::DoCommand group command");
 	m_pimpl->m_proxy->DoCommand(eg, m_pimpl->m_taskbar->IsCommandQueueKeyPressed());
 }
 
 void RDNHUD::DoCommand(const Vec3f *v, unsigned long num)
 {
+	dbTracef("RDNHUD::DoCommand single command");
 	m_pimpl->m_proxy->DoCommand(v, num, m_pimpl->m_taskbar->IsCommandQueueKeyPressed());
 }
 

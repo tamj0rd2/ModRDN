@@ -373,6 +373,12 @@
 						RelativePath="Simulation\Controllers\ControllerTypes.h">
 					</File>
 					<File
+						RelativePath="Simulation\Controllers\CoalController.cpp">
+					</File>
+					<File
+						RelativePath="Simulation\Controllers\CoalController.h">
+					</File>
+					<File
 						RelativePath="Simulation\Controllers\HenchmenController.cpp">
 					</File>
 					<File

@@ -66,7 +66,8 @@ GameEventSys *GameEventSys::Instance()
 
 void GameEventSys::PublishEvent(const Event &event)
 {
-	//
+	dbTracef("GameEventSys::PublishEvent %d", event.GetType());
+
 	const size_t n = m_pimpl->m_listenerList.size();
 
 	// go through each client and call its virtual function

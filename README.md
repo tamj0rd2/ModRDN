@@ -70,7 +70,7 @@ If your mod is called `ModName`, you'd need these files
 | ModNameData.sga                  |                                                                       |                         |
 | Locale\English\RDNMod\modloc.sga |                                                                       |                         |
 | Locale\English\RDNMod\ModText.*  |                                                                       |                         |
-  
+
 #### The content of <ModName.module>
 
 #### How files for the game get searched for:
@@ -161,6 +161,54 @@ or repurpose GuyController into Henchmen controller.
 - i for indexes and iterators
 - e for events
 
+### Game lifecycle
+
+Once the game has started, a Game Start Event gets fired. Enums for the events are in GameEventDefs.h
+
+Controllers and many other things are usually able to implemnent an Update method, which I imagine runs on every tick.
+That method accepts a command that can allow us to do certain things depending on what took place.
+
+```
+
+RDNHUD::Input
+  - captures mouse movement
+  - captures clicks
+  - forwards them to either the RDNSimProxy or Taskbar
+RDNSimProxy::Input
+
+DLGModOptions seems to do some nice things around keyboard input and
+hotkeys
+
+
+1. RDNHUD::DoCommand
+2. RDNSimProxy::DoCommand
+3. HenchmenController::Update (ModController::Will get called for things that do not have their own update method)
+4. CommandProcessor::Update
+5. GameEventSys::PublishEvent 6
+6. RDNSimProxy::OnEvent An event happened: 6
+
+
+
+(I think pCurState is the thing that makes entities update)
+
+CommandTypes:
+  CT_Entity - an entity does something
+  CT_EntityPoint - an entity interacts with a point
+  CT_EntityEntity - an entity interacts with another entity
+```
+
+## Running IC inside the vm
+
+These instructions can supposedly be used to make it work in virtualbox, but
+using VMware is probably the better choice (as long as there are decent
+commandline tools)
+
+https://superuser.com/questions/779070/use-nvidia-gpu-from-virtualbox
+
+https://forums.virtualbox.org/viewtopic.php?f=8&t=56404
+
+https://old.reddit.com/r/virtualbox/comments/gablpz/is_it_possible_to_increase_video_memory_past_128/
+
 ## Glossary
 
 ICInstallationDirectory: The folder where IC is installed
@@ -172,3 +220,7 @@ EC: Entity Controller
 Root: <ICInstallationDirectory>\data
 
 Ted: Object Editor
+
+Dlg: Delegate
+
+pimpl: pointer to some kind of implementation

@@ -294,6 +294,7 @@ void RDNSimProxy::CheatReset()
 
 void RDNSimProxy::Notify_Insertion(Entity *e)
 {
+	dbTracef("RDNSimProxy::Notify_Insertion");
 	UNREF_P(e);
 
 	// flag
@@ -305,6 +306,7 @@ void RDNSimProxy::Notify_Insertion(Entity *e)
 
 void RDNSimProxy::Notify_Removal(Entity *e)
 {
+	dbTracef("RDNSimProxy::Notify_Removal");
 	UNREF_P(e);
 
 	// flag
@@ -920,6 +922,8 @@ void RDNSimProxy::DoModalCommand(int mode, float x, float y, float z, int entity
 
 void RDNSimProxy::DoCommand(const Vec3f *v, unsigned long num, bool bQueueCommand)
 {
+	dbTracef("RDNSimProxy::DoCommand single command");
+
 	// validate selection first
 	if (!SelectionCanReceiveCommand(0))
 		return;
@@ -975,6 +979,8 @@ void RDNSimProxy::DoCommand(const Vec3f *v, unsigned long num, bool bQueueComman
 
 void RDNSimProxy::DoCommand(const EntityGroup &eg, bool bQueueCommand)
 {
+	dbTracef("RDNSimProxy::DoCommand group command");
+
 	// validate selection first
 	if (!SelectionCanReceiveCommand(0))
 		return;
@@ -1003,16 +1009,16 @@ void RDNSimProxy::DoCommand(const EntityGroup &eg, bool bQueueCommand)
 	if (eg.front())
 	{
 		// Flash the target entity, only if someone will do something to it
-		EntityGroup::const_iterator si = m_pimpl->m_selection->GetSelection().begin();
-		EntityGroup::const_iterator se = m_pimpl->m_selection->GetSelection().end();
+		EntityGroup::const_iterator selectionIter = m_pimpl->m_selection->GetSelection().begin();
+		EntityGroup::const_iterator selectionEnd = m_pimpl->m_selection->GetSelection().end();
 
-		for (; si != se; ++si)
+		for (; selectionIter != selectionEnd; ++selectionIter)
 		{
-			if (CommandProcessor::GetDefaultEntityEntityCommand(*si, eg.front()) != CMD_DefaultAction)
+			if (CommandProcessor::GetDefaultEntityEntityCommand(*selectionIter, eg.front()) != CMD_DefaultAction)
 				break;
 		}
 
-		if (si != se)
+		if (selectionIter != selectionEnd)
 		{
 			OnEntityEntityCmd(eg.front());
 		}
@@ -1170,6 +1176,8 @@ const EntityGroup &RDNSimProxy::GetSelection() const
 
 void RDNSimProxy::OnEvent(const GameEventSys::Event &event)
 {
+	dbTracef("RDNSimProxy::OnEvent %d", event.GetType());
+
 	// handle special events
 	if (event.GetType() == GE_PlayerKilled)
 	{
@@ -1364,9 +1372,21 @@ bool RDNSimProxy::GetCachedRally(const Vec3f **const position, const EntityGroup
 //
 bool RDNSimProxy::SelectionCanReceiveCommand(int max)
 {
+	dbTracef("RDNSimProxy::SelectionCanReceiveCommand | max: %d", max);
 	if (m_pimpl->m_player == 0 ||
 			m_pimpl->m_player->IsPlayerDead())
 		return false;
+
+	EntityGroup selection = m_pimpl->m_selection->GetSelection();
+	EntityGroup::iterator iter;
+	for (iter = selection.begin(); iter != selection.end(); iter++)
+	{
+		Entity *entity = *iter;
+		dbTracef("%s is in the selection", entity->GetControllerBP()->GetFileName());
+	}
+
+	// dbTracef("front %s", selection.front()->GetControllerBP()->GetFileName());
+	// dbTracef("end %s", selection.end()->GetControllerBP()->GetFileName());
 
 	if (m_pimpl->m_selection->GetSelection().front() == 0 ||
 			m_pimpl->m_selection->GetSelection().front()->GetOwner() != m_pimpl->m_player)
@@ -1386,6 +1406,7 @@ bool RDNSimProxy::SelectionCanReceiveCommand(int max)
 //
 void RDNSimProxy::OnEntityPointCmd(const Vec3f &target, int command)
 {
+	dbTracef("RDNSimProxy::OnEntityPointCmd");
 	// validate parm
 	dbAssert(command < CMD_COUNT);
 
@@ -1429,6 +1450,7 @@ void RDNSimProxy::OnEntityPointCmd(const Vec3f &target, int command)
 //
 void RDNSimProxy::OnEntityEntityCmd(const Entity *target)
 {
+	dbTracef("RDNSimProxy::OnEntityEntityCmd");
 	EntityAnimator *pAnimator = target->GetAnimator();
 
 	if (pAnimator)
