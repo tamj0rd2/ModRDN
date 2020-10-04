@@ -4,9 +4,9 @@
 scripts/settings.json
 __pycache__
 
-Locale/ModText.aps
-Locale/.vs
-Locale/Debug
-Locale/Release
-Locale/Locale.vcxproj.user
-Locale/Locale.vcxproj.filters
+locale-project/ModText.aps
+locale-project/.vs
+locale-project/Debug
+locale-project/Release
+locale-project/Locale.vcxproj.user
+locale-project/Locale.vcxproj.filters
