@@ -11,7 +11,7 @@ class Settings:
         self.icInstallDirectory = icInstallDirectory
         self.icSdkDirectory = "{0}/SDK".format(icInstallDirectory)
 
-        self.dllOutputPath = "{0}/Obj/bin/{1}.dll".format(
+        self.dllOutputPath = "{0}/{1}/Obj/bin/RDNMod.dll".format(
             self.icSdkDirectory, modName)
         self.dllInstallPath = "{0}/{1}.dll".format(icInstallDirectory, modName)
 
@@ -22,17 +22,19 @@ class Settings:
         self.modTextInstallPath = "{0}/Locale/english/{1}/ModText.dll".format(
             icInstallDirectory, modName)
 
-        self.guestProjectFolder = "{0}/{1}".format(guestMount, modName)
-        self.guestBuildScriptLocation = "{0}/scripts/build-guest-code.bat".format(
-            self.guestProjectFolder)
+        guestProjectFolder = "{0}/{1}".format(guestMount, modName)
+        self.guestCppProjectFolder = "{0}/cpp-project".format(
+            guestProjectFolder)
         self.guestSolutionLocation = "{0}/RDNRelease.sln".format(
-            self.guestProjectFolder)
+            self.guestCppProjectFolder)
+        self.guestBuildScriptLocation = "{0}/scripts/build-guest-code.bat".format(
+            guestProjectFolder)
 
 
 def writeTemplateSettingsFile(filePath):
     template = """{
   "vmName": "windows xp",
-  "modName": "TMod",
+  "modName": "RDNMod",
   "guestMount": "Z:",
   "icInstallDirectory": "D:/SteamLibrary/steamapps/common/Impossible Creatures_Dev"
 }"""

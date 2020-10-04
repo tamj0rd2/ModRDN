@@ -6,7 +6,7 @@
 	ProjectGUID="{B2BC62D9-A709-4059-BAF3-62B6EBAD0DA3}"
 	SccProjectName="Perforce Project"
 	SccAuxPath=""
-	SccLocalPath="..\.."
+	SccLocalPath="..\..\.."
 	SccProvider="MSSCCI:Perforce SCM">
 	<Platforms>
 		<Platform
@@ -26,7 +26,7 @@
 				AdditionalOptions="/Zm250 "
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories=".\;.\pch\;..\Include\;..\Include\stl"
+				AdditionalIncludeDirectories=".\;.\pch\;..\..\Include\;..\..\Include\stl"
 				PreprocessorDefinitions="RELIC_PC,$(USERNAME);WIN32;_DEBUG;_WINDOWS;_USRDLL;MODRDN_EXPORTS"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -53,9 +53,9 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
 				AdditionalOptions="/MACHINE:I386 "
-				OutputFile="..\..\RDNMod.dll"
+				OutputFile="..\Obj\Bin\RDNMod.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\Lib"
+				AdditionalLibraryDirectories="..\..\Lib"
 				IgnoreDefaultLibraryNames="libcd.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="..\Obj\Bin\RDNMod_d.pdb"
@@ -101,7 +101,7 @@
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="2"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories=".\;.\pch\;..\Include\;..\Include\stl"
+				AdditionalIncludeDirectories=".\;.\pch\;..\..\Include\;..\..\Include\stl"
 				PreprocessorDefinitions="RELIC_PC,WIN32;NDEBUG;_WINDOWS;_USRDLL;MODRDN_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -131,7 +131,7 @@
 				ShowProgress="0"
 				OutputFile="..\Obj\Bin\RDNMod.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\Lib"
+				AdditionalLibraryDirectories="..\..\Lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="..\Obj\Bin\RDNMod.pdb"
 				GenerateMapFile="TRUE"
@@ -678,40 +678,40 @@
 			Name="IC Libs"
 			Filter="">
 			<File
-				RelativePath="..\Lib\Assist.lib">
+				RelativePath="..\..\Lib\Assist.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\Debug.lib">
+				RelativePath="..\..\Lib\Debug.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\Filesystem.lib">
+				RelativePath="..\..\Lib\Filesystem.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\Localizer.lib">
+				RelativePath="..\..\Lib\Localizer.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\Lua.lib">
+				RelativePath="..\..\Lib\Lua.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\Math.lib">
+				RelativePath="..\..\Lib\Math.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\Memory.lib">
+				RelativePath="..\..\Lib\Memory.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\ModInterface.lib">
+				RelativePath="..\..\Lib\ModInterface.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\Platform.lib">
+				RelativePath="..\..\Lib\Platform.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\SimEngine.lib">
+				RelativePath="..\..\Lib\SimEngine.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\SurfVol.lib">
+				RelativePath="..\..\Lib\SurfVol.lib">
 			</File>
 			<File
-				RelativePath="..\Lib\Util.lib">
+				RelativePath="..\..\Lib\Util.lib">
 			</File>
 		</Filter>
 	</Files>
