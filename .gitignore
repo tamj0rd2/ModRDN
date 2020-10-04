@@ -10,5 +10,6 @@ locale-project/Debug
 locale-project/Release
 locale-project/Locale.vcxproj.user
 locale-project/Locale.vcxproj.filters
+Locale/
 
 Obj

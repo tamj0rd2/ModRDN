@@ -4,9 +4,10 @@ import json
 
 
 class Settings:
-    def __init__(self, repoFolder, vmName, guestMount, icInstallDirectory, modName):
+    def __init__(self, repoFolder, vmName, guestMount, icInstallDirectory, modName, modDescription, modVersion):
         self.modName = modName
-        self.vmName = vmName
+        self.modVersion = modVersion
+        self.modDescription = modDescription
 
         self.icInstallDirectory = icInstallDirectory
         self.icSdkDirectory = "{0}/SDK".format(icInstallDirectory)
@@ -22,6 +23,7 @@ class Settings:
         self.modTextInstallPath = "{0}/Locale/english/{1}/ModText.dll".format(
             icInstallDirectory, modName)
 
+        self.vmName = vmName
         guestProjectFolder = "{0}/{1}".format(guestMount, modName)
         self.guestCppProjectFolder = "{0}/cpp-project".format(
             guestProjectFolder)
@@ -30,11 +32,18 @@ class Settings:
         self.guestBuildScriptLocation = "{0}/scripts/build-guest-code.bat".format(
             guestProjectFolder)
 
+        assetsFolder = "{}/assets".format(repoFolder)
+        self.moduleTemplatePath = "{}/template.module".format(assetsFolder)
+        self.moduleInstallPath = "{}/{}.module".format(
+            icInstallDirectory, modName.lower())
+
 
 def writeTemplateSettingsFile(filePath):
     template = """{
   "vmName": "windows xp",
   "modName": "RDNMod",
+  "modDescription": "Baby's first mod",
+  "modVersion": "0.0.1",
   "guestMount": "Z:",
   "icInstallDirectory": "D:/SteamLibrary/steamapps/common/Impossible Creatures_Dev"
 }"""

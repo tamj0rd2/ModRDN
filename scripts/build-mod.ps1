@@ -22,11 +22,11 @@ if ($(Invoke-Expression $getVmState).Contains('running')) {
   $warnings = ($output | Select-String -Pattern ": warning") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace $settings.guestCppProjectFolder,''
   $summary = $output | Select-string -Pattern "ModRDNRelease - "
 
-  Write-Output $output
   if (!$buildWasSuccessful) {
     Write-Output $errors
     Write-Output $summary
     Write-Host "Build failed" -ForegroundColor "red"
+    OnBuildComplete
     exit 1
   }
 
@@ -48,6 +48,7 @@ if ($initialVmState.Contains('powered off') -or $initialVmState.Contains('aborte
     if (!$output.Contains('VBoxManage.exe: error')) {
       if (!$buildWasSuccessful) {
         Write-Host "Build failed" -ForegroundColor "red"
+        OnBuildComplete
         exit 1
       }
 

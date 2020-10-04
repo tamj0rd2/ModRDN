@@ -1,0 +1,17 @@
+;; the values wrapped with {{}} will be filled in automatically
+
+[global]
+
+Name			= {{modName}}
+Description		= {{modDescription}}
+DllName			= {{modName}}
+LocaleFolder	= {{modName}}
+ModFolder		= {{modName}}
+ModVersion      = {{modVersion}}
+PatcherUrl		=
+
+;; //////////////////////////////////////////////////////////////////
+;; List of archives to load for this MOD order is important
+;; The first Archives registered will be scanned for files first
+
+ArchiveFile_1= RDNModData.sga

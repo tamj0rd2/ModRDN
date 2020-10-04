@@ -9,3 +9,6 @@ write-output $settings
 # installs them into the iC directory
 ./scripts/install-mod.ps1
 ./scripts/install-locale.ps1
+
+# installs other assets to the IC directory
+./scripts/install-assets.ps1
