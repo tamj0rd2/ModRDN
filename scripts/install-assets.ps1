@@ -11,6 +11,10 @@ $moduleContent = (Get-Content $settings.moduleTemplatePath | Out-String) `
 Write-Host $settings.moduleInstallPath "installed" -ForegroundColor "green"
 
 # install Locale/english/RDNMod/modloc.sga
-New-Item "$($settings.modTextInstallPath)/.." -Force -Type Directory
+New-Item "$($settings.modTextInstallPath)/.." -Force -Type Directory | Out-Null
 Copy-Item $settings.emptySgaPath $settings.modlocInstallPath -Force
 Write-Host $settings.modlocInstallPath "installed" -ForegroundColor "green"
+
+# install the mod assets folder in the ic directory
+Copy-Item $settings.dataFolder $settings.dataInstallFolder -Force -Recurse
+Write-Host $settings.dataInstallFolder "installed" -ForegroundColor "green"

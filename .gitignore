@@ -1,8 +1,11 @@
 *.ncb
 *.suo
+Obj
+
 
 script-settings.json
 __pycache__
+
 
 locale-project/ModText.aps
 locale-project/.vs
@@ -12,4 +15,22 @@ locale-project/Locale.vcxproj.user
 locale-project/Locale.vcxproj.filters
 Locale/
 
-Obj
+
+**/*.tga
+**/*.rcf
+**/*.spt
+**/*.jpg
+**/*.sgb
+**/*.sga
+**/*.sgm
+**/*.dlg
+**/*.trg
+**/*.na
+**/*.luc
+**/*.bmp
+**/*.scb
+**/*.ebp
+**/*.army
+**/*.scr
+**/*.lsc
+**/*.events

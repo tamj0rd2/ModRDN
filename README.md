@@ -54,6 +54,15 @@ I'm having a mess around with the RockPaperScissors mod included with the Imposs
 1. check `warnings.log` in the IC root directory to check for errors/warnings. That should hopefully give an idea if anything is wrong
 1. Don't keep backup files in the IC root directory. For example, if you want to create a backup of the file `MyMod.dll`, do not rename it to `MyMod.dll.old`. It causes weird things to happen and I don't know why. Instead, keep your backups somewhere else outside of the IC root dir.
 
+### Working with assets
+
+Lua changes should be commited to this repository. Other assets like ebps and
+sgas etc should not be. They should justt be shared via zip files or dropbox.
+They would take up way too much space in the repository otherwise.
+
+After modifying assets or luas, run `./build.ps1` to install them into the
+correct directory.
+
 ## Mod help
 
 ### How do I get my mod to be recognised by IC?

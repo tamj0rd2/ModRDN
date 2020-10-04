@@ -39,6 +39,9 @@ class Settings:
         self.moduleInstallPath = "{}/{}.module".format(
             icInstallDirectory, modName.lower())
         self.emptySgaPath = "{}/empty.sga".format(assetsFolder)
+        self.dataFolder = "{}/Data".format(assetsFolder)
+        self.dataInstallFolder = "{}/{}/Data".format(
+            icInstallDirectory, modName)
 
 
 def writeTemplateSettingsFile(filePath):
