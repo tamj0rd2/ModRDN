@@ -218,6 +218,13 @@ https://forums.virtualbox.org/viewtopic.php?f=8&t=56404
 
 https://old.reddit.com/r/virtualbox/comments/gablpz/is_it_possible_to_increase_video_memory_past_128/
 
+## Running against IC.SDK
+
+I haven't been able to use IC.SDK inside of the VM as of yet due to other issues.
+However, you do need EBEUla.dll in order to launch it at all. You can find that
+file within the original non-steam IC directory. Once you have the file, you
+just need to put it inside of your steam IC directory
+
 ## Glossary
 
 ICInstallationDirectory: The folder where IC is installed
