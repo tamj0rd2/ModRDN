@@ -4,37 +4,48 @@ import json
 
 
 class Settings:
-    def __init__(self, scriptsFolderPath, vmName, guestBuildScriptLocation, icInstallDirectory):
+    def __init__(self, projectFolder, vmName, guestMount, icInstallDirectory, modName):
+        self.modName = modName
         self.vmName = vmName
-        self.guestBuildScriptLocation = guestBuildScriptLocation
+
         self.icInstallDirectory = icInstallDirectory
-        self.icSdkDirectory = icInstallDirectory + "/SDK"
-        self.dllInstallPath = icInstallDirectory + "/RDNMod.dll"
-        self.dllOutputPath = self.icSdkDirectory + "/Obj/bin/RDNMod.dll"
-        self.modTextDllOutputPath = scriptsFolderPath + "/../Locale/Release/Locale.dll"
-        self.modTextInstallPath = self.icInstallDirectory + \
-            "/Locale/english/RDNMod/ModText.dll"
+        self.icSdkDirectory = "{0}/SDK".format(icInstallDirectory)
+        self.dllInstallPath = "{0}/{1}.dll".format(icInstallDirectory, modName)
+        self.modTextInstallPath = "{0}/Locale/english/{1}/ModText.dll".format(
+            icInstallDirectory, modName)
+
+        self.dllOutputPath = "{0}/Obj/bin/{1}.dll".format(
+            self.icSdkDirectory, modName)
+        self.modTextDllOutputPath = "{0}/Locale/Release/Locale.dll".format(
+            projectFolder)
+
+        self.guestProjectFolder = "{0}/{1}".format(guestMount, modName)
+        self.guestBuildScriptLocation = "{0}/scripts/build-guest-code.bat".format(
+            self.guestProjectFolder)
+        self.guestSolutionLocation = "{0}/RDNRelease.sln".format(
+            self.guestProjectFolder)
 
 
 def writeTemplateSettingsFile(filePath):
     template = """{
   "vmName": "windows xp",
-  "guestBuildScriptLocation": "Z:/ModRDNDevelopment/scripts/build-guest-code.bat",
-  "icInstallDirectory": "D:/SteamLibrary/steamapps/common/Impossible Creatures_Dev",
+  "modName": "TMod",
+  "guestMount": "Z:",
+  "icInstallDirectory": "D:/SteamLibrary/steamapps/common/Impossible Creatures_Dev"
 }"""
     with open(filePath, "w") as f:
         f.write(template)
 
 
 def parseSettingsFile():
-    scriptsFolderPath = os.path.dirname(os.path.realpath(sys.argv[0]))
-    settingsFilePath = scriptsFolderPath + '/settings.json'
+    projectFolder = os.getcwd().replace("\\", "/")
+    settingsFilePath = "{}/scripts/settings.json".format(projectFolder)
 
     if not os.path.isfile(settingsFilePath):
         writeTemplateSettingsFile(settingsFilePath)
 
     with open(settingsFilePath) as f:
-        return Settings(scriptsFolderPath, **json.load(f)).__dict__
+        return Settings(projectFolder, **json.load(f)).__dict__
 
 
 if __name__ == "__main__":

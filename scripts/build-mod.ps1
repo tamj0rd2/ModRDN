@@ -15,11 +15,11 @@ if ($initialVmState.Contains('paused')) {
 
 if ($(Invoke-Expression $getVmState).Contains('running')) {
   Write-Host "Trying to build the code...`n" -ForegroundColor 'blue'
-  $output = & VBoxManage.exe guestcontrol $settings.vmName run -- $settings.guestBuildScriptLocation 2>&1
+  $output = & VBoxManage.exe guestcontrol $settings.vmName run -- $settings.guestBuildScriptLocation $settings.guestSolutionLocation 2>&1
   $buildWasSuccessful = $?
 
-  $errors = ($output | Select-String -Pattern ": (fatal )?error") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace 'z:\\ModRDNDevelopment\\',''
-  $warnings = ($output | Select-String -Pattern ": warning" -SimpleMatch) -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace 'z:\\ModRDNDevelopment\\',''
+  $errors = ($output | Select-String -Pattern ": (fatal )?error") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace $settings.guestProjectFolder,''
+  $warnings = ($output | Select-String -Pattern ": warning") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace $settings.guestProjectFolder,''
   $summary = $output | Select-string -Pattern "ModRDNRelease - "
 
   if (!$buildWasSuccessful) {
