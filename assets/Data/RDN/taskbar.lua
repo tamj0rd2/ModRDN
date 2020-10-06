@@ -1,11 +1,11 @@
 ---------------------------------------------------------------------
 -- File    : taskbar.lua
--- Desc    : 
--- Created : 
--- Author  : 
--- 
+-- Desc    :
+-- Created :
+-- Author  :
+--
 -- (c) 2003 Relic Entertainment Inc.
--- 
+--
 
 -- * in-game taskbar script
 
@@ -50,12 +50,12 @@
 	}
 
 	-- buttons
-	menu_commands = 
+	menu_commands =
 	{
 		{ 40950, HK_System_Menu,			42380, },
 		{ 40950, HK_System_Chat,			42380, },
 	}
-	
+
 	guy_commands =
 	{
 		{ 40800,	HK_Guy_Stop,			40800,	"ui/ingame/henchmen_stop.tga" },
@@ -64,20 +64,20 @@
 		{ 40800,	HK_Guy_Kill,			40800,	"ui/ingame/kill.tga"	},
 	}
 
-	hq_commands = 
+	hq_commands =
 	{
 		{ 40930,	HK_Lab_SpawnRock,		42370,	"ui/ingame/spawn_rock.tga" },
 		{ 40931,	HK_Lab_SpawnPaper,		42336,	"ui/ingame/spawn_paper.tga" },
 		{ 40932,	HK_Lab_SpawnScissor,		42337,	"ui/ingame/spawn_scissor.tga" },
 	}
 
-	guy_modalmodes = 
+	guy_modalmodes =
 	{
 		{ MM_Cursor,	MC_Move },
 		{ MM_Cursor,	MC_AttackMove },
 	}
 
-	singleselectinfotable = 
+	singleselectinfotable =
 	{
 		{38410, 38411},		-- healthbar/healthlabel
 		{38412, 38413},		-- entity icon
@@ -92,13 +92,16 @@
 	-- of the selected entities qualifies for this context, and the command to end
 	-- any modal UI state.  The 1st part is the context refresher
 	-- and the 2nd part is the context qualifier.
-	-- 
+	--
 	menucontext = { "", "", "" }
 
 --
 cleartaskbar = function()
 
 	Clear()
+
+	--show background labels
+	ShowHud( "picturelabel" )
 
 	BindHotkey( HK_System_Escape, "deselectall", 0 )
 
@@ -117,6 +120,9 @@ cleartaskbar = function()
 		BindHotkey       ( HK_Select_Lab, "selecthq", 0 )
 
 		-- player resources
+
+		ShowHud("background1")
+
 		BindLabelToPlayerCash	( "resource_cash_label", "resourceindicatorstooltip", 1, LocalPlayer() )
 		BindHudToTooltip		( "resource_cash_icon", "resourceindicatorstooltip", 1, 1 )
 		BindLabelToPlayerPop	( "resource_unitcap_label", "resourceindicatorstooltip", 1, LocalPlayer() )
@@ -148,7 +154,7 @@ chat = function( dummy )
 
 end
 
--- 
+--
 chattooltip = function( enabled, index )
 
 	HelpTextTitle( 40952 )
@@ -156,7 +162,7 @@ chattooltip = function( enabled, index )
 
 end
 
--- 
+--
 tooltip_command = function( enabled, index, table )
 
 	if index >= 1 and index <= getn( table ) then
@@ -169,15 +175,15 @@ tooltip_command = function( enabled, index, table )
 
 end
 
--- 
+--
 resourceindicatorstooltip = function( enabled, index )
 
 	HelpTextTitle( 40750 )
 	HelpTextTextWithoutRequirements( 42400 )
 
 end
- 
--- 
+
+--
 menutooltip = function( enabled, index )
 
 	tooltip_command( enabled, index, menu_commands )
@@ -202,7 +208,7 @@ infocentersinglebasicstats = function( id )
 		-- owner
 		BindLabelToPlayerName  ( "textlabel_playerinfo1", EntityOwner( id ) )
 		BindLabelToPlayerColour( "color_label",           EntityOwner( id ) )
-		
+
 		-- ally/enemy
 		if not( LocalPlayer() == 0) then
 			if SelectionIsEnemy() == 1 then
@@ -211,7 +217,7 @@ infocentersinglebasicstats = function( id )
 				BindLabelToText( "textlabel_infoline02", 40970 )
 
 			end
-		end	
+		end
 
 	end
 
@@ -274,8 +280,8 @@ infocenterenemy = function()
 	if SelectionCount() == 1 then
 
 		local id = SelectionId( 0 )
-		
-		local type = EntityType( id ) 
+
+		local type = EntityType( id )
 
 		if	type == Lab_EC or
 			type == Henchmen_EC
@@ -345,7 +351,7 @@ end
 infocenter = function()
 
 	if SelectionCount() == 0 then
-	
+
 		-- display nothing
 
 	else
@@ -425,7 +431,7 @@ infocentermulti = function()
 	local count = SelectionCount()
 
 	if  count > getn( multibuttons ) then
-		
+
 		count = getn( multibuttons )
 
 	end
@@ -434,7 +440,7 @@ infocentermulti = function()
 	do
 
 		local id = SelectionId( i )
-		
+
 		BindButtonToEntity   ( multibuttons[ i + 1 ][ 1 ], "", "selectentity", "", id )
 		BindBarToEntityHealth( multibuttons[ i + 1 ][ 2 ], id, "", 0 );
 
@@ -539,7 +545,7 @@ end
 
 --
 dodestroy = function( dummy )
-	
+
 	DoDestroy()
 
 end
@@ -571,9 +577,9 @@ hqselection = function()
 	cleartaskbar()
 
 	-- spawn guys
-	BindButtonToUnitEBP( "build_rock", HK_Lab_SpawnRock, "dobuildunit", "commandstooltip", id, RockEBP() )
-	BindButtonToUnitEBP( "build_paper", HK_Lab_SpawnPaper, "dobuildunit", "commandstooltip", id, PaperEBP() )
-	BindButtonToUnitEBP( "build_scissor", HK_Lab_SpawnScissor, "dobuildunit", "commandstooltip", id, ScissorEBP() )
+	BindButtonToUnitEBP( "command_big_icon01", HK_Lab_SpawnRock, "dobuildunit", "commandstooltip", id, RockEBP() )
+	BindButtonToUnitEBP( "command_big_icon02", HK_Lab_SpawnPaper, "dobuildunit", "commandstooltip", id, PaperEBP() )
+	BindButtonToUnitEBP( "command_big_icon03", HK_Lab_SpawnScissor, "dobuildunit", "commandstooltip", id, ScissorEBP() )
 
 	-- command area
 		-- background
@@ -588,7 +594,7 @@ selectentity = function( id )
 	-- check to see if the select similar entity button is pressed
 	-- currently this button is 'Shift'
 	local actOnSimilar = IsSelectSimilarPressed()
-	
+
 	-- check to see if the select single entity button is being pressed
 	-- currently this button is 'Ctrl'
 	if (IsSelectSinglePressed() == 1) then
@@ -596,7 +602,7 @@ selectentity = function( id )
 	else
 		SelectEntity( id, actOnSimilar )
 	end
-	
+
 
 end
 
@@ -695,7 +701,7 @@ dobuildunit = function( ebpid )
 	local result = DoBuildUnit( ebpid )
 
 	if result == 0 then
-		
+
 		-- success
 
 	else
@@ -742,7 +748,7 @@ doresearch = function( research )
 	local result = DoResearch( research )
 
 	if result == 0 then
-		
+
 		-- success
 
 	else
@@ -765,7 +771,7 @@ dobuildbuildingcancel = function( dummy )
 
 end
 
--- 
+--
 buildbuilding_updateui = function()
 
 	--
@@ -777,7 +783,7 @@ buildbuilding_updateui = function()
 
 end
 
--- 
+--
 dospawnmodal = function( index )
 
 	-- register function for refresh calls
@@ -786,7 +792,7 @@ dospawnmodal = function( index )
 	-- translate mode in game usable mode (only one here)
 	local mode		= MM_LockCursor
 	local command	= MC_SetRallyPoint
-	
+
 	--
 	local result = ModalUIBegin( "domodalclick", "domodalcancel", mode, command )
 
@@ -803,7 +809,7 @@ dospawnmodal = function( index )
 
 		-- failed
 		failedcommand( result )
-	
+
 	end
 
 end
@@ -817,7 +823,7 @@ docreaturemodal = function( index )
 	-- translate mode in game usable mode
 	local mode		= creature_modalmodes[ index ][1];
 	local command	= creature_modalmodes[ index ][2];
-	
+
 	-- let creature modal commands be queued
 	CommandQueueEnable( HK_System_CommandQueue, "commandqueuecancel" )
 
@@ -837,7 +843,7 @@ docreaturemodal = function( index )
 
 		-- failed
 		failedcommand( result )
-	
+
 	end
 
 end
@@ -847,7 +853,7 @@ domodalclick = function( mode, x, y, z, ebpid )
 
 	-- are we in command queue mode?
 	local queue = ModalCommandQueueRequest()
-	
+
 	if queue == 0 then
 
 		-- stop ui (taskbar)
@@ -872,11 +878,11 @@ end
 
 --
 
--- 
+--
 commandarearesearch = function( id, research, tooltipcb )
 
 	--
-	local buttons = 
+	local buttons =
 	{
 		"command_big_icon01",
 		"command_big_icon02",
@@ -918,11 +924,11 @@ commandarearesearch = function( id, research, tooltipcb )
 
 end
 
--- 
+--
 commandareaupgrade = function( id, ebpnetid, upgrade, tooltipcb )
 
 	--
-	local buttons = 
+	local buttons =
 	{
 		"command_big_icon01",
 		"command_big_icon02",
@@ -1014,11 +1020,11 @@ menucontext_clear = function()
 
 end
 
--- 
+--
 menucontext_cancelmodal = function()
 
 	if menucontext[3] ~= "" then
-	
+
 		dostring( menucontext[3] )
 
 	end
