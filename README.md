@@ -80,6 +80,8 @@ If your mod is called `ModName`, you'd need these files
 | Locale\English\RDNMod\modloc.sga |                                                                       |                         |
 | Locale\English\RDNMod\ModText.*  |                                                                       |                         |
 
+When creating the SGA archive, you need to set Alias to `Data`
+
 #### The content of <ModName.module>
 
 #### How files for the game get searched for:

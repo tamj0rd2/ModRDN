@@ -15,3 +15,4 @@ PatcherUrl		=
 ;; The first Archives registered will be scanned for files first
 
 ArchiveFile_1= {{modName}}Data.sga
+ArchiveFile_2= ICData.sga
