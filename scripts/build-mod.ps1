@@ -18,8 +18,8 @@ if ($(Invoke-Expression $getVmState).Contains('running')) {
   $output = & VBoxManage.exe guestcontrol $settings.vmName run -- $settings.guestBuildScriptLocation $settings.guestSolutionLocation 2>&1
   $buildWasSuccessful = $?
 
-  $errors = ($output | Select-String -Pattern ": (fatal )?error") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace $settings.guestCppProjectFolder,''
-  $warnings = ($output | Select-String -Pattern ": warning") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace $settings.guestCppProjectFolder,''
+  $errors = ($output | Select-String -Pattern ": (fatal )?error") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace '\\','/' -replace $settings.guestCppProjectFolder,''
+  $warnings = ($output | Select-String -Pattern ": warning") -replace '\.(cpp|h)\((\d+)\)','.$1:$2' -replace '\\','/' -replace $settings.guestCppProjectFolder,''
   $summary = $output | Select-string -Pattern "ModRDNRelease - "
 
   if (!$buildWasSuccessful) {

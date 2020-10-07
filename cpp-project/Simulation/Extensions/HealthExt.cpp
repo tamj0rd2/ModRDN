@@ -24,7 +24,6 @@
 #include "AttackExt.h"
 #include "ModifierExt.h"
 
-#include "../ExtInfo/WarriorExtInfo.h"
 #include "../ExtInfo/HealthExtInfo.h"
 #include "../ExtInfo/SiteExtInfo.h"
 
@@ -170,15 +169,9 @@ bool HealthExt::ImmuneTo(DamageType) const
 //
 bool HealthExt::ReceivesNoDamageFrom(const DamageType damagetype, const AttackType attacktype, const Entity *pAttacker) const
 {
+	UNREF_P(damagetype);
 	UNREF_P(pAttacker);
 	UNREF_P(attacktype);
-
-	const WarriorExtInfo *pWarriorExtInfo = QIExtInfo<WarriorExtInfo>(GetSelf());
-	if (pWarriorExtInfo)
-	{
-		//	Warriors can selectively not get damaged
-		return ((pWarriorExtInfo->damagedBy & damagetype) != 0);
-	}
 
 	return false;
 }

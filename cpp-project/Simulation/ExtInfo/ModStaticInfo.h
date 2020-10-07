@@ -32,7 +32,6 @@ public:
 		EXTINFOID_Cost,
 		EXTINFOID_Health,
 		EXTINFOID_Moving,
-		EXTINFOID_Warrior,
 		EXTINFOID_Resource,
 		EXTINFOID_Sight,
 		EXTINFOID_Site,

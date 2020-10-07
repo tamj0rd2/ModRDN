@@ -25,9 +25,7 @@ public:
 	};
 
 	static const EBPName Lab;
-	static const EBPName Rock;
-	static const EBPName Paper;
-	static const EBPName Scissor;
+	static const EBPName Henchmen;
 
 	static void Preload();
 

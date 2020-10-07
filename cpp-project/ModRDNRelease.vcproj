@@ -454,12 +454,6 @@
 					<File
 						RelativePath="Simulation\ExtInfo\UIExtInfo.h">
 					</File>
-					<File
-						RelativePath="Simulation\ExtInfo\WarriorExtInfo.cpp">
-					</File>
-					<File
-						RelativePath="Simulation\ExtInfo\WarriorExtInfo.h">
-					</File>
 				</Filter>
 				<Filter
 					Name="Modifiers"

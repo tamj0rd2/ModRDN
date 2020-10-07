@@ -21,7 +21,5 @@ enum AttackType
 enum DamageType
 {
 	DT_None = 0,
-	DT_Rock = (1 << 0),
-	DT_Paper = (1 << 1),
-	DT_Scissors = (1 << 2),
+	DT_Henchmen = (1 << 0),
 };

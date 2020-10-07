@@ -32,22 +32,13 @@
 	HK_Guy_Kill				= "keygroups.guycommands.keys.kill"
 
 	-- Lab
-	HK_Lab_SpawnRock		= "keygroups.hqcommands.keys.spawnrock"
-	HK_Lab_SpawnPaper		= "keygroups.hqcommands.keys.spawnpaper"
-	HK_Lab_SpawnScissor		= "keygroups.hqcommands.keys.spawnscissor"
+
+	HK_Lab_SpawnHenchmen		= "keygroups.hqcommands.keys.spawnhenchmen"
 
 	-- selection
 	HK_Select_UnitsOnScreen	= "keygroups.select.keys.unitsonscreen"
 	HK_Select_UnitsInWorld	= "keygroups.select.keys.unitsinworld"
 	HK_Select_Lab			= "keygroups.select.keys.hq"
-
-	-- guy buttons
-	guy_buttons =
-	{
-		"spawn_rock",
-		"spawn_paper",
-		"spawn_scissors",
-	}
 
 	-- buttons
 	menu_commands =
@@ -66,9 +57,7 @@
 
 	hq_commands =
 	{
-		{ 40930,	HK_Lab_SpawnRock,		42370,	"ui/ingame/spawn_rock.tga" },
-		{ 40931,	HK_Lab_SpawnPaper,		42336,	"ui/ingame/spawn_paper.tga" },
-		{ 40932,	HK_Lab_SpawnScissor,		42337,	"ui/ingame/spawn_scissor.tga" },
+		{ 40930,	HK_Lab_SpawnHenchmen,		42370,	"ui/ingame/spawn_rock.tga" },
 	}
 
 	guy_modalmodes =
@@ -577,9 +566,7 @@ hqselection = function()
 	cleartaskbar()
 
 	-- spawn guys
-	BindButtonToUnitEBP( "command_big_icon01", HK_Lab_SpawnRock, "dobuildunit", "commandstooltip", id, RockEBP() )
-	BindButtonToUnitEBP( "command_big_icon02", HK_Lab_SpawnPaper, "dobuildunit", "commandstooltip", id, PaperEBP() )
-	BindButtonToUnitEBP( "command_big_icon03", HK_Lab_SpawnScissor, "dobuildunit", "commandstooltip", id, ScissorEBP() )
+	BindButtonToUnitEBP( "command_big_icon01", HK_Lab_SpawnHenchmen, "dobuildunit", "commandstooltip", id, HenchmenEBP() )
 
 	-- command area
 		-- background

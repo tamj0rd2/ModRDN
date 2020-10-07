@@ -247,9 +247,7 @@ void RDNSimProxy::LuaSetup()
 	BINDFUNC(EntityOwner);
 	BINDFUNC(EntityInSpawning);
 
-	BINDFUNC(RockEBP);
-	BINDFUNC(PaperEBP);
-	BINDFUNC(ScissorEBP);
+	BINDFUNC(HenchmenEBP);
 
 	BINDFUNC(UnitCanBeBuiltHere);
 	BINDFUNC(BuildQueueLength);
@@ -646,26 +644,10 @@ bool RDNSimProxy::UnitCanBeBuiltHere(int building, int ebpid)
 	return spawner->UnitListFilter(cbp);
 }
 
-int RDNSimProxy::RockEBP() const
+int RDNSimProxy::HenchmenEBP() const
 {
 	const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
-	const ControllerBlueprint *cbp = const_cast<EntityFactory *>(ef)->GetControllerBP(RDNEBP::Rock.folder, RDNEBP::Rock.file);
-
-	return cbp->GetEBPNetworkID();
-}
-
-int RDNSimProxy::PaperEBP() const
-{
-	const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
-	const ControllerBlueprint *cbp = const_cast<EntityFactory *>(ef)->GetControllerBP(RDNEBP::Paper.folder, RDNEBP::Paper.file);
-
-	return cbp->GetEBPNetworkID();
-}
-
-int RDNSimProxy::ScissorEBP() const
-{
-	const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
-	const ControllerBlueprint *cbp = const_cast<EntityFactory *>(ef)->GetControllerBP(RDNEBP::Scissor.folder, RDNEBP::Scissor.file);
+	const ControllerBlueprint *cbp = const_cast<EntityFactory *>(ef)->GetControllerBP(RDNEBP::Henchmen.folder, RDNEBP::Henchmen.file);
 
 	return cbp->GetEBPNetworkID();
 }

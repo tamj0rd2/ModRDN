@@ -140,9 +140,7 @@ public:
 	bool EntityInSpawning(int entityId);
 
 	// unit spawning
-	int RockEBP() const;
-	int PaperEBP() const;
-	int ScissorEBP() const;
+	int HenchmenEBP() const;
 
 	//
 	bool UnitCanBeBuiltHere(int building, int ebpid);

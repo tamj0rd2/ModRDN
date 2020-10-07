@@ -9,13 +9,10 @@
  * == RDNEBP ==
  * As far as I can tell, we only preload these specific EBPs because they are
  * used directly in our code. i.e for conditions about whether there are enough
- * labs etc. I imagine Rock, Paper and Scissor are here because they need
- * specific RDN controllers applied to them
+ * labs etc.
  * */
 const RDNEBP::EBPName RDNEBP::Lab = {"structures", "lab"};
-const RDNEBP::EBPName RDNEBP::Rock = {"units", "rock"};
-const RDNEBP::EBPName RDNEBP::Paper = {"units", "paper"};
-const RDNEBP::EBPName RDNEBP::Scissor = {"units", "scissor"};
+const RDNEBP::EBPName RDNEBP::Henchmen = {"gatherers", "henchmen"};
 
 void RDNEBP::Preload()
 {
@@ -23,9 +20,7 @@ void RDNEBP::Preload()
 	ModObj::i()->GetEntityFactory()->GetControllerBP(t.folder, t.file);
 
 	LOAD(Lab);
-	LOAD(Rock);
-	LOAD(Paper);
-	LOAD(Scissor);
+	LOAD(Henchmen);
 
 #undef LOAD
 
