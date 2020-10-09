@@ -54,6 +54,10 @@ I'm having a mess around with the RockPaperScissors mod included with the Imposs
 1. check `warnings.log` in the IC root directory to check for errors/warnings. That should hopefully give an idea if anything is wrong
 1. Don't keep backup files in the IC root directory. For example, if you want to create a backup of the file `MyMod.dll`, do not rename it to `MyMod.dll.old`. It causes weird things to happen and I don't know why. Instead, keep your backups somewhere else outside of the IC root dir.
 
+#### I'm only getting back the first letter of a wchar or wstring
+
+Use the %S formatter instead of %s. [Ref](https://docs.microsoft.com/en-us/cpp/c-runtime-library/format-specification-syntax-printf-and-wprintf-functions?view=vs-2019)
+
 ### Working with assets
 
 Lua changes should be commited to this repository. Other assets like ebps and
@@ -226,6 +230,8 @@ I haven't been able to use IC.SDK inside of the VM as of yet due to other issues
 However, you do need EBEUla.dll in order to launch it at all. You can find that
 file within the original non-steam IC directory. Once you have the file, you
 just need to put it inside of your steam IC directory
+
+
 
 ## Glossary
 

@@ -187,6 +187,14 @@ public:
 
 	void CommandQueueEnable(const char *hotkeyLuaName, const char *releaseCallback);
 
+	/**
+	 * Some methods that are used to display localised strings ingame
+	**/
+	void HelpTextTitle(int modtextId);
+	void HelpTextShortcut(const char *hotkeyLuaName);
+	void HelpTextTextWithoutRequirements(int modtextId);
+	void HelpTextChat();
+
 	// inherited -- GameEventSys::Listener
 private:
 	virtual void OnEvent(const GameEventSys::Event &);

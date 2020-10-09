@@ -24,14 +24,14 @@ if ($(Invoke-Expression $getVmState).Contains('running')) {
 
   if (!$buildWasSuccessful) {
     Write-Output $errors
-    Write-Output $summary
+    Write-Host $summary
     Write-Host "Build failed" -ForegroundColor "red"
     OnBuildComplete
     exit 1
   }
 
   Write-Output $warnings
-  Write-Output $summary
+  Write-Host $summary
   Write-Host "Build succeeded" -ForegroundColor "green"
   OnBuildComplete
   exit 0

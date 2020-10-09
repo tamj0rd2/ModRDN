@@ -1463,6 +1463,11 @@ void RDNTaskbar::LuaSetup()
 	BIND(IsHudEnabled);
 
 	BIND(GetModalCommandMode);
+
+	BIND(HelpTextTitle);
+	BIND(HelpTextShortcut);
+	BIND(HelpTextTextWithoutRequirements);
+	BIND(HelpTextChat);
 #undef BIND
 
 #define BINDINNERCONSTANT(t, c) \
@@ -3549,4 +3554,40 @@ void RDNTaskbar::UnselectHiddenEntities()
 int RDNTaskbar::GetModalCommandMode()
 {
 	return m_pimpl->m_modalParm;
+}
+
+void RDNTaskbar::HelpTextTitle(int modtextId)
+{
+	std::wstring helpText(Localizer::GetString(modtextId));
+	dbTracef("RDNTaskbar::HelpTextTitle %S", helpText);
+
+	m_pimpl->m_hud->SetText(CURRENTSCREEN, "ingame_helptext_title", helpText.c_str());
+}
+
+void RDNTaskbar::HelpTextShortcut(const char *hotkeyLuaName)
+{
+	const RDNInputBinder::HotKey *p_hk = m_pimpl->m_pInputBinder->GetHotKeyByTableName(hotkeyLuaName);
+	if (p_hk)
+	{
+		dbTracef("RDNTaskbar::HelpTextShortcut Hotkey for %s is: %s", hotkeyLuaName, p_hk->keyCombo);
+	}
+	else
+	{
+		dbTracef("RDNTaskbar::HelpTextShortcut Could not find hot key string for %s", hotkeyLuaName);
+		std::wstring fallbackText(std::wstring(L"FallbackText"));
+		m_pimpl->m_hud->SetText(CURRENTSCREEN, "ingame_helptext_shortcut", fallbackText.c_str());
+	}
+}
+
+void RDNTaskbar::HelpTextTextWithoutRequirements(int modtextId)
+{
+	std::wstring helpText(Localizer::GetString(modtextId));
+	dbTracef("RDNTaskbar::HelpTextTextWithoutRequirements %S", helpText);
+
+	m_pimpl->m_hud->SetText(CURRENTSCREEN, "ingame_helptext_without_requirements", helpText.c_str());
+}
+
+void RDNTaskbar::HelpTextChat()
+{
+	dbTracef("RDNTaskbar::HelpTextChat");
 }

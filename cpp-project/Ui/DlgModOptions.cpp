@@ -104,8 +104,8 @@ namespace
 // Param.    :
 // Author    :
 //
-DlgModOptions::DlgModOptions(RTSHud *h, const RDNSimProxy *proxy, RDNInputBinder *pInputBinder, RDNUIOptions *pRDNUIOptions, const CloseCB &cb)
-		: m_hud(h),
+DlgModOptions::DlgModOptions(RTSHud *hud, const RDNSimProxy *proxy, RDNInputBinder *pInputBinder, RDNUIOptions *pRDNUIOptions, const CloseCB &cb)
+		: m_hud(hud),
 			m_cbClose(cb),
 			m_proxy(proxy),
 			m_pInputBinder(pInputBinder),
@@ -146,21 +146,21 @@ DlgModOptions::~DlgModOptions()
 // Param.    :
 // Author    :
 //
-DlgModOptions *DlgModOptions::Create(RTSHud *h, const RDNSimProxy *proxy, RDNInputBinder *pInputBinder, RDNUIOptions *pRDNUIOptions, const CloseCB &cb)
+DlgModOptions *DlgModOptions::Create(RTSHud *hud, const RDNSimProxy *proxy, RDNInputBinder *pInputBinder, RDNUIOptions *pRDNUIOptions, const CloseCB &cb)
 {
 	// validate parm
-	dbAssert(h);
+	dbAssert(hud);
 	dbAssert(cb.empty() == 0);
 
 	// try to show popup
-	if (h->PopupShow(SCREENNAME, RTSHud::InputCallback()) == 0)
+	if (hud->PopupShow(SCREENNAME, RTSHud::InputCallback()) == 0)
 		return 0;
 
 	// create instance
-	DlgModOptions *dlg = new DlgModOptions(h, proxy, pInputBinder, pRDNUIOptions, cb);
+	DlgModOptions *dlg = new DlgModOptions(hud, proxy, pInputBinder, pRDNUIOptions, cb);
 
 	// applies tootltips
-	h->ApplyTooltipFile(SCREENNAME, "data:ui/screens/tooltips/igmodoptionstt.lua");
+	hud->ApplyTooltipFile(SCREENNAME, "data:ui/screens/tooltips/igmodoptionstt.lua");
 
 	return dlg;
 }
