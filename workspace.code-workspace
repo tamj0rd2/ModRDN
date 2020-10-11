@@ -36,6 +36,7 @@
       "buildAndInstallLocale": ["ModText.rc"]
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
-    "Lua.diagnostics.disable": ["undefined-global", "lowercase-global"]
+    "Lua.diagnostics.disable": ["undefined-global", "lowercase-global"],
+    "python.autoComplete.extraPaths": ["./scripts"]
   }
 }
