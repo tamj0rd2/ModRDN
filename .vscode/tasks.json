@@ -4,42 +4,11 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "buildCpp",
-      "type": "shell",
-      "command": "./scripts/build-mod.ps1",
-      "group": "build",
-      "problemMatcher": [],
-      "presentation": {
-        "echo": true,
-        "reveal": "silent",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-      }
-    },
-    {
       "label": "buildAndInstallMod",
       "type": "shell",
-      "command": "./scripts/install-mod.ps1",
-      "dependsOn": ["buildCpp"],
+      "command": "python ./scripts/build.py --install --targets mod",
       "group": "build",
       "problemMatcher": [],
-      "presentation": {
-        "echo": true,
-        "reveal": "silent",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-      }
-    },
-    {
-      "label": "buildModText",
-      "type": "shell",
-      "command": "./scripts/build-locale.ps1",
-      "group": "build",
-      "problemMatcher": ["$msCompile"],
       "presentation": {
         "echo": true,
         "reveal": "silent",
@@ -52,8 +21,7 @@
     {
       "label": "buildAndInstallLocale",
       "type": "shell",
-      "command": "./scripts/install-locale.ps1",
-      "dependsOn": ["buildModText"],
+      "command": "python ./scripts/build.py --install --targets locale",
       "group": "build",
       "problemMatcher": [],
       "presentation": {
@@ -67,7 +35,7 @@
     },
     {
       "label": "build",
-      "dependsOn": ["buildAndInstallMod", "buildAndInstallLocale"],
+      "command": "python ./scripts/build.py --install",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -82,19 +50,5 @@
         "clear": false
       }
     },
-    {
-      "label": "launchIC",
-      "type": "shell",
-      "command": "./scripts/launch-ic.ps1",
-      "problemMatcher": [],
-      "presentation": {
-        "echo": true,
-        "reveal": "silent",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-      }
-    }
   ]
 }

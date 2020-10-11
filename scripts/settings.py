@@ -5,11 +5,14 @@ import json
 
 class Settings:
     def __init__(self, repoFolder: str, vmName: str, guestMount: str, icInstallDirectory: str, modName: str, modDescription: str, modVersion: str):
+        self.repoFolder = repoFolder
+
         self.modName = modName
         self.modVersion = modVersion
         self.modDescription = modDescription
 
         self.icInstallDirectory = icInstallDirectory
+        self.icExePath = "{}\\IC.exe".format(icInstallDirectory)
         self.icSdkDirectory = "{0}\\SDK".format(icInstallDirectory)
 
         self.dllOutputPath = "{0}\\{1}\\Obj\\bin\\RDNMod.dll".format(
@@ -26,6 +29,7 @@ class Settings:
         self.modTextInstallPath = "{0}\\ModText.dll".format(
             localeInstallFolder)
         self.modlocInstallPath = "{0}\\modloc.sga".format(localeInstallFolder)
+        self.msBuildPath = "D:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe"
 
         self.vmName = vmName
         guestProjectFolder = "{0}\\{1}".format(guestMount, modName)
