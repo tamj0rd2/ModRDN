@@ -6,6 +6,7 @@ import time
 import os
 import argparse
 from shutil import copyfile
+import sys
 
 
 class Logger:
@@ -30,6 +31,10 @@ class Logger:
     @staticmethod
     def warn(text: str):
         print(Logger.YELLOW + text + Logger.RESET)
+
+    @staticmethod
+    def log(text: str):
+        print(text)
 
 
 def runProcess(args: list, throwOnFail=True):
@@ -78,7 +83,7 @@ class VmManager:
             vmState = self.__getState()
 
         self.__waitForAvailability()
-        print("Connected to vm \"{}\"".format(self.vmName))
+        print("Connected to vm \"{}\"\n".format(self.vmName))
         return
 
     def __pause(self):
@@ -112,7 +117,7 @@ class VmManager:
 
 def buildCppCode(settings: Settings, vm: VmManager):
     result = vm.exec([settings.guestBuildScriptLocation,
-                      settings.guestSolutionLocation], throwOnFail=True, preExecMessage="Building cpp code")
+                      settings.guestSolutionLocation], throwOnFail=False, preExecMessage="Building cpp code")
     if result.returncode == 0:
         Logger.success("Cpp code built\n")
         return
@@ -126,16 +131,21 @@ def buildCppCode(settings: Settings, vm: VmManager):
             shouldStartPrinting = True
 
         if shouldStartPrinting:
-            if re.match(r".*: (fatal )?(error|warning)", trimmedLine):
+            if re.match(r".*: (fatal )?(error)", trimmedLine):
                 Logger.error(re.sub(r"\.(cpp|h)\((\d+)\)",
                                     ".\g<1>:\g<2>", trimmedLine))
+            elif re.match(r".*: (warning)", trimmedLine):
+                Logger.warn(re.sub(r"\.(cpp|h)\((\d+)\)",
+                                   ".\g<1>:\g<2>", trimmedLine))
             elif trimmedLine.lower().startswith(settings.guestCppProjectFolder.lower()):
                 search = re.compile(r"{}\\(.*)\((\d+)\)".format(
                     re.escape(settings.guestCppProjectFolder)), re.IGNORECASE)
-                Logger.error(re.sub(search, "\g<1>:\g<2>", trimmedLine))
+                Logger.log(re.sub(search, "\g<1>:\g<2>", trimmedLine))
             else:
-                Logger.error(trimmedLine)
+                Logger.log(trimmedLine)
                 continue
+
+    raise ChildProcessError("Failed to build cpp code")
 
 
 def buildLocale(settings: Settings):
@@ -182,12 +192,16 @@ def start(install: bool, launch: bool, targets: list):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--install", action="store_true",
-                        help="installs the DLL after the build")
-    parser.add_argument("--launch", action="store_true",
-                        help="launches IC after the build")
-    possibleTargets = ["mod", "locale", "assets"]
-    parser.add_argument("--targets", nargs="+",
-                        default=possibleTargets, choices=possibleTargets)
-    start(**parser.parse_args().__dict__)
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--install", action="store_true",
+                            help="installs the DLL after the build")
+        parser.add_argument("--launch", action="store_true",
+                            help="launches IC after the build")
+        possibleTargets = ["mod", "locale", "assets"]
+        parser.add_argument("--targets", nargs="+",
+                            default=possibleTargets, choices=possibleTargets)
+        start(**parser.parse_args().__dict__)
+    except Exception as err:
+        Logger.error(getattr(err, 'message', repr(err)))
+        sys.exit(1)
