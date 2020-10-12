@@ -8,6 +8,30 @@ import argparse
 from shutil import copyfile
 
 
+class Logger:
+    GREEN = '\033[1;32m'
+    RED = '\033[1;31m'
+    BLUE = '\033[1;34m'
+    YELLOW = '\033[93m'
+    RESET = '\033[0m'
+
+    @staticmethod
+    def info(text: str):
+        print(Logger.BLUE + text + Logger.RESET)
+
+    @staticmethod
+    def success(text: str):
+        print(Logger.GREEN + text + Logger.RESET)
+
+    @staticmethod
+    def error(text: str):
+        print(Logger.RED + text + Logger.RESET)
+
+    @staticmethod
+    def warn(text: str):
+        print(Logger.YELLOW + text + Logger.RESET)
+
+
 def runProcess(args: list, throwOnFail=True):
     if (len(args) < 1):
         raise ValueError("you must provide a list of args")
@@ -22,33 +46,80 @@ def runProcess(args: list, throwOnFail=True):
     return result
 
 
-def getVmState(settings: Settings):
-    result = runProcess(["VBoxManage.exe", "showvminfo", settings.vmName])
+class VmManager:
+    def __init__(self, settings: Settings):
+        self.vmName = settings.vmName
 
-    allOutput = [[line[0].strip(), line[1].strip()] for line in [re.sub(r"\s+", " ", rawLine).split(':', 1)
-                                                                 for rawLine in result.stdout.split('\n') if rawLine != ''] if len(line) > 1]
-    properties = dict(allOutput)
-    return properties['State']
+    def exec(self, args: list, throwOnFail=True, preExecMessage: str = None):
+        self.__start()
+        if preExecMessage:
+            Logger.info(preExecMessage)
+
+        result = runProcess(["VBoxManage.exe", "guestcontrol",
+                             self.vmName, "run", "--"] + args, throwOnFail)
+        self.__pause()
+        return result
+
+    def __start(self):
+        vmState = self.__getState()
+
+        if ("running" in vmState):
+            return
+
+        if ("paused" in vmState):
+            runProcess(
+                ["VBoxManage.exe", "controlvm", self.vmName, "resume"])
+            return
+
+        if ("powered off" in vmState or "aborted" in vmState):
+            runProcess(["VBoxManage.exe", "startvm",
+                        self.vmName, "--type", "headless"])
+            time.sleep(1)
+            vmState = self.__getState()
+
+        self.__waitForAvailability()
+        print("Connected to vm \"{}\"".format(self.vmName))
+        return
+
+    def __pause(self):
+        runProcess(["VBoxManage.exe", "controlvm", self.vmName, "pause"])
+
+    def __getState(self):
+        result = runProcess(["VBoxManage.exe", "showvminfo", self.vmName])
+
+        allOutput = [[line[0].strip(), line[1].strip()] for line in [re.sub(r"\s+", " ", rawLine).split(':', 1)
+                                                                     for rawLine in result.stdout.split('\n') if rawLine != ''] if len(line) > 1]
+        properties = dict(allOutput)
+        return properties['State']
+
+    def __waitForAvailability(self):
+        Logger.info("Waiting for VM to become available")
+
+        def isVmAvailable():
+            result = runProcess(["VBoxManage.exe", "guestcontrol",
+                                 self.vmName, "run", "--", "cmd.exe", "/C", "echo all good"], False)
+            return result.returncode == 0
+
+        attemptCount = 0
+        while not isVmAvailable() or "running" not in self.__getState():
+            print("waiting...")
+            if (attemptCount > 30):
+                raise ValueError("Could not start the {} vm. Current state: {}".format(
+                    self.vmName, self.__getState()))
+            attemptCount += 1
+            time.sleep(1)
 
 
-def resumeVm(settings: Settings):
-    print("Resuming the VM...")
-    runProcess(
-        ["VBoxManage.exe", "controlvm", settings.vmName, "resume"])
-    time.sleep(1)
-
-
-def buildCppCode(settings: Settings):
-    result = runProcess(["VBoxManage.exe", "guestcontrol", settings.vmName, "run",
-                         "--", settings.guestBuildScriptLocation, settings.guestSolutionLocation], throwOnFail=False)
-
+def buildCppCode(settings: Settings, vm: VmManager):
+    result = vm.exec([settings.guestBuildScriptLocation,
+                      settings.guestSolutionLocation], throwOnFail=True, preExecMessage="Building cpp code")
     if result.returncode == 0:
-        print("cpp code built")
+        Logger.success("Cpp code built\n")
         return
 
     shouldStartPrinting = False
     stdout: str = result.stdout
-    print(result.stderr)
+
     for line in stdout.strip().split("\n"):
         trimmedLine = line.strip()
         if re.match(r".*: (fatal )?(error|warning)", trimmedLine):
@@ -56,53 +127,31 @@ def buildCppCode(settings: Settings):
 
         if shouldStartPrinting:
             if re.match(r".*: (fatal )?(error|warning)", trimmedLine):
-                print(re.sub(r"\.(cpp|h)\((\d+)\)", ".\g<1>:\g<2>", trimmedLine))
+                Logger.error(re.sub(r"\.(cpp|h)\((\d+)\)",
+                                    ".\g<1>:\g<2>", trimmedLine))
             elif trimmedLine.lower().startswith(settings.guestCppProjectFolder.lower()):
                 search = re.compile(r"{}\\(.*)\((\d+)\)".format(
                     re.escape(settings.guestCppProjectFolder)), re.IGNORECASE)
-                print(re.sub(search, "\g<1>:\g<2>", trimmedLine))
+                Logger.error(re.sub(search, "\g<1>:\g<2>", trimmedLine))
             else:
-                print(trimmedLine)
+                Logger.error(trimmedLine)
                 continue
 
 
 def buildLocale(settings: Settings):
-    result = runProcess([settings.msBuildPath, settings.modTextSln,
-                         "/p:configuration=release", "/property:GenerateFullPaths=true"])
-    print("Locale built")
-
-
-def startWindowsVM(settings: Settings):
-    vmState = getVmState(settings)
-
-    if ("powered off" in vmState):
-        print("Starting the vm...")
-        runProcess(["VBoxManage.exe", "startvm",
-                    settings.vmName, "--type", "headless"])
-        time.sleep(30)
-        vmState = getVmState(settings)
-
-    if ("paused" in vmState):
-        resumeVm(settings)
-        vmState = getVmState(settings)
-
-    if ("running" in vmState):
-        return
-
-    raise ValueError("Could not start the {} vm. Current state: {}".format(
-        settings.vmName, vmState))
+    Logger.info("Building locale")
+    runProcess([settings.msBuildPath, settings.modTextSln,
+                "/p:configuration=release", "/property:GenerateFullPaths=true"])
+    Logger.success("Locale built\n")
 
 
 def start(install: bool, launch: bool, targets: list):
     settings = parseSettingsFile()
-    if "mod" in targets:
-        startWindowsVM(settings)
+    vm = VmManager(settings)
 
     if "mod" in targets or "locale" in targets:
-        print("Trying to build the code...")
-
         if "mod" in targets:
-            buildCppCode(settings)
+            buildCppCode(settings, vm)
         if "locale" in targets:
             buildLocale(settings)
 
@@ -112,16 +161,18 @@ def start(install: bool, launch: bool, targets: list):
 
         if "mod" in targets:
             copyfile(settings.dllOutputPath, settings.dllInstallPath)
-            print("RDNMod.dll installed to {}".format(settings.dllInstallPath))
+            Logger.success("RDNMod.dll installed to {}".format(
+                settings.dllInstallPath))
 
         if "locale" in targets:
             copyfile(settings.modTextDllOutputPath,
                      settings.modTextInstallPath)
-            print("ModText.dll installed to {}".format(
+            Logger.success("ModText.dll installed to {}".format(
                 settings.modTextInstallPath))
 
         if "assets" in targets:
-            print("warning: Asset installation not yet implemented in py. Using ps1")
+            Logger.warn(
+                "warning: Asset installation not yet implemented in py. Using ps1")
             result = runProcess(
                 ["powershell", "-file", '{}\\scripts\\install-assets.ps1'.format(settings.repoFolder).replace("/", "\\")])
             print(result.stdout)
