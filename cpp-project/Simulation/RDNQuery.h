@@ -108,6 +108,13 @@ public:
 
 	static bool CanAttack(const EntityGroup &g, const Entity *target, bool bCheckRelationship = true, bool bCheckFOW = true);
 
+	static bool CanGather(const Entity *self, const Entity *target, bool bCheckFOW = true);
+
+	static bool CanGather(const EntityGroup &g, const Entity *target, bool bCheckFOW = true);
+
+	// checks if an entity can be gathered by the given player
+	static bool CanBeGathered(const Entity *entity, const Player *player, bool bCheckFOW = true);
+
 	// has this entity been attacked in the last numTicks?
 	static bool HasBeenAttackedRecently(Entity *pEntity, long numTicks);
 

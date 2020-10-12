@@ -301,6 +301,7 @@ namespace
 			{
 					{Lab_EC, 100},
 					{Henchmen_EC, 100},
+					{Coal_EC, 0},
 	};
 } // namespace
 
@@ -946,5 +947,81 @@ bool RDNQuery::CanTouch(const MovingExtInfo *movSelf, const MovingExtInfo *movTa
 
 	// if here self and target are both on land/water.  It's possible they may touch.
 	//   Note: land exclusive and water exclusive may touch if they are both on the shore.
+	return true;
+}
+
+// Desc: checks if an entity can gather from another entity
+bool RDNQuery::CanGather(const Entity *self, const Entity *target, bool bCheckFOW)
+{
+	if (self == 0)
+	{
+		dbBreak();
+		return 0;
+	}
+
+	dbTracef("RDNQuery::CanGather | checking if %s can gather from %s",
+					 self->GetControllerBP()->GetFileName(), target->GetControllerBP()->GetFileName());
+
+	EntityGroup g;
+	g.push_back(const_cast<Entity *>(self));
+
+	return CanGather(g, target, bCheckFOW);
+}
+
+bool RDNQuery::CanGather(const EntityGroup &group, const Entity *target, bool bCheckFOW)
+{
+	if (group.empty())
+	{
+		dbTracef("Group is somehow empty");
+		dbBreak();
+		return false;
+	}
+
+	if (!CanBeGathered(target, group.front()->GetOwner(), bCheckFOW))
+	{
+		dbTracef("Coal cannot be gathered :(");
+		return false;
+	}
+
+	// check if any dude in the group can do it
+	EntityGroup::const_iterator entityIterator = group.begin();
+	EntityGroup::const_iterator iteratorEnd = group.end();
+
+	for (; entityIterator != iteratorEnd; ++entityIterator)
+	{
+		Entity *theEntity = *entityIterator;
+		if (theEntity->GetControllerBP()->GetControllerType() == Henchmen_EC)
+			return true;
+	}
+
+	return false;
+}
+
+bool RDNQuery::CanBeGathered(const Entity *entity, const Player *player, bool bCheckFOW)
+{
+	if (entity == 0)
+		return false;
+
+	if (entity->GetOwner() != 0)
+	{
+		// can only gather from nature resources, unowned by players
+		dbTracef("Entity owner is not 0");
+		return false;
+	}
+
+	const ResourceExt *resource = QIExt<ResourceExt>(entity);
+
+	if (resource == 0 || resource->GetResources() <= 0.0f)
+	{
+		dbTracef("Did not get resource using QI thingy, or no resources left within entity");
+		return false;
+	}
+
+	if (RDNQuery::CanBeSeen(entity, player, bCheckFOW) == 0)
+	{
+		dbTracef("Item cannot be seen");
+		return false;
+	}
+
 	return true;
 }

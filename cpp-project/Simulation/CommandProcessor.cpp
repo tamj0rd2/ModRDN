@@ -984,15 +984,19 @@ unsigned long CommandProcessor::GetDefaultEntityEntityCommand(const Entity *pMe,
 		}
 	}
 
+	if (RDNQuery::CanGather(pMe, pTe))
+	{
+		dbTracef("Can gather :D");
+		return CMD_Gather;
+	}
+
 	// Fallback if all cases above fail
 	if (GETSTATEENTITY(pMe, StateMove))
 	{
 		return CMD_Move;
 	}
-	else
-	{
-		return CMD_DefaultAction;
-	}
+
+	return CMD_DefaultAction;
 }
 
 /////////////////////////////////////////////////////////////////////

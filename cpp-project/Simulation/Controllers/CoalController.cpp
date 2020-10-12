@@ -46,12 +46,16 @@ CoalController::StaticInfo::QInfo(unsigned char id) const
 
 CoalController::CoalController(Entity *pEntity, const ECStaticInfo *pStaticInfo)
 		: ModController(pEntity, new GroundDynamics(static_cast<SimEntity *>(pEntity)), pStaticInfo),
-			ResourceExt()
+			ResourceExt(),
+			m_stateidle(GetEntityDynamics()),
+			m_pCurrentState(NULL)
 
 {
+	SetResources(5000);
+
 	// init the Command Processor
-	// m_commandproc.Init(this);
-	// SetCommandProcessor(&m_commandproc);
+	m_commandproc.Init(this);
+	SetCommandProcessor(&m_commandproc);
 	return;
 }
 
@@ -64,24 +68,79 @@ ModController *CoalController::GetSelf()
 	return this;
 }
 
-float CoalController::GetResources() const
+void CoalController::SetActiveState(unsigned char stateid)
 {
-	return 0;
+	if (stateid == State::SID_NULLState)
+	{
+		m_pCurrentState = NULL;
+		return;
+	}
+
+	State *pState = QIStateAll(stateid);
+	dbAssert(pState);
+
+	m_pCurrentState = pState;
 }
 
-void CoalController::SetResources(float amount)
+Extension *CoalController::QI(unsigned char id)
 {
+	// If we do any dynamic detachment of an extension put that logic here
+	if (m_commandproc.IsDead())
+		return NULL;
+
+	return CoalController::QIAll(id);
 }
 
-float CoalController::DecResources(float amount)
+Extension *CoalController::QIAll(unsigned char id)
 {
-	return 0;
+	if (id == ResourceExt::ExtensionID)
+		return static_cast<ResourceExt *>(this);
+
+	return NULL;
+}
+
+State *CoalController::QIActiveState(unsigned char stateid)
+{
+	// check if there is a current state
+	if (m_pCurrentState == NULL)
+		return NULL;
+
+	// If the current state ID matches the asked for state, then return it
+	if (m_pCurrentState->GetStateID() == stateid)
+	{
+		dbAssert(QIStateAll(stateid) == m_pCurrentState);
+		return m_pCurrentState;
+	}
+	// If the asked for state is the Current state then return it
+	else if (stateid == State::SID_Current)
+	{
+		return m_pCurrentState;
+	}
+
+	return NULL;
+}
+
+State *CoalController::QIStateAll(unsigned char stateid)
+{
+	if (stateid == State::SID_Current)
+		return m_pCurrentState;
+	if (stateid == StateIdle::StateID)
+		return &m_stateidle;
+
+	return NULL;
 }
 
 void CoalController::OnZeroResources()
 {
+	dbTracef("CoalController::OnZeroResources");
 }
 
-void CoalController::OnResourceProgress(float amount)
+bool CoalController::Update(const EntityCommand *currentCommand)
 {
+	if (currentCommand)
+	{
+		dbTracef("Coal controller processing update");
+	}
+
+	return ModController::Update(currentCommand);
 }

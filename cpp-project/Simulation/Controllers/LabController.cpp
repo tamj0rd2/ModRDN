@@ -250,12 +250,11 @@ State *LabController::QIActiveState(unsigned char stateid)
 //
 State *LabController::QIStateAll(unsigned char stateid)
 {
-	if (stateid == State ::SID_Current)
+	if (stateid == State::SID_Current)
 		return m_pCurrentState;
-
-	if (stateid == StateIdle ::StateID)
+	if (stateid == StateIdle::StateID)
 		return &m_stateidle;
-	if (stateid == StateDead ::StateID)
+	if (stateid == StateDead::StateID)
 		return &m_statedead;
 
 	return NULL;

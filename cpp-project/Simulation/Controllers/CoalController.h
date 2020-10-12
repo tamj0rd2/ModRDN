@@ -8,6 +8,11 @@
 #include "../ExtInfo/ResourceExtInfo.h"
 #include "../ExtInfo/UIExtInfo.h"
 
+#include "../States/State.h"
+#include "../States/StateIdle.h"
+
+#include "../CommandProcessor.h"
+
 class CoalController : public ModController,
 											 private ResourceExt
 {
@@ -30,20 +35,27 @@ public:
 	CoalController(Entity *pEntity, const ECStaticInfo *);
 	virtual ~CoalController();
 
-	// inherited from ResourceExt.h
 public:
-	virtual float GetResources() const;
-	virtual void SetResources(float amount);
+	virtual bool Update(const EntityCommand *currentCommand);
 
-	// return amount decreased
-	virtual float DecResources(float amount);
+	virtual Extension *QI(unsigned char InterfaceID);
+
+	virtual State *QIActiveState(unsigned char stateid);
 
 protected:
 	virtual void OnZeroResources();
 
 private:
-	virtual void OnResourceProgress(float amount);
-
-private:
 	virtual ModController *GetSelf();
+
+	State *m_pCurrentState;
+	StateIdle m_stateidle;
+
+	virtual void SetActiveState(unsigned char);
+
+	virtual Extension *QIAll(unsigned char);
+
+	virtual State *QIStateAll(unsigned char);
+
+	CommandProcessor m_commandproc;
 };

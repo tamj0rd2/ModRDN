@@ -29,19 +29,21 @@ enum CommandType
 
 	// These are the Simple command ID's  they are received in the
 	// MOD_DoEntity function, and passed to the EntityController DoEntity function
-	CMD_Stop,		 // cancel last action, and stop the unit
-	CMD_Destroy, // scuttle this unit
+	CMD_Stop = 1,		 // cancel last action, and stop the unit
+	CMD_Destroy = 2, // scuttle this unit
 
-	CMD_BuildUnit,
-	CMD_CancelBuildUnit,
+	CMD_BuildUnit = 3,
+	CMD_CancelBuildUnit = 4,
 
-	CMD_Move,				// move command
-	CMD_Attack,			// attack command
-	CMD_AttackMove, // attack move command, same as Starcraft
-	CMD_RallyPoint, // set a rally point
+	CMD_Move = 5,				// move command
+	CMD_Attack = 6,			// attack command
+	CMD_AttackMove = 7, // attack move command, same as Starcraft
+	CMD_RallyPoint = 8, // set a rally point
 
-	CMD_Pause,
-	CMD_UnPause,
+	CMD_Pause = 9,
+	CMD_UnPause = 10,
+
+	CMD_Gather = 11,
 
 	CMD_COUNT
 };
