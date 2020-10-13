@@ -28,7 +28,17 @@
 #include <SimEngine/EntityDynamics.h>
 #include <SimEngine/EntityAnimator.h>
 
-StateGather::StateGather(EntityDynamics *e_dynamics) : State(e_dynamics), m_pStateMove(NULL)
+enum
+{
+  SG_Invalid,
+  SG_MoveToCoal,
+  SG_Exiting,
+};
+
+StateGather::StateGather(EntityDynamics *e_dynamics) : State(e_dynamics), m_pStateMove(NULL),
+                                                       m_pCurState(NULL),
+                                                       m_State(SG_Invalid),
+                                                       m_pResourceTarget(NULL)
 {
 }
 
@@ -39,24 +49,17 @@ void StateGather::Init(StateMove *pStateMove)
 
 void StateGather::Enter(const Entity *pResourceEntity)
 {
+  dbAssert(pResourceEntity);
+  m_pResourceTarget = pResourceEntity;
   //	HACK : signal the entity to play an idle animation
   // if (pEntity->GetAnimator())
   // 	pEntity->GetAnimator()->SetStyle((GetDynamics()->GetVisualMovementType() == EntityDynamics::eEDWater) ? 'SWIM' : 'IDLE');
   Entity *pEntity = GetEntity();
   dbTracef("StateGather::Enter entity %s", pEntity->GetControllerBP()->GetFileName());
   dbTracef("StateGather::Target entity %s", pResourceEntity->GetControllerBP()->GetFileName());
-
   SetExitStatus(false);
 
-  Vec3f destination = pResourceEntity->GetPosition();
-
-  m_pStateMove->Enter(destination, 0.0f);
-  // m_pCurState = m_pStateMove;
-
-  // m_State = AM_StateMove;
-  // m_SearchTimer = ModObj::i()->GetWorld()->GetGameTicks() + SEARCH_INTERVAL;
-
-  return;
+  ToMoveToCoalState();
 }
 
 bool StateGather::Update()
@@ -94,8 +97,16 @@ void StateGather::SaveState(BiFF &) const
 {
 }
 
+// TODO: implement this
 void StateGather::LoadState(IFF &)
 {
-  // TODO: implement this
   // Enter();
+}
+
+void StateGather::ToMoveToCoalState()
+{
+  Vec3f destination = m_pResourceTarget->GetPosition();
+  m_pStateMove->Enter(destination, 0.0f);
+  m_pCurState = m_pStateMove;
+  m_State = SG_MoveToCoal;
 }

@@ -48,4 +48,11 @@ public:
 
 private:
   StateMove *m_pStateMove;
+  State *m_pCurState;
+
+  unsigned long m_State;
+
+  const Entity *m_pResourceTarget;
+
+  void StateGather::ToMoveToCoalState();
 };
