@@ -310,6 +310,8 @@ void ModController::OnDeSpawnEntity()
 //
 bool ModController::CommandDoProcessNow(const EntityCommand *pEC)
 {
+	dbTracef("ModController::CommandDoProcessNow");
+
 	if (m_pCommandProc)
 		return m_pCommandProc->CommandDoProcessNow(pEC);
 

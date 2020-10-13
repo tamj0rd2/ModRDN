@@ -277,6 +277,8 @@ bool CommandProcessor::ValidateCommand(const EntityCommand *pEntCmd)
 //
 bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 {
+	dbTracef("CommandProcessor::CommandDoProcessNow");
+
 	// grab the current state
 	State *pCurState = m_pMC->QIActiveState();
 	dbAssert(pCurState);
@@ -467,6 +469,7 @@ bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 
 	// if we get here the command was processed and shouldn't be
 	// added to the queue
+	dbTracef("CommandProcessor::CommandDoProcessNow end");
 	return processed;
 }
 
@@ -640,6 +643,8 @@ bool CommandProcessor::Update(const EntityCommand *pEntCmd)
 		}
 		break;
 		}
+
+		dbTracef("CommandProcessor::Update finished");
 	}
 
 	if (m_pMC->QIActiveState() == NULL)
@@ -648,7 +653,6 @@ bool CommandProcessor::Update(const EntityCommand *pEntCmd)
 	}
 
 	dbAssert(m_pMC->QIActiveState());
-
 	return true;
 }
 
@@ -967,14 +971,14 @@ void CommandProcessor::LeaveStatePause()
 //
 unsigned long CommandProcessor::GetDefaultEntityEntityCommand(const Entity *pMe, const Entity *pTe)
 {
-	dbTracef("Controller 1: %s | Controller 2: %s", pMe->GetControllerBP()->GetFileName(), pTe->GetControllerBP()->GetFileName());
+	dbTracef("CommandProcessor::GetDefaultEntityEntityCommand Controller 1: %s | Controller 2: %s", pMe->GetControllerBP()->GetFileName(), pTe->GetControllerBP()->GetFileName());
 
 	if (!pMe->GetController() || !pTe->GetController())
 	{
 		return CMD_DefaultAction;
 	}
 
-	dbTracef("Determining which action to use");
+	dbTracef("CommandProcessor::GetDefaultEntityEntityCommand Determining which action to use");
 
 	if (RDNQuery::CanAttack(pMe, pTe))
 	{
@@ -1058,6 +1062,7 @@ bool CommandProcessor::CanDoCommand(const Entity *pMe, unsigned long command, un
 //
 bool CommandProcessor::CanDoCommand(const Entity *pMe, const Entity *pTarget, unsigned long command, unsigned long param)
 {
+	dbTracef("CommandProcessor::CanDoCommand");
 	UNREF_P(param);
 
 	// grab the current state

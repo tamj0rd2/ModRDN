@@ -197,6 +197,7 @@ DLGModOptions seems to do some nice things around keyboard input and
 hotkeys
 
 
+this geneuinely is the entrypoint. seen in RDNDll.cpp
 1. RDNHUD::DoCommand
 2. RDNSimProxy::DoCommand
 3. HenchmenController::Update (ModController::Will get called for things that do not have their own update method)
@@ -205,6 +206,14 @@ hotkeys
 6. RDNSimProxy::OnEvent An event happened: 6
 
 
+clients register to events by using GameEventSys::RegisterClient
+Then ofc is calls the OnEvent method of the subscriber whenever
+there is an event.
+Game events are defined in GameEventDefs.h
+
+RDNWorld::Simulate updates the player. Maybe the player updates all ECs?
+
+The event handlers for the SelectionInterface must surely be DoCommand and DoModalCommand
 
 (I think pCurState is the thing that makes entities update)
 
@@ -212,6 +221,30 @@ CommandTypes:
   CT_Entity - an entity does something
   CT_EntityPoint - an entity interacts with a point
   CT_EntityEntity - an entity interacts with another entity
+```
+
+Take two...
+
+
+```
+17.11: RDNSimProxy::Notify_Insertion # happens when hench clicked
+18.45: RDNHUD::DoCommand group command # happens when right clicking on coal
+18.45: RDNSimProxy::DoCommand group command
+18.45: RDNSimProxy::DoCommand triggering DoEntityEntity command
+18.45: RDNSimProxy::DoCommand done triggering DoEntityEntity command
+18.45: RDNSimProxy::DoCommand getting default entity-entity command
+18.45: CommandProcessor::GetDefaultEntityEntityCommand Controller 1: HENCHMEN | Controller 2: COAL_02
+18.45: CommandProcessor::GetDefaultEntityEntityCommand Determining which action to use
+18.45: RDNQuery::CanGather | checking if HENCHMEN can gather from COAL_02
+18.45: Can gather :D
+18.45: RDNSimProxy::OnEntityEntityCmd flashing target COAL_02 in UI
+18.45: RDNSimProxy::DoCommand finished
+18.62: CommandProcessor::CommandDoProcessNow
+18.62: CommandProcessor::GetDefaultEntityEntityCommand Controller 1: HENCHMEN | Controller 2: COAL_02
+18.62: CommandProcessor::GetDefaultEntityEntityCommand Determining which action to use
+18.62: RDNQuery::CanGather | checking if HENCHMEN can gather from COAL_02
+18.62: Can gather :D
+18.62: CommandProcessor::CommandDoProcessNow end
 ```
 
 ## Running IC inside the vm

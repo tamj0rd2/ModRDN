@@ -782,6 +782,8 @@ void RDNSimProxy::GetCursorInfo(char *cursor, size_t len, int &ttStrId, const En
 
 void RDNSimProxy::DoModalCommand(int mode, float x, float y, float z, int entityID, bool bQueueCommand)
 {
+	dbTracef("RDNSimProxy::DoModalCommand");
+
 	// validate selection first
 	if (!SelectionCanReceiveCommand(0))
 		return;
@@ -980,6 +982,7 @@ void RDNSimProxy::DoCommand(const EntityGroup &eg, bool bQueueCommand)
 	}
 
 	// send the appropriate network message
+	dbTracef("RDNSimProxy::DoCommand triggering DoEntityEntity command");
 	m_pimpl->m_command->DoEntityEntity(
 			CMD_DefaultAction,
 			0,
@@ -988,6 +991,7 @@ void RDNSimProxy::DoCommand(const EntityGroup &eg, bool bQueueCommand)
 			m_pimpl->m_selection->GetSelection(),
 			eg);
 
+	dbTracef("RDNSimProxy::DoCommand done triggering DoEntityEntity command");
 	if (eg.front())
 	{
 		// Flash the target entity, only if someone will do something to it
@@ -996,6 +1000,7 @@ void RDNSimProxy::DoCommand(const EntityGroup &eg, bool bQueueCommand)
 
 		for (; selectionIter != selectionEnd; ++selectionIter)
 		{
+			dbTracef("RDNSimProxy::DoCommand getting default entity-entity command");
 			if (CommandProcessor::GetDefaultEntityEntityCommand(*selectionIter, eg.front()) != CMD_DefaultAction)
 				break;
 		}
@@ -1005,6 +1010,8 @@ void RDNSimProxy::DoCommand(const EntityGroup &eg, bool bQueueCommand)
 			OnEntityEntityCmd(eg.front());
 		}
 	}
+
+	dbTracef("RDNSimProxy::DoCommand finished");
 }
 
 int RDNSimProxy::DoBuildUnit(int ebpid)
@@ -1354,18 +1361,9 @@ bool RDNSimProxy::GetCachedRally(const Vec3f **const position, const EntityGroup
 //
 bool RDNSimProxy::SelectionCanReceiveCommand(int max)
 {
-	dbTracef("RDNSimProxy::SelectionCanReceiveCommand | max: %d", max);
 	if (m_pimpl->m_player == 0 ||
 			m_pimpl->m_player->IsPlayerDead())
 		return false;
-
-	EntityGroup selection = m_pimpl->m_selection->GetSelection();
-	EntityGroup::iterator iter;
-	for (iter = selection.begin(); iter != selection.end(); iter++)
-	{
-		Entity *entity = *iter;
-		dbTracef("%s is in the selection", entity->GetControllerBP()->GetFileName());
-	}
 
 	// dbTracef("front %s", selection.front()->GetControllerBP()->GetFileName());
 	// dbTracef("end %s", selection.end()->GetControllerBP()->GetFileName());
@@ -1432,7 +1430,7 @@ void RDNSimProxy::OnEntityPointCmd(const Vec3f &target, int command)
 //
 void RDNSimProxy::OnEntityEntityCmd(const Entity *target)
 {
-	dbTracef("RDNSimProxy::OnEntityEntityCmd");
+	dbTracef("RDNSimProxy::OnEntityEntityCmd flashing target %s in UI", target->GetControllerBP()->GetFileName());
 	EntityAnimator *pAnimator = target->GetAnimator();
 
 	if (pAnimator)
