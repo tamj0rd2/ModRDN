@@ -37,6 +37,13 @@
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "Lua.diagnostics.disable": ["undefined-global", "lowercase-global"],
-    "python.autoComplete.extraPaths": ["./scripts"]
+    "python.autoComplete.extraPaths": [
+      "./scripts"
+    ],
+    "files.associations": {
+      ".nycrc": "json",
+      ".releaserc": "json",
+      "xiosbase": "cpp"
+    }
   }
 }

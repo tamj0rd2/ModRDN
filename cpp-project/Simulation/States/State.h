@@ -39,15 +39,16 @@ public:
 		SID_Begin = 1,
 
 		SID_Idle = 1,
-		SID_Move,
-		SID_GroupMove,
-		SID_Attack,
-		SID_AttackMove,
-		SID_Dead,
-		SID_Pause,
+		SID_Move = 2,
+		SID_GroupMove = 3,
+		SID_Attack = 4,
+		SID_AttackMove = 5,
+		SID_Dead = 6,
+		SID_Pause = 7,
 
-		SID_Count,
-		SID_NULLState,
+		SID_Gather = 8,
+
+		SID_NULLState = 9,
 	};
 
 	// fields

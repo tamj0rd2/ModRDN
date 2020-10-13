@@ -58,6 +58,10 @@ I'm having a mess around with the RockPaperScissors mod included with the Imposs
 
 Use the %S formatter instead of %s. [Ref](https://docs.microsoft.com/en-us/cpp/c-runtime-library/format-specification-syntax-printf-and-wprintf-functions?view=vs-2019)
 
+#### CommandProcessor.obj : error LNK2019: unresolved external symbol or other linker errors
+
+If you added a new file, remember to add it to the vcproj too!
+
 ### Working with assets
 
 Lua changes should be commited to this repository. Other assets like ebps and
@@ -229,22 +233,23 @@ Take two...
 ```
 17.11: RDNSimProxy::Notify_Insertion # happens when hench clicked
 18.45: RDNHUD::DoCommand group command # happens when right clicking on coal
-18.45: RDNSimProxy::DoCommand group command
-18.45: RDNSimProxy::DoCommand triggering DoEntityEntity command
-18.45: RDNSimProxy::DoCommand done triggering DoEntityEntity command
-18.45: RDNSimProxy::DoCommand getting default entity-entity command
-18.45: CommandProcessor::GetDefaultEntityEntityCommand Controller 1: HENCHMEN | Controller 2: COAL_02
-18.45: CommandProcessor::GetDefaultEntityEntityCommand Determining which action to use
-18.45: RDNQuery::CanGather | checking if HENCHMEN can gather from COAL_02
-18.45: Can gather :D
-18.45: RDNSimProxy::OnEntityEntityCmd flashing target COAL_02 in UI
-18.45: RDNSimProxy::DoCommand finished
-18.62: CommandProcessor::CommandDoProcessNow
-18.62: CommandProcessor::GetDefaultEntityEntityCommand Controller 1: HENCHMEN | Controller 2: COAL_02
-18.62: CommandProcessor::GetDefaultEntityEntityCommand Determining which action to use
-18.62: RDNQuery::CanGather | checking if HENCHMEN can gather from COAL_02
-18.62: Can gather :D
-18.62: CommandProcessor::CommandDoProcessNow end
+31.11: RDNSimProxy::DoCommand group command
+31.11: RDNSimProxy::DoCommand triggering DoEntityEntity command
+31.11: RDNSimProxy::DoCommand done triggering DoEntityEntity command
+31.11: RDNSimProxy::DoCommand getting default entity-entity command
+31.11: CommandProcessor::GetDefaultEntityEntityCommand Controller 1: HENCHMEN | Controller 2: COAL_03
+31.11: CommandProcessor::GetDefaultEntityEntityCommand Determining which action to use
+31.11: RDNQuery::CanGather | checking if HENCHMEN can gather from COAL_03
+31.11: Can gather :D
+31.11: RDNSimProxy::OnEntityEntityCmd flashing target COAL_03 in UI
+31.11: RDNSimProxy::DoCommand finished
+31.28: ModController::CommandDoProcessNow
+31.28: CommandProcessor::CommandDoProcessNow
+31.28: CommandProcessor::GetDefaultEntityEntityCommand Controller 1: HENCHMEN | Controller 2: COAL_03
+31.28: CommandProcessor::GetDefaultEntityEntityCommand Determining which action to use
+31.28: RDNQuery::CanGather | checking if HENCHMEN can gather from COAL_03
+31.28: Can gather :D
+31.28: CommandProcessor::CommandDoProcessNow end
 ```
 
 ## Running IC inside the vm

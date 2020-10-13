@@ -25,6 +25,7 @@
 #include "ExtInfo/HealthExtInfo.h"
 
 #include "States/StateDead.h"
+#include "States/StateGather.h"
 #include "States/StateMove.h"
 #include "States/StateIdle.h"
 #include "States/StateAttack.h"
@@ -309,7 +310,9 @@ bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 		return false;
 	}
 
+	// set to true by default
 	bool processed = true;
+
 	// By default all commands that aren't processed will ask the current state to exit
 	bool bRequestExit = true;
 
@@ -411,6 +414,8 @@ bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 			command = GetDefaultEntityEntityCommand(m_pMC->GetEntity(), pEntCmd_EE->GetTargets().front());
 		}
 
+		dbTracef("CommandProcessor::CommandDoProcessNow EntityEntity %d", command);
+
 		// An Entity-Entity Command.
 		switch (command)
 		{
@@ -442,6 +447,14 @@ bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 				processed = false;
 			}
 			break;
+		case CMD_Gather:
+		{
+			if (HasState(State::SID_Gather))
+			{
+				processed = false;
+			}
+			break;
+		}
 		case CMD_RallyPoint:
 		{
 			UnitSpawnerExt *pUnitSpawnerExt = QIExt<UnitSpawnerExt>(m_pMC);
@@ -639,6 +652,12 @@ bool CommandProcessor::Update(const EntityCommand *pEntCmd)
 					ToStateAttackMove(const_cast<Entity *>(pEntCmd_EE->GetTargets().front()));
 				}
 				break;
+			case CMD_Gather:
+				if (HasState(State::SID_Gather))
+				{
+					ToStateGather(const_cast<Entity *>(pEntCmd_EE->GetTargets().front()));
+				}
+				break;
 			}
 		}
 		break;
@@ -696,6 +715,8 @@ bool CommandProcessor::HasState(unsigned char StateID)
 //
 bool CommandProcessor::ProcessQueuedCommandNow(const EntityCommand *pEntCmd)
 {
+	dbTracef("CommandProcessor::ProcessQueuedCommandNow");
+
 	// grab the current state
 	State *pCurState = m_pMC->QIActiveState();
 	dbAssert(pCurState);
@@ -934,12 +955,7 @@ void CommandProcessor::ToStateAttackMove(Entity *entity)
 	m_pMC->SetActiveState(StateAttackMove::StateID);
 }
 
-/////////////////////////////////////////////////////////////////////
-//	Desc.	:
-//	Result	:
-//	Param.	:
-//	Author	:
-//
+// Pause state
 void CommandProcessor::ToStatePause(bool bIgnoreCmds)
 {
 	StatePause *pStatePause = GETSTATE(StatePause);
@@ -949,18 +965,22 @@ void CommandProcessor::ToStatePause(bool bIgnoreCmds)
 	m_pMC->SetActiveState(StatePause::StateID);
 }
 
-/////////////////////////////////////////////////////////////////////
-//	Desc.	:
-//	Result	:
-//	Param.	:
-//	Author	:
-//
 void CommandProcessor::LeaveStatePause()
 {
 	StatePause *pStatePause = GETSTATE(StatePause);
 	dbAssert(pStatePause);
 
 	pStatePause->RequestExit();
+}
+
+// Gather state
+void CommandProcessor::ToStateGather(const Entity *pResourceEntity)
+{
+	StateGather *pStateGather = GETSTATE(StateGather);
+	dbAssert(pStateGather);
+
+	pStateGather->Enter(pResourceEntity);
+	m_pMC->SetActiveState(StateGather::StateID);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -1012,6 +1032,7 @@ unsigned long CommandProcessor::GetDefaultEntityEntityCommand(const Entity *pMe,
 bool CommandProcessor::CanDoCommand(const Entity *pMe, unsigned long command, unsigned long param)
 {
 	UNREF_P(param);
+	dbTracef("CommandProcessor::CanDoCommand");
 
 	// grab the current state
 	if (!pMe->GetController())
@@ -1049,6 +1070,12 @@ bool CommandProcessor::CanDoCommand(const Entity *pMe, unsigned long command, un
 			return true;
 		}
 		break;
+	case CMD_Gather:
+		if (GETSTATEENTITY(pMe, StateGather))
+		{
+			return true;
+		}
+		break;
 	}
 
 	return false;
@@ -1062,7 +1089,7 @@ bool CommandProcessor::CanDoCommand(const Entity *pMe, unsigned long command, un
 //
 bool CommandProcessor::CanDoCommand(const Entity *pMe, const Entity *pTarget, unsigned long command, unsigned long param)
 {
-	dbTracef("CommandProcessor::CanDoCommand");
+	dbTracef("CommandProcessor::CanDoCommand overload");
 	UNREF_P(param);
 
 	// grab the current state

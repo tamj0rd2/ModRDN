@@ -90,6 +90,7 @@ HenchmenController::HenchmenController(Entity *pEntity, const ECStaticInfo *pSta
 			m_stateattackmove(GetEntityDynamics()),
 			m_stategroupmove(GetEntityDynamics()),
 			m_statepause(GetEntityDynamics()),
+			m_stategather(GetEntityDynamics()),
 			m_bFirstUpdate(true)
 {
 
@@ -100,6 +101,7 @@ HenchmenController::HenchmenController(Entity *pEntity, const ECStaticInfo *pSta
 	m_stateattack.Init(&m_statemove, QIExt<AttackExt>(this), &QIExtInfo<AttackExtInfo>(this)->attackInfo);
 	m_stateattackmove.Init(&m_statemove, &m_stateattack);
 	m_stategroupmove.Init(&m_statemove);
+	m_stategather.Init(&m_statemove);
 	m_statedead.UseWaterDeathAnim(true);
 
 	// init the Command Processor
@@ -365,6 +367,8 @@ State *HenchmenController::QIStateAll(unsigned char StateID)
 		return &m_stategroupmove;
 	if (StateID == StatePause ::StateID)
 		return &m_statepause;
+	if (StateID == StateGather::StateID)
+		return &m_stategather;
 	return NULL;
 }
 

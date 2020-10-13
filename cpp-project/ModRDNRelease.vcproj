@@ -515,6 +515,12 @@
 						RelativePath="Simulation\States\StateIdle.h">
 					</File>
 					<File
+						RelativePath="Simulation\States\StateGather.cpp">
+					</File>
+					<File
+						RelativePath="Simulation\States\StateGather.h">
+					</File>
+					<File
 						RelativePath="Simulation\States\StateMove.cpp">
 					</File>
 					<File

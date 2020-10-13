@@ -16,6 +16,7 @@
 #include "../States/StateIdle.h"
 #include "../States/StateDead.h"
 #include "../States/StateMove.h"
+#include "../States/StateGather.h"
 #include "../States/StateAttack.h"
 #include "../States/StateAttackMove.h"
 #include "../States/StateGroupMove.h"
@@ -107,6 +108,7 @@ private:
 
 	StateIdle m_stateidle;
 	StateMove m_statemove;
+	StateGather m_stategather;
 	StateAttack m_stateattack;
 	StateDead m_statedead;
 	StateAttackMove m_stateattackmove;

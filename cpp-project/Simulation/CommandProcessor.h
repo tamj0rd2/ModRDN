@@ -95,6 +95,7 @@ private:
 	void ToStateAttackMove(const Vec3f &);
 	void ToStateAttackMove(Entity *);
 	void ToStatePause(bool bIgnoreCmds);
+	void ToStateGather(const Entity *);
 
 	void LeaveStatePause();
 };
