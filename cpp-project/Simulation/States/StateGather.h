@@ -55,4 +55,6 @@ private:
   const Entity *m_pResourceTarget;
 
   void StateGather::ToMoveToCoalState();
+
+  void StateGather::ToGatherResourceState();
 };

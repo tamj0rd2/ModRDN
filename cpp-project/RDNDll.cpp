@@ -107,21 +107,30 @@ static void EntityCreate(const Entity *pEntity)
 
 	const MovingExtInfo *moving = QIExtInfo<MovingExtInfo>(pEntity);
 	const SiteExtInfo *site = QIExtInfo<SiteExtInfo>(pEntity);
+	const ResourceExtInfo *resourceInfo = QIExtInfo<ResourceExtInfo>(pEntity);
 
-	if (moving == 0 && site == 0)
+	if (moving == 0 && site == 0 && resourceInfo == 0)
 	{
 		dbFatalf("MOD -- Missing attributes for placing %S", pEntity->GetControllerBP()->GetScreenName());
+	}
+
+	const ControllerBlueprint *pControllerBP = pEntity->GetControllerBP();
+	if (pControllerBP)
+	{
+		dbTracef("Placing %s in the world", pControllerBP->GetFileName());
 	}
 
 	// If it's a moving entity
 	if (moving)
 	{
 		// ENTITY IS A UNIT
+		dbTracef("Entity is a unit");
 		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_ChildBVs | EntityAnimator::SIT_OverSizeBV);
 		return;
 	}
 	else if (site)
 	{
+		dbTracef("Entity is a site/building");
 		// ENTITY IS A BUILDING
 		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_GroundSelect | EntityAnimator::SIT_ChildBVs);
 		// set impass info
@@ -132,6 +141,7 @@ static void EntityCreate(const Entity *pEntity)
 	}
 	else
 	{
+		dbTracef("Entity is something else");
 		// If we can't figure out what it is then treat it as a building.
 		pAnimator->SetSelectionIntersection(EntityAnimator::SIT_ChildBVs | EntityAnimator::SIT_OverSizeBV);
 	}

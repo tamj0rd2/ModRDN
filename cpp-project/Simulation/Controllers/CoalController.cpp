@@ -45,7 +45,7 @@ CoalController::StaticInfo::QInfo(unsigned char id) const
 }
 
 CoalController::CoalController(Entity *pEntity, const ECStaticInfo *pStaticInfo)
-		: ModController(pEntity, new GroundDynamics(static_cast<SimEntity *>(pEntity)), pStaticInfo),
+		: ModController(pEntity, SiteExtInfo::CreateDynamics(pEntity, QIExtInfo<SiteExtInfo>(pStaticInfo)), pStaticInfo),
 			ResourceExt(),
 			m_stateidle(GetEntityDynamics()),
 			m_pCurrentState(NULL)

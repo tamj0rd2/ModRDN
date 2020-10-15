@@ -196,3 +196,8 @@ void ResourceExt::UnBurnCantBuild(TerrainCellMap *pTCMap)
 	pTCMap->BlitCells( cellx, cellz, width, height, mask, TerrainCellMap::OP_AND );
 ***/
 }
+
+void ResourceExt::GathererAdd(const Entity *p_Entity)
+{
+	m_gatherers.push_back(const_cast<Entity *>(p_Entity));
+}
