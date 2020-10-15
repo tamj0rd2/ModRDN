@@ -278,6 +278,25 @@ bool FindClosestEnemyOfType::Check(const Entity *pEntity)
 	return false;
 }
 
+// Used for finding the closest foundry/workshop
+bool FindClosestResourceDepsoit::Check(const Entity *pEntity)
+{
+	if (m_bFound)
+	{
+		return false;
+	}
+
+	const unsigned long controllerType = pEntity->GetControllerBP()->GetControllerType();
+
+	if (controllerType == Workshop_EC || controllerType == Lab_EC)
+	{
+		m_bFound = true;
+		return true;
+	}
+
+	return false;
+}
+
 //-------------------------------------------------------------------------------------
 // Prioritize an enemy entity according to how threatening it is.
 //	An entity with a priortity <= -1 will never be chosen

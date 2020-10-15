@@ -13,6 +13,8 @@ enum ControllerType
 	Henchmen_EC = 3,
 	Coal_EC = 4,
 	Lab_EC = 5,
+	Workshop_EC = 17,
 
-	MAX_EC = 6 // needs to be bigger than all the other values
+	// needs to be bigger than all the other values
+	MAX_EC
 };

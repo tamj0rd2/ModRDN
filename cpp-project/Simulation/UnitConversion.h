@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "../Simulation/RDNWorld.h"
+
 /////////////////////////////////////////////////////////////////////
 // This file contains useful conversion macros
 

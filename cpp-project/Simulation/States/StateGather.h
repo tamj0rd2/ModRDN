@@ -47,14 +47,29 @@ public:
   virtual void LoadState(IFF &);
 
 private:
-  StateMove *m_pStateMove;
-  State *m_pCurState;
+  enum StateGatherInternalState
+  {
+    SG_Invalid,
+    SG_MoveToResource,
+    SG_GatherResources,
+    SG_PickupResource,
+    SG_MoveToDeposit,
+    SG_DropOffResource,
+    SG_Exiting,
+  };
 
-  unsigned long m_State;
+  StateMove *m_pStateMove;
+  unsigned long m_InternalState;
+  float m_TickToCheckNextInternalState;
 
   const Entity *m_pResourceTarget;
+  const Entity *m_pDepositTarget;
 
   void StateGather::ToMoveToCoalState();
-
   void StateGather::ToGatherResourceState();
+  void StateGather::ToPickupResourceState();
+  void StateGather::ToMoveToDepositState();
+  void StateGather::ToDropOffResourceState();
+
+  long StateGather::GetTicks();
 };

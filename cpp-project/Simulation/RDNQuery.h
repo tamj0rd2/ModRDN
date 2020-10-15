@@ -306,6 +306,25 @@ private:
 	unsigned long m_ControllerType;
 };
 
+
+// finds the cloest foundry/workshop
+class FindClosestResourceDepsoit : public FindClosestFilter
+{
+public:
+	FindClosestResourceDepsoit()
+			:	m_bFound(false)
+	{
+	};
+
+	// Check to see if this entity is an enemy
+	virtual bool Check(const Entity *pEntity);
+
+private:
+  bool m_bFound;
+};
+
+
+
 //-------------------------------------------------------------------------------------
 //
 //-------------------------------------------------------------------------------------
