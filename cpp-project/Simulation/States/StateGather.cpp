@@ -245,10 +245,14 @@ void StateGather::ToDropOffResourceState()
 
 void StateGather::HandleDropOffResource()
 {
-  if (HasTimerElapsed())
+  if (!HasTimerElapsed())
   {
-    ToMoveToResourceState();
+    return;
   }
+
+  RDNPlayer *player = static_cast<RDNPlayer *>(GetEntity()->GetOwner());
+  player->IncResourceCash(c_ResourceIncrements, RDNPlayer::RES_Resourcing);
+  ToMoveToResourceState();
 }
 
 bool StateGather::TriggerExit(StateGather::StateGatherExitState exitState)
