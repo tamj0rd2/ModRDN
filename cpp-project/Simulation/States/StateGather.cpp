@@ -37,7 +37,8 @@ StateGather::StateGather(EntityDynamics *e_dynamics) : State(e_dynamics), m_pSta
                                                        m_pResourceTarget(NULL),
                                                        m_pDepositTarget(NULL),
                                                        m_TickToCheckNextInternalState(0),
-                                                       m_resourceExt(NULL)
+                                                       m_resourceExt(NULL),
+                                                       c_ResourceIncrements(20)
 {
 }
 
@@ -100,31 +101,36 @@ void StateGather::LoadState(IFF &)
 
 bool StateGather::Update()
 {
+  if (m_resourceExt->GetResources() <= 0.0f && !IsDepositing())
+  {
+    return TriggerExit(GES_ResourceDepleted);
+  }
+
   switch (m_InternalState)
   {
   case SG_MoveToResource:
   {
-    UpdateMoveToResource();
+    HandleMoveToResource();
     break;
   }
   case SG_GatherResources:
   {
-    UpdateGatherResource();
+    HandleGatherResource();
     break;
   }
   case SG_PickupResource:
   {
-    UpdatePickupResource();
+    HandlePickupResource();
     break;
   }
   case SG_MoveToDeposit:
   {
-    UpdateMoveToDeposit();
+    HandleMoveToDeposit();
     break;
   }
   case SG_DropOffResource:
   {
-    UpdateDropOffResource();
+    HandleDropOffResource();
     break;
   }
   default:
@@ -144,7 +150,7 @@ void StateGather::ToMoveToResourceState()
   m_pStateMove->Enter(m_pResourceTarget, 0);
 }
 
-void StateGather::UpdateMoveToResource()
+void StateGather::HandleMoveToResource()
 {
   if (m_pStateMove->Update())
   {
@@ -152,6 +158,7 @@ void StateGather::UpdateMoveToResource()
     if (moveExitState == StateMove::MES_ReachedTarget)
     {
       ToGatherResourceState();
+      return;
     }
     else
     {
@@ -165,13 +172,12 @@ void StateGather::ToGatherResourceState()
   m_InternalState = SG_GatherResources;
   GetEntity()->GetAnimator()->SetTargetLook(m_pResourceTarget);
   GetEntity()->GetAnimator()->SetMotionTreeNode("PaSwing");
-
-  m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * 3);
+  SetTimer(3);
 }
 
-void StateGather::UpdateGatherResource()
+void StateGather::HandleGatherResource()
 {
-  if (GetTicks() > m_TickToCheckNextInternalState)
+  if (HasTimerElapsed())
   {
     ToPickupResourceState();
   }
@@ -180,19 +186,19 @@ void StateGather::UpdateGatherResource()
 void StateGather::ToPickupResourceState()
 {
   m_InternalState = SG_PickupResource;
-  dbTracef("Should start picking up the resource now");
-
   GetEntity()->GetAnimator()->SetMotionTreeNode("CpPickup");
-
-  m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * 1.03f);
+  SetTimer(1.04f);
 }
 
-void StateGather::UpdatePickupResource()
+void StateGather::HandlePickupResource()
 {
-  if (GetTicks() > m_TickToCheckNextInternalState)
+  if (!HasTimerElapsed())
   {
-    ToMoveToDepositState();
+    return;
   }
+
+  m_resourceExt->DecResources(c_ResourceIncrements);
+  ToMoveToDepositState();
 }
 
 void StateGather::ToMoveToDepositState()
@@ -214,7 +220,7 @@ void StateGather::ToMoveToDepositState()
   GetEntity()->GetAnimator()->SetMotionTreeNode("CpOverlay");
 }
 
-void StateGather::UpdateMoveToDeposit()
+void StateGather::HandleMoveToDeposit()
 {
   if (m_pStateMove->Update())
   {
@@ -234,16 +240,42 @@ void StateGather::ToDropOffResourceState()
   m_InternalState = SG_DropOffResource;
 
   GetEntity()->GetAnimator()->SetMotionTreeNode("CpPutdown");
-
-  m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * 1.03f);
+  SetTimer(1.03f);
 }
 
-void StateGather::UpdateDropOffResource()
+void StateGather::HandleDropOffResource()
 {
-  if (GetTicks() > m_TickToCheckNextInternalState)
+  if (HasTimerElapsed())
   {
     ToMoveToResourceState();
   }
+}
+
+bool StateGather::TriggerExit(StateGather::StateGatherExitState exitState)
+{
+  m_ExitState = exitState;
+  SetExitStatus(true);
+  return true;
+}
+
+StateGather::StateGatherExitState StateGather::GetExitState()
+{
+  return m_ExitState;
+}
+
+bool StateGather::IsDepositing()
+{
+  return m_InternalState == SG_MoveToDeposit || m_InternalState == SG_DropOffResource;
+}
+
+bool StateGather::HasTimerElapsed()
+{
+  return GetTicks() > m_TickToCheckNextInternalState;
+}
+
+void StateGather::SetTimer(float seconds)
+{
+  m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * seconds);
 }
 
 long StateGather::GetTicks()

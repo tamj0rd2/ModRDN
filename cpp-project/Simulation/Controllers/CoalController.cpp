@@ -7,6 +7,7 @@
 #include "../RDNPlayer.h"
 #include "../RDNTuning.h"
 #include "../RDNQuery.h"
+#include "../RDNWorld.h"
 
 #include <EngineAPI/ControllerBlueprint.h>
 
@@ -51,7 +52,7 @@ CoalController::CoalController(Entity *pEntity, const ECStaticInfo *pStaticInfo)
 			m_pCurrentState(NULL)
 
 {
-	SetResources(5000);
+	SetResources(100);
 
 	// init the Command Processor
 	m_commandproc.Init(this);
@@ -132,7 +133,8 @@ State *CoalController::QIStateAll(unsigned char stateid)
 
 void CoalController::OnZeroResources()
 {
-	dbTracef("CoalController::OnZeroResources");
+	GetEntity()->ClearEntityFlag(EF_IsVisible);
+	ModObj::i()->GetWorld()->DeSpawnEntity(GetEntity());
 }
 
 bool CoalController::Update(const EntityCommand *currentCommand)

@@ -21,6 +21,12 @@ public:
     StateID = SID_Gather,
   };
 
+  enum StateGatherExitState
+  {
+    GES_Invalid,
+    GES_ResourceDepleted,
+  };
+
   // construction
 public:
   StateGather(EntityDynamics *e_dynamics);
@@ -47,6 +53,8 @@ public:
   virtual void SaveState(BiFF &) const;
   virtual void LoadState(IFF &);
 
+  StateGatherExitState GetExitState();
+
 private:
   enum StateGatherInternalState
   {
@@ -56,16 +64,19 @@ private:
     SG_PickupResource,
     SG_MoveToDeposit,
     SG_DropOffResource,
-    SG_Exiting,
   };
 
   StateMove *m_pStateMove;
   unsigned long m_InternalState;
   float m_TickToCheckNextInternalState;
+  StateGatherExitState m_ExitState;
 
   const Entity *m_pResourceTarget;
   const Entity *m_pDepositTarget;
-  const ResourceExt *m_resourceExt;
+  ResourceExt *m_resourceExt;
+
+  // TODO: these constants should come from tuning or something
+  const float c_ResourceIncrements;
 
   void StateGather::ToMoveToResourceState();
   void StateGather::ToGatherResourceState();
@@ -73,11 +84,18 @@ private:
   void StateGather::ToMoveToDepositState();
   void StateGather::ToDropOffResourceState();
 
-  void StateGather::UpdateMoveToResource();
-  void StateGather::UpdateGatherResource();
-  void StateGather::UpdatePickupResource();
-  void StateGather::UpdateMoveToDeposit();
-  void StateGather::UpdateDropOffResource();
+  void StateGather::HandleMoveToResource();
+  void StateGather::HandleGatherResource();
+  void StateGather::HandlePickupResource();
+  void StateGather::HandleMoveToDeposit();
+  void StateGather::HandleDropOffResource();
 
+  bool StateGather::TriggerExit(StateGatherExitState exitState);
+
+  bool StateGather::IsDepositing();
   long StateGather::GetTicks();
+  // set the time that a future operation should occur, in seconds
+  void StateGather::SetTimer(float seconds);
+  // check if the set timer has elapsed
+  bool StateGather::HasTimerElapsed();
 };
