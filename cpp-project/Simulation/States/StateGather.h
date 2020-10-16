@@ -6,6 +6,7 @@
 
 // Forward Declarations
 class EntityDynamics;
+class ResourceExt;
 
 /////////////////////////////////////////////////////////////////////
 // StateGather
@@ -64,12 +65,19 @@ private:
 
   const Entity *m_pResourceTarget;
   const Entity *m_pDepositTarget;
+  const ResourceExt *m_resourceExt;
 
-  void StateGather::ToMoveToCoalState();
+  void StateGather::ToMoveToResourceState();
   void StateGather::ToGatherResourceState();
   void StateGather::ToPickupResourceState();
   void StateGather::ToMoveToDepositState();
   void StateGather::ToDropOffResourceState();
+
+  void StateGather::UpdateMoveToResource();
+  void StateGather::UpdateGatherResource();
+  void StateGather::UpdatePickupResource();
+  void StateGather::UpdateMoveToDeposit();
+  void StateGather::UpdateDropOffResource();
 
   long StateGather::GetTicks();
 };
