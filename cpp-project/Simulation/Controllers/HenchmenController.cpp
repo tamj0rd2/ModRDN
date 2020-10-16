@@ -157,41 +157,41 @@ bool HenchmenController::Update(const EntityCommand *pEntCmd)
 
 	// If we processed a command and there was a command, send some notifications
 	// I believe this is here purely for the AI, seems kinda haxor
-	if (ret && pEntCmd)
-	{
-		switch (pEntCmd->GetCommandType())
-		{
-		case EntityCommand::CT_EntityPoint:
-		{
-			// publish that we have received this command
-			GameEventSys::Instance()->PublishEvent(
-					GameEvent_HenchmanEntityPointCmd(
-							static_cast<const RDNPlayer *>(pEntCmd->GetPlayer()),
-							GetEntity()));
-		}
-		break;
-		case EntityCommand::CT_EntityEntity:
-		{
-			const EntityCommand_EntityEntity *pEntCmd_EE = static_cast<const EntityCommand_EntityEntity *>(pEntCmd);
-			// publish that we have received this command
-			GameEventSys::Instance()->PublishEvent(
-					GameEvent_HenchmanEntityEntityCmd(
-							static_cast<const RDNPlayer *>(pEntCmd->GetPlayer()),
-							GetEntity(),
-							pEntCmd_EE->GetTargets().front()));
-		}
-		break;
-		case EntityCommand::CT_Entity:
-		{
-			// publish that we have received this command
-			GameEventSys::Instance()->PublishEvent(
-					GameEvent_HenchmanEntityCmd(
-							static_cast<const RDNPlayer *>(pEntCmd->GetPlayer()),
-							GetEntity()));
-		}
-		break;
-		}
-	}
+	// if (ret && pEntCmd)
+	// {
+	// 	switch (pEntCmd->GetCommandType())
+	// 	{
+	// 	case EntityCommand::CT_EntityPoint:
+	// 	{
+	// 		// publish that we have received this command
+	// 		GameEventSys::Instance()->PublishEvent(
+	// 				GameEvent_HenchmanEntityPointCmd(
+	// 						static_cast<const RDNPlayer *>(pEntCmd->GetPlayer()),
+	// 						GetEntity()));
+	// 	}
+	// 	break;
+	// 	case EntityCommand::CT_EntityEntity:
+	// 	{
+	// 		const EntityCommand_EntityEntity *pEntCmd_EE = static_cast<const EntityCommand_EntityEntity *>(pEntCmd);
+	// 		// publish that we have received this command
+	// 		GameEventSys::Instance()->PublishEvent(
+	// 				GameEvent_HenchmanEntityEntityCmd(
+	// 						static_cast<const RDNPlayer *>(pEntCmd->GetPlayer()),
+	// 						GetEntity(),
+	// 						pEntCmd_EE->GetTargets().front()));
+	// 	}
+	// 	break;
+	// 	case EntityCommand::CT_Entity:
+	// 	{
+	// 		// publish that we have received this command
+	// 		GameEventSys::Instance()->PublishEvent(
+	// 				GameEvent_HenchmanEntityCmd(
+	// 						static_cast<const RDNPlayer *>(pEntCmd->GetPlayer()),
+	// 						GetEntity()));
+	// 	}
+	// 	break;
+	// 	}
+	// }
 
 	return ret;
 }

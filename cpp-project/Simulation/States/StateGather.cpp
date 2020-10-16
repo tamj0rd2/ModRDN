@@ -31,6 +31,7 @@
 #include <SimEngine/SpatialBucketSystem.h>
 #include <SimEngine/EntityDynamics.h>
 #include <SimEngine/EntityAnimator.h>
+#include <SimEngine/BuildingDynamics.h>
 
 StateGather::StateGather(EntityDynamics *e_dynamics) : State(e_dynamics), m_pStateMove(NULL),
                                                        m_InternalState(SG_Invalid),
@@ -124,11 +125,13 @@ bool StateGather::Update()
     if (m_pStateMove->Update())
     {
       StateMove::MoveExitState moveExitState = m_pStateMove->GetExitState();
-      if (moveExitState == StateMove::MES_ReachedTarget || moveExitState == StateMove::MES_CantPathToTargetTerrain)
+      if (moveExitState == StateMove::MES_ReachedTarget)
       {
-        // maybe this terrain issue also explains why henchmen walk behind the coal instead of to the front
-        dbTracef("Hench reached the resource or terrain blocked it. state: %d", moveExitState);
         ToGatherResourceState();
+      }
+      else
+      {
+        dbFatalf("Could not get to the resource. Status %d", moveExitState);
       }
     }
     break;
@@ -139,10 +142,6 @@ bool StateGather::Update()
     {
       ToPickupResourceState();
     }
-    else
-    {
-      dbTracef("Gathering resources :)");
-    }
     break;
   }
   case SG_PickupResource:
@@ -150,10 +149,6 @@ bool StateGather::Update()
     if (GetTicks() > m_TickToCheckNextInternalState)
     {
       ToMoveToDepositState();
-    }
-    else
-    {
-      dbTracef("Still picking up the resource");
     }
     break;
   }
@@ -169,11 +164,6 @@ bool StateGather::Update()
         ToDropOffResourceState();
       }
     }
-    else
-    {
-      dbTracef("Setting overlay for moving to deposit...");
-      GetEntity()->GetAnimator()->SetMotionTreeNode("CpOverlay");
-    }
     break;
   }
   case SG_DropOffResource:
@@ -181,10 +171,6 @@ bool StateGather::Update()
     if (GetTicks() > m_TickToCheckNextInternalState)
     {
       ToMoveToCoalState();
-    }
-    else
-    {
-      dbTracef("Still dropping off resource");
     }
     break;
   }
@@ -201,44 +187,21 @@ bool StateGather::Update()
 
 void StateGather::ToMoveToCoalState()
 {
-  // walk over to coal
-  Vec3f destination = m_pResourceTarget->GetPosition();
-  m_pStateMove->Enter(destination, 0.0f);
   m_InternalState = SG_MoveToResource;
+  m_pStateMove->Enter(m_pResourceTarget, 0);
 }
 
 void StateGather::ToGatherResourceState()
 {
   m_InternalState = SG_GatherResources;
-
-  // turn to face the coal
-  SimController *pSimController = static_cast<SimController *>(GetEntity()->GetController());
-  if (pSimController && pSimController->GetEntityDynamics())
-  {
-    Vec2f directionOfResource;
-    directionOfResource = Vec2f(m_pResourceTarget->GetPosition().x, m_pResourceTarget->GetPosition().z) - Vec2f(GetEntity()->GetPosition().x, GetEntity()->GetPosition().z);
-
-    // watch out for Normalizing 0 length vector
-    if (directionOfResource.LengthSqr() > 0.1)
-    {
-      directionOfResource.NormalizeSelf();
-    }
-    else
-    {
-      directionOfResource.Set(0.0, 1.0f);
-    }
-
-    // use the solution from mod actions for a smoother transition
-    pSimController->GetEntityDynamics()->SetEntityFacing(directionOfResource);
-  }
-
+  GetEntity()->GetAnimator()->SetTargetLook(m_pResourceTarget);
   GetEntity()->GetAnimator()->SetMotionTreeNode("PaSwing");
+
+  m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * 3);
 
   // TODO: tie in with the actual resource ext
   // ResourceExt *resource = const_cast<ResourceExt *>(QIExt<ResourceExt>(m_pResourceTarget));
   // resource->GathererAdd(GetEntity());
-
-  m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * 3);
 }
 
 void StateGather::ToPickupResourceState()
@@ -266,7 +229,7 @@ void StateGather::ToMoveToDepositState()
   }
 
   // maybe CpOverlay motion
-  m_pStateMove->Enter(depositEntity->GetPosition(), 0.0f);
+  m_pStateMove->Enter(depositEntity, 0);
   GetEntity()->GetAnimator()->SetMotionTreeNode("CpOverlay");
 }
 
