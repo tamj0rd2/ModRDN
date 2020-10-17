@@ -98,8 +98,6 @@ RDNPlayer::RDNPlayer(WorldFOW *pWorldFOW)
 	//
 	m_population = 0;
 
-	m_cashPerTick = 0.0f;
-
 	for (int i = 0; i < MAX_EC; ++i)
 	{
 		m_groupController[i].ClearFlag(EF_IsSpawned);
@@ -414,17 +412,6 @@ float RDNPlayer::IncResourceCash(float amount, ResourceIncreased reason)
 	}
 
 	return m_resourceCash;
-}
-
-/////////////////////////////////////////////////////////////////////
-//	Desc.	:
-//	Result	:
-//	Param.	:
-//	Author	:
-//
-float RDNPlayer::GetResourceCashRatePerTick() const
-{
-	return m_cashPerTick;
 }
 
 /////////////////////////////////////////////////////////////////////

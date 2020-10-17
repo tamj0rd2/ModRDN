@@ -95,7 +95,6 @@ public:
 	float GetResourceCash() const;
 	float IncResourceCash(float amount, ResourceIncreased reason = RES_Other);
 	float DecResourceCash(float amount);
-	float GetResourceCashRatePerTick() const;
 
 	// population
 	int PopulationCurrent() const;
@@ -211,8 +210,6 @@ private:
 	// population
 	// do not save that value
 	int m_population;
-
-	float m_cashPerTick;
 
 	// a group for each type of controller - for faster and easier ways to find objects
 	// do not save that value

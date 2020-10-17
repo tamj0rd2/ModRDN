@@ -1583,19 +1583,10 @@ void RDNTaskbar::LabelUpdatePlayerCash(const char *label, int parm)
 
 	// text
 	const int cur = int(floorf(player->GetResourceCash()));
-	const int rate = int(floorf(player->GetResourceCashRatePerTick() * k_SimStepsPerSecond));
-
 	wchar_t curW[16];
 	Localizer::ConvertNumber2Localized(curW, LENGTHOF(curW), cur);
-	wchar_t rateW[16];
-	Localizer::ConvertNumber2Localized(rateW, LENGTHOF(rateW), rate);
 
-	// text
-	wchar_t wchbuf[256];
-	int formatkey = (rate >= 0) ? TBAR_RESCASH_PLUS : TBAR_RESCASH_MINUS;
-	Localizer::FormatText(wchbuf, LENGTHOF(wchbuf), formatkey, curW, rateW);
-
-	m_pimpl->m_hud->SetText(CURRENTSCREEN, label, wchbuf);
+	m_pimpl->m_hud->SetText(CURRENTSCREEN, label, curW);
 
 	return;
 }

@@ -201,3 +201,20 @@ void ResourceExt::GathererAdd(const Entity *p_Entity)
 {
 	m_gatherers.push_back(const_cast<Entity *>(p_Entity));
 }
+
+
+void ResourceExt::GathererRmv(const Entity *p_Entity)
+{
+	m_gatherers.remove(p_Entity);
+}
+
+void ResourceExt::GatherersOnSiteAdd(const Entity * p_Entity)
+{
+	m_gatherersOnSite.push_back(const_cast<Entity *>(p_Entity));
+}
+
+
+void ResourceExt::GatherersOnSiteRmv(const Entity * p_Entity)
+{
+	m_gatherersOnSite.remove(p_Entity);
+}

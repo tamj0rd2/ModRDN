@@ -25,6 +25,7 @@ public:
   {
     GES_Invalid,
     GES_ResourceDepleted,
+    GES_RequestedToStop,
   };
 
   // construction
@@ -73,7 +74,7 @@ private:
 
   const Entity *m_pResourceTarget;
   const Entity *m_pDepositTarget;
-  ResourceExt *m_resourceExt;
+  ResourceExt *m_pResourceExt;
 
   // TODO: these constants should come from tuning or something
   const float c_ResourceIncrements;
