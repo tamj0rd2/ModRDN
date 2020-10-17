@@ -91,10 +91,18 @@ private:
   void StateGather::HandleMoveToDeposit();
   void StateGather::HandleDropOffResource();
 
+  void StateGather::HandleResourceDepleted();
+
   bool StateGather::TriggerExit(StateGatherExitState exitState);
 
   bool StateGather::IsDepositing();
   long StateGather::GetTicks();
+
+  // sets the resource to mine to be the given entity
+  void StateGather::SetTargetResource(const Entity *pResourceEntity);
+  // find the resource closest to the current targetted resource
+  Entity* StateGather::FindResourceNearTargetResource();
+
   // set the time that a future operation should occur, in seconds
   void StateGather::SetTimer(float seconds);
   // check if the set timer has elapsed

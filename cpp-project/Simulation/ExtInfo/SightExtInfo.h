@@ -32,6 +32,7 @@ public:
 public:
 	SightExtInfo(const ControllerBlueprint *cbp)
 	{
-		sightRadius = GetVal(cbp, "sight_radius", 10.0f);
+		// TODO: maybe add support here for the "sight_radius" property, without the 1
+		sightRadius = GetVal(cbp, "sight_radius1", 10.0f);
 	}
 };

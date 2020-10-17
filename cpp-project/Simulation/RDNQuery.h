@@ -324,6 +324,24 @@ private:
 };
 
 
+// finds the closest controller of the specified type
+class FindClosestEntityOfType : public FindClosestFilter
+{
+public:
+	FindClosestEntityOfType(ControllerType controllerType)
+			:	m_bFound(false),
+				m_ControllerType(controllerType)
+	{
+	};
+
+	// Check to see if this entity is an enemy
+	virtual bool Check(const Entity *pEntity);
+
+private:
+  bool m_bFound;
+  ControllerType m_ControllerType;
+};
+
 
 //-------------------------------------------------------------------------------------
 //

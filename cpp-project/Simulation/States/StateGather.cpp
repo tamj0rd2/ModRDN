@@ -54,16 +54,8 @@ void StateGather::Enter(const Entity *pResourceEntity)
     dbFatalf("Entities that want to gather resources should have animators attached");
   }
 
-  // TODO: make sure there is an animator for the entity
-  dbAssert(pResourceEntity);
-  m_pResourceTarget = pResourceEntity;
-
-  m_pResourceExt = const_cast<ResourceExt *>(QIExt<ResourceExt>(pResourceEntity->GetController()));
-  dbAssert(m_pResourceExt);
-  m_pResourceExt->GathererAdd(GetEntity());
-
   SetExitStatus(false);
-  ToMoveToResourceState();
+  SetTargetResource(pResourceEntity);
 }
 
 void StateGather::SoftExit()
@@ -106,7 +98,8 @@ bool StateGather::Update()
 {
   if (m_pResourceExt->GetResources() <= 0.0f && !IsDepositing())
   {
-    return TriggerExit(GES_ResourceDepleted);
+    HandleResourceDepleted();
+    return IsExiting();
   }
 
   switch (m_InternalState)
@@ -258,6 +251,19 @@ void StateGather::HandleDropOffResource()
   ToMoveToResourceState();
 }
 
+void StateGather::HandleResourceDepleted()
+{
+  Entity *nearestResource = FindResourceNearTargetResource();
+
+  if (nearestResource)
+  {
+    SetTargetResource(nearestResource);
+    return;
+  }
+
+  TriggerExit(GES_ResourceDepleted);
+}
+
 bool StateGather::TriggerExit(StateGather::StateGatherExitState exitState)
 {
   m_pResourceExt->GathererRmv(GetEntity());
@@ -286,6 +292,32 @@ bool StateGather::HasTimerElapsed()
 void StateGather::SetTimer(float seconds)
 {
   m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * seconds);
+}
+
+void StateGather::SetTargetResource(const Entity *pResourceEntity)
+{
+  m_pResourceTarget = pResourceEntity;
+  if (!m_pResourceTarget)
+    dbFatalf("No resource entity given");
+
+  m_pResourceExt = const_cast<ResourceExt *>(QIExt<ResourceExt>(m_pResourceTarget->GetController()));
+  if (!m_pResourceExt)
+    dbFatalf("The given resource entity has no resource ext");
+
+  m_pResourceExt->GathererAdd(GetEntity());
+  ToMoveToResourceState();
+}
+
+Entity *StateGather::FindResourceNearTargetResource()
+{
+  FindClosestEntityOfType filter(Coal_EC);
+  ModController *pController = static_cast<ModController *>(GetEntity()->GetController());
+
+  return ModObj::i()->GetWorld()->FindClosestEntity(
+      filter,
+      m_pResourceTarget->GetPosition(),
+      10,
+      m_pResourceTarget);
 }
 
 long StateGather::GetTicks()

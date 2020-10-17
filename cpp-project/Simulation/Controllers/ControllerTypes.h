@@ -5,7 +5,6 @@
 //
 #pragma once
 
-// order is VERY IMPORTANT
 enum ControllerType
 {
 	NULL_EC = 0,

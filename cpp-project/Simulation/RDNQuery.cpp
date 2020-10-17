@@ -281,20 +281,15 @@ bool FindClosestEnemyOfType::Check(const Entity *pEntity)
 // Used for finding the closest foundry/workshop
 bool FindClosestResourceDepsoit::Check(const Entity *pEntity)
 {
-	if (m_bFound)
-	{
-		return false;
-	}
-
 	const unsigned long controllerType = pEntity->GetControllerBP()->GetControllerType();
+	return controllerType == Workshop_EC || controllerType == Lab_EC;
+}
 
-	if (controllerType == Workshop_EC || controllerType == Lab_EC)
-	{
-		m_bFound = true;
-		return true;
-	}
-
-	return false;
+// Used for finding the cloest entity that matches the given controller type
+bool FindClosestEntityOfType::Check(const Entity *pEntity)
+{
+	const unsigned long controllerType = pEntity->GetControllerBP()->GetControllerType();
+	return controllerType == m_ControllerType;
 }
 
 //-------------------------------------------------------------------------------------

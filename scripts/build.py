@@ -155,6 +155,12 @@ def buildLocale(settings: Settings):
     Logger.success("Locale built\n")
 
 
+def installAsset(srcPath: str, installLocation: str):
+    displayName = re.search(r"([^\\]+)$", srcPath)[0] or srcPath
+    copyfile(srcPath, installLocation)
+    Logger.info("{} installed to {}".format(displayName, installLocation))
+
+
 def start(install: bool, launch: bool, targets: list):
     settings = parseSettingsFile()
     vm = VmManager(settings)
@@ -170,22 +176,38 @@ def start(install: bool, launch: bool, targets: list):
         time.sleep(1)
 
         if "mod" in targets:
-            copyfile(settings.dllOutputPath, settings.dllInstallPath)
-            Logger.success("RDNMod.dll installed to {}".format(
-                settings.dllInstallPath))
+            installAsset(
+                settings.dllOutputPath, settings.dllInstallPath)
 
         if "locale" in targets:
-            copyfile(settings.modTextDllOutputPath,
-                     settings.modTextInstallPath)
-            Logger.success("ModText.dll installed to {}".format(
-                settings.modTextInstallPath))
+            installAsset(settings.modTextDllOutputPath,
+                         settings.modTextInstallPath)
 
         if "assets" in targets:
             Logger.warn(
-                "warning: Asset installation not yet implemented in py. Using ps1")
-            result = runProcess(
-                ["powershell", "-file", '{}\\scripts\\install-assets.ps1'.format(settings.repoFolder).replace("/", "\\")])
-            print(result.stdout)
+                "Need to implement installing the module, including replacement")
+            installAsset(settings.emptySgaPath, settings.modSgaInstallPath)
+            installAsset(settings.emptySgaPath, settings.modlocInstallPath)
+
+            with open(settings.moduleTemplatePath, "r") as templateFile:
+                moduleContent = templateFile.read().replace("{{modName}}", settings.modName).replace(
+                    "{{modDescription}}", settings.modDescription).replace("{{modVersion}}", settings.modVersion)
+
+                with open(settings.moduleInstallPath, "w") as moduleFile:
+                    moduleFile.write(moduleContent)
+            Logger.info("template.module installed to {}".format(
+                settings.moduleInstallPath))
+
+            for folder in os.walk(settings.dataFolder):
+                for fileName in folder[2]:
+                    fileToCopy = "{}\\{}".format(folder[0], fileName)
+                    relativePath = fileToCopy.split(settings.dataFolder)[1]
+                    installPath = "{}{}".format(
+                        settings.dataInstallFolder, relativePath)
+                    copyfile(fileToCopy, installPath)
+
+            Logger.info("{} installed to {}".format(
+                settings.dataFolder, settings.dataInstallFolder))
 
     if launch:
         subprocess.Popen([settings.icExePath, "-moddev"])

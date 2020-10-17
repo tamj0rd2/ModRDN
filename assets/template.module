@@ -15,4 +15,8 @@ PatcherUrl		=
 ;; The first Archives registered will be scanned for files first
 
 ArchiveFile_1= {{modName}}Data.sga
-ArchiveFile_2= ICData.sga
+;; ArchiveFile_2= InsectData.sga
+;; ArchiveFile_3= ICData.sga
+
+;; allows using additonal scenarios or something
+CompatableMod_1 = IC

@@ -33,7 +33,8 @@
     },
     "triggerTaskOnSave.tasks": {
       "buildAndInstallMod": ["**/*.h", "**/*.cpp"],
-      "buildAndInstallLocale": ["ModText.rc"]
+      "buildAndInstallLocale": ["ModText.rc"],
+      "copyAssets": ["**/*.lua", "template.module"],
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "Lua.diagnostics.disable": ["undefined-global", "lowercase-global"],
