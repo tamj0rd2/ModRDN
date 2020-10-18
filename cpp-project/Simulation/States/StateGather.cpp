@@ -32,6 +32,10 @@
 #include <SimEngine/EntityAnimator.h>
 #include <SimEngine/BuildingDynamics.h>
 
+const bool Success = false;
+const bool NothingHappened = false;
+const bool ShouldExit = true;
+
 StateGather::StateGather(EntityDynamics *e_dynamics) : State(e_dynamics), m_pStateMove(NULL),
                                                        m_InternalState(SG_Invalid),
                                                        m_pResourceTarget(NULL),
@@ -56,12 +60,6 @@ void StateGather::Enter(const Entity *pResourceEntity)
 
   SetExitStatus(false);
   SetTargetResource(pResourceEntity);
-}
-
-void StateGather::SoftExit()
-{
-  dbTracef("StateGather::SoftExit");
-  TriggerExit(GES_RequestedToStop);
 }
 
 void StateGather::RequestExit()
@@ -97,107 +95,82 @@ void StateGather::LoadState(IFF &)
 bool StateGather::Update()
 {
   if (m_pResourceExt->GetResources() <= 0.0f && !IsDepositing())
-  {
-    HandleResourceDepleted();
-    return IsExiting();
-  }
+    return HandleResourceDepleted();
 
-  switch (m_InternalState)
-  {
-  case SG_MoveToResource:
-  {
-    HandleMoveToResource();
-    break;
-  }
-  case SG_GatherResources:
-  {
-    HandleGatherResource();
-    break;
-  }
-  case SG_PickupResource:
-  {
-    HandlePickupResource();
-    break;
-  }
-  case SG_MoveToDeposit:
-  {
-    HandleMoveToDeposit();
-    break;
-  }
-  case SG_DropOffResource:
-  {
-    HandleDropOffResource();
-    break;
-  }
-  default:
-  {
-    dbFatalf("Unimplemented StateGather state %d", m_InternalState);
-    break;
-  }
-  }
+  if (m_InternalState == SG_MoveToResource)
+    return HandleMoveToResource();
 
-  // if we want to exit at any time
-  return IsExiting();
+  if (m_InternalState == SG_GatherResources)
+    return HandleGatherResource();
+
+  if (m_InternalState == SG_PickupResource)
+    return HandlePickupResource();
+
+  if (m_InternalState == SG_MoveToDeposit)
+    return HandleMoveToDeposit();
+
+  if (m_InternalState == SG_DropOffResource)
+    return HandleDropOffResource();
+
+  dbFatalf("Unimplemented StateGather state %d", m_InternalState);
 }
 
-void StateGather::ToMoveToResourceState()
+bool StateGather::ToMoveToResourceState()
 {
   m_InternalState = SG_MoveToResource;
   m_pStateMove->Enter(m_pResourceTarget, 0);
+  return Success;
 }
 
-void StateGather::HandleMoveToResource()
+bool StateGather::HandleMoveToResource()
 {
   if (m_pStateMove->Update())
   {
     StateMove::MoveExitState moveExitState = m_pStateMove->GetExitState();
     if (moveExitState == StateMove::MES_ReachedTarget)
-    {
-      ToGatherResourceState();
-      return;
-    }
+      return ToGatherResourceState();
     else
-    {
-      dbFatalf("Could not get to the resource. Status %d", moveExitState);
-    }
+      return TriggerExit(GES_CouldNotReachResource);
   }
+
+  return NothingHappened;
 }
 
-void StateGather::ToGatherResourceState()
+bool StateGather::ToGatherResourceState()
 {
   m_InternalState = SG_GatherResources;
   GetEntity()->GetAnimator()->SetTargetLook(m_pResourceTarget);
   GetEntity()->GetAnimator()->SetMotionTreeNode("PaSwing");
   SetTimer(3);
+  return Success;
 }
 
-void StateGather::HandleGatherResource()
+bool StateGather::HandleGatherResource()
 {
   if (HasTimerElapsed())
-  {
-    ToPickupResourceState();
-  }
+    return ToPickupResourceState();
+
+  return NothingHappened;
 }
 
-void StateGather::ToPickupResourceState()
+bool StateGather::ToPickupResourceState()
 {
   m_InternalState = SG_PickupResource;
   GetEntity()->GetAnimator()->SetMotionTreeNode("CpPickup");
   SetTimer(1.04f);
+  return Success;
 }
 
-void StateGather::HandlePickupResource()
+bool StateGather::HandlePickupResource()
 {
   if (!HasTimerElapsed())
-  {
-    return;
-  }
+    return NothingHappened;
 
   m_pResourceExt->DecResources(c_ResourceIncrements);
-  ToMoveToDepositState();
+  return ToMoveToDepositState();
 }
 
-void StateGather::ToMoveToDepositState()
+bool StateGather::ToMoveToDepositState()
 {
   m_InternalState = SG_MoveToDeposit;
 
@@ -205,63 +178,55 @@ void StateGather::ToMoveToDepositState()
   Entity *depositEntity = ModObj::i()->GetWorld()->FindClosestEntity(filter, GetEntity()->GetPosition(), 1000, NULL);
 
   if (!depositEntity)
-  {
-    // TODO: it should actually exit the gather state if there is no place to deposit coal
-    dbFatalf("Could not find a deposit :(");
-  }
+    return TriggerExit(GES_CouldNotReachDeposit);
 
   // maybe CpOverlay motion
   m_pStateMove->Enter(depositEntity, 0);
   GetEntity()->GetAnimator()->SetMotionTreeNode("CpOverlay");
+  return Success;
 }
 
-void StateGather::HandleMoveToDeposit()
+bool StateGather::HandleMoveToDeposit()
 {
   if (m_pStateMove->Update())
   {
     StateMove::MoveExitState moveExitState = m_pStateMove->GetExitState();
     if (moveExitState == StateMove::MES_ReachedTarget)
-    {
-      ToDropOffResourceState();
-    }
+      return ToDropOffResourceState();
     else
-    {
       dbFatalf("Hench could not reach the deposit. state: %d", moveExitState);
-    }
   }
+
+  return NothingHappened;
 }
 
-void StateGather::ToDropOffResourceState()
+bool StateGather::ToDropOffResourceState()
 {
   m_InternalState = SG_DropOffResource;
 
   GetEntity()->GetAnimator()->SetMotionTreeNode("CpPutdown");
   SetTimer(1.03f);
+  return Success;
 }
 
-void StateGather::HandleDropOffResource()
+bool StateGather::HandleDropOffResource()
 {
   if (!HasTimerElapsed())
-  {
-    return;
-  }
+    return NothingHappened;
 
   RDNPlayer *player = static_cast<RDNPlayer *>(GetEntity()->GetOwner());
   player->IncResourceCash(c_ResourceIncrements, RDNPlayer::RES_Resourcing);
-  ToMoveToResourceState();
+  return ToMoveToResourceState();
 }
 
-void StateGather::HandleResourceDepleted()
+bool StateGather::HandleResourceDepleted()
 {
   Entity *nearestResource = FindResourceNearTargetResource();
 
   if (nearestResource)
-  {
-    SetTargetResource(nearestResource);
-    return;
-  }
+    return SetTargetResource(nearestResource);
 
-  TriggerExit(GES_ResourceDepleted);
+  return TriggerExit(GES_ResourceDepleted);
 }
 
 bool StateGather::TriggerExit(StateGather::StateGatherExitState exitState)
@@ -270,13 +235,8 @@ bool StateGather::TriggerExit(StateGather::StateGatherExitState exitState)
   m_pResourceExt->GatherersOnSiteRmv(GetEntity());
 
   m_ExitState = exitState;
-  SetExitStatus(true);
-  return true;
-}
-
-StateGather::StateGatherExitState StateGather::GetExitState()
-{
-  return m_ExitState;
+  SetExitStatus(ShouldExit);
+  return ShouldExit;
 }
 
 bool StateGather::IsDepositing()
@@ -294,7 +254,7 @@ void StateGather::SetTimer(float seconds)
   m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * seconds);
 }
 
-void StateGather::SetTargetResource(const Entity *pResourceEntity)
+bool StateGather::SetTargetResource(const Entity *pResourceEntity)
 {
   m_pResourceTarget = pResourceEntity;
   if (!m_pResourceTarget)
@@ -305,13 +265,12 @@ void StateGather::SetTargetResource(const Entity *pResourceEntity)
     dbFatalf("The given resource entity has no resource ext");
 
   m_pResourceExt->GathererAdd(GetEntity());
-  ToMoveToResourceState();
+  return ToMoveToResourceState();
 }
 
 Entity *StateGather::FindResourceNearTargetResource()
 {
   FindClosestEntityOfType filter(Coal_EC);
-  ModController *pController = static_cast<ModController *>(GetEntity()->GetController());
 
   return ModObj::i()->GetWorld()->FindClosestEntity(
       filter,

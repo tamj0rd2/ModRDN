@@ -83,7 +83,7 @@ class VmManager:
             vmState = self.__getState()
 
         self.__waitForAvailability()
-        print("Connected to vm \"{}\"\n".format(self.vmName))
+        Logger.log("Connected to vm \"{}\"\n".format(self.vmName))
         return
 
     def __pause(self):
@@ -107,12 +107,12 @@ class VmManager:
 
         attemptCount = 0
         while not isVmAvailable() or "running" not in self.__getState():
-            print("waiting...")
-            if (attemptCount > 30):
+            Logger.log("waiting...")
+            if (attemptCount > 6):
                 raise ValueError("Could not start the {} vm. Current state: {}".format(
                     self.vmName, self.__getState()))
             attemptCount += 1
-            time.sleep(1)
+            time.sleep(5)
 
 
 def buildCppCode(settings: Settings, vm: VmManager):
@@ -130,17 +130,24 @@ def buildCppCode(settings: Settings, vm: VmManager):
         if re.match(r".*: (fatal )?(error|warning)", trimmedLine):
             shouldStartPrinting = True
 
+        def getLineWithReplacedPath():
+            errorLineSearch = re.compile(r"(?:{})?(\\.*cpp|h)\((\d+)\)".format(
+                re.escape(settings.guestCppProjectFolder)), re.IGNORECASE)
+            lineWithReplacePaths = re.sub(
+                errorLineSearch, "\g<1>:\g<2>", trimmedLine)
+
+            if (lineWithReplacePaths.startswith('\\')):
+                lineWithReplacePaths = lineWithReplacePaths[1:]
+
+            return lineWithReplacePaths
+
+        lineWithReplacedPaths = getLineWithReplacedPath()
+
         if shouldStartPrinting:
-            if re.match(r".*: (fatal )?(error)", trimmedLine):
-                Logger.error(re.sub(r"\.(cpp|h)\((\d+)\)",
-                                    ".\g<1>:\g<2>", trimmedLine))
-            elif re.match(r".*: (warning)", trimmedLine):
-                Logger.warn(re.sub(r"\.(cpp|h)\((\d+)\)",
-                                   ".\g<1>:\g<2>", trimmedLine))
-            elif trimmedLine.lower().startswith(settings.guestCppProjectFolder.lower()):
-                search = re.compile(r"{}\\(.*)\((\d+)\)".format(
-                    re.escape(settings.guestCppProjectFolder)), re.IGNORECASE)
-                Logger.log(re.sub(search, "\g<1>:\g<2>", trimmedLine))
+            if re.match(r".*: (fatal )?(error)", lineWithReplacedPaths):
+                Logger.error(lineWithReplacedPaths)
+            elif re.match(r".*: (warning)", lineWithReplacedPaths):
+                Logger.warn(lineWithReplacedPaths)
             else:
                 Logger.log(trimmedLine)
                 continue

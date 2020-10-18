@@ -26,6 +26,8 @@ public:
     GES_Invalid,
     GES_ResourceDepleted,
     GES_RequestedToStop,
+    GES_CouldNotReachResource,
+    GES_CouldNotReachDeposit,
   };
 
   // construction
@@ -41,8 +43,8 @@ public:
 public:
   virtual bool Update();
 
-  virtual void SoftExit();
   virtual void RequestExit();
+
   virtual void ReissueOrder() const;
 
   virtual void ForceExit();
@@ -53,8 +55,6 @@ public:
   // Save Load
   virtual void SaveState(BiFF &) const;
   virtual void LoadState(IFF &);
-
-  StateGatherExitState GetExitState();
 
 private:
   enum StateGatherInternalState
@@ -79,29 +79,32 @@ private:
   // TODO: these constants should come from tuning or something
   const float c_ResourceIncrements;
 
-  void StateGather::ToMoveToResourceState();
-  void StateGather::ToGatherResourceState();
-  void StateGather::ToPickupResourceState();
-  void StateGather::ToMoveToDepositState();
-  void StateGather::ToDropOffResourceState();
+  // these methods return Success if the state should exit
+  bool StateGather::ToMoveToResourceState();
+  bool StateGather::ToGatherResourceState();
+  bool StateGather::ToPickupResourceState();
+  bool StateGather::ToMoveToDepositState();
+  bool StateGather::ToDropOffResourceState();
 
-  void StateGather::HandleMoveToResource();
-  void StateGather::HandleGatherResource();
-  void StateGather::HandlePickupResource();
-  void StateGather::HandleMoveToDeposit();
-  void StateGather::HandleDropOffResource();
+  // these methods return Success if the state should exit
+  bool StateGather::HandleMoveToResource();
+  bool StateGather::HandleGatherResource();
+  bool StateGather::HandlePickupResource();
+  bool StateGather::HandleMoveToDeposit();
+  bool StateGather::HandleDropOffResource();
 
-  void StateGather::HandleResourceDepleted();
+  bool StateGather::HandleResourceDepleted();
 
+  // returns true if the exit was successful
   bool StateGather::TriggerExit(StateGatherExitState exitState);
 
   bool StateGather::IsDepositing();
   long StateGather::GetTicks();
 
   // sets the resource to mine to be the given entity
-  void StateGather::SetTargetResource(const Entity *pResourceEntity);
+  bool StateGather::SetTargetResource(const Entity *pResourceEntity);
   // find the resource closest to the current targetted resource
-  Entity* StateGather::FindResourceNearTargetResource();
+  Entity *StateGather::FindResourceNearTargetResource();
 
   // set the time that a future operation should occur, in seconds
   void StateGather::SetTimer(float seconds);

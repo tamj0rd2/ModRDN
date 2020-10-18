@@ -34,12 +34,14 @@ public:
 public:
 	virtual float GetResources() const;
 	virtual void SetResources(float amount);
+	bool HasResources();
 
 	// return amount decreased
 	virtual float DecResources(float amount);
 
 	// list of henchmen actively gathering this site
 	const EntityGroup &Gatherers() const;
+	size_t GetGathererCount();
 	void GathererAdd(const Entity *);
 	void GathererRmv(const Entity *);
 

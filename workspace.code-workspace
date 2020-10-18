@@ -41,10 +41,5 @@
     "python.autoComplete.extraPaths": [
       "./scripts"
     ],
-    "files.associations": {
-      ".nycrc": "json",
-      ".releaserc": "json",
-      "xiosbase": "cpp"
-    }
   }
 }
