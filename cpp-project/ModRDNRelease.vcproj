@@ -161,6 +161,82 @@
 			<Tool
 				Name="VCWebDeploymentTool"/>
 		</Configuration>
+		<Configuration
+			Name="HalfRelease|Win32"
+			OutputDirectory="..\Obj\Target\ModRDN\"
+			IntermediateDirectory="..\Obj\Target\ModRDN\"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm250 "
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="2"
+				FavorSizeOrSpeed="2"
+				OptimizeForProcessor="2"
+				AdditionalIncludeDirectories=".\;.\pch\;..\..\Include\;..\..\Include\stl"
+				PreprocessorDefinitions="RELIC_PC,WIN32;_WINDOWS;_USRDLL;MODRDN_EXPORTS"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="FALSE"
+				EnableFunctionLevelLinking="TRUE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
+				RuntimeTypeInfo="TRUE"
+				UsePrecompiledHeader="3"
+				PrecompiledHeaderThrough="pch.h"
+				PrecompiledHeaderFile="..\Obj\Target\ModRDN\ModRDN.pch"
+				AssemblerOutput="2"
+				AssemblerListingLocation="..\Obj\Target\ModRDN\"
+				ObjectFile="..\Obj\Target\ModRDN\"
+				ProgramDataBaseFileName="..\Obj\Target\ModRDN\"
+				WarningLevel="4"
+				SuppressStartupBanner="FALSE"
+				DebugInformationFormat="3"
+				CallingConvention="2"
+				CompileAs="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="TRUE"
+				AdditionalOptions="/MACHINE:I386 "
+				ShowProgress="0"
+				OutputFile="..\Obj\Bin\RDNMod.dll"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="..\..\Lib"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="..\Obj\Bin\RDNMod.pdb"
+				GenerateMapFile="TRUE"
+				MapFileName="..\Obj\Target\ModRDN\RDNMod.map"
+				MapExports="TRUE"
+				OptimizeReferences="2"
+				ImportLibrary="..\Obj\Lib\RDNMod.lib"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions=""
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName="..\Obj\Target\ModRDN\ModRDN.tlb"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions=""
+				Culture="1033"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+		</Configuration>
 	</Configurations>
 	<Files>
 		<Filter
@@ -665,6 +741,12 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="HalfRelease|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"/>

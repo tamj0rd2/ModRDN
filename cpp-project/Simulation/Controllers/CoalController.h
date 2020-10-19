@@ -46,6 +46,8 @@ protected:
 	virtual void OnZeroResources();
 
 private:
+	void OnSpawnEntity();
+
 	virtual ModController *GetSelf();
 
 	State *m_pCurrentState;

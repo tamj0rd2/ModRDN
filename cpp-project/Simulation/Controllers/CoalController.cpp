@@ -47,13 +47,11 @@ CoalController::StaticInfo::QInfo(unsigned char id) const
 
 CoalController::CoalController(Entity *pEntity, const ECStaticInfo *pStaticInfo)
 		: ModController(pEntity, SiteExtInfo::CreateDynamics(pEntity, QIExtInfo<SiteExtInfo>(pStaticInfo)), pStaticInfo),
-			ResourceExt(),
+			ResourceExt(QIExtInfo<ResourceExtInfo>(pStaticInfo)),
 			m_stateidle(GetEntityDynamics()),
 			m_pCurrentState(NULL)
 
 {
-	SetResources(100);
-
 	// init the Command Processor
 	m_commandproc.Init(this);
 	SetCommandProcessor(&m_commandproc);
@@ -129,6 +127,12 @@ State *CoalController::QIStateAll(unsigned char stateid)
 		return &m_stateidle;
 
 	return NULL;
+}
+
+void CoalController::OnSpawnEntity()
+{
+	InitLooks();
+	ModController::OnSpawnEntity();
 }
 
 void CoalController::OnZeroResources()

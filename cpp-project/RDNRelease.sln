@@ -14,6 +14,7 @@ Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
 		ConfigName.1 = Release
+		ConfigName.2 = HalfRelease
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
@@ -22,6 +23,8 @@ Global
 		{293120C5-5EA2-40F2-BF9E-EEED022C85EF}.Debug.Build.0 = Debug|Win32
 		{293120C5-5EA2-40F2-BF9E-EEED022C85EF}.Release.ActiveCfg = Release|Win32
 		{293120C5-5EA2-40F2-BF9E-EEED022C85EF}.Release.Build.0 = Release|Win32
+		{293120C5-5EA2-40F2-BF9E-EEED022C85EF}.HalfRelease.ActiveCfg = HalfRelease|Win32
+		{293120C5-5EA2-40F2-BF9E-EEED022C85EF}.HalfRelease.Build.0 = HalfRelease|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

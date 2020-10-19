@@ -1,0 +1,44 @@
+@startuml StateGather
+
+partition TriggerFlow {
+  start
+  :Click on henchman;
+  :Right click a resource (e.g coal pile);
+  note right: Enter state
+}
+
+repeat
+
+partition FindLeastBusyResourceNearby {
+  if (this is the only resource left in the area) then (yes)
+    if (the resource is fully depleted) then (yes)
+      end
+      note left: Exit state
+    else (no)
+      :Move to the resource;
+      :Wait for any other henchmen to
+      finish gathering from the site;
+    endif
+  else if (targetted resource has other gatherers?) then (yes)
+    repeat :Move to resource with the least gatherers;
+      if (is anyone gathering onsite?) then (no)
+        break
+      else (yes)
+        :Wait for other henchmen to
+        finish gathering from the site;
+      endif
+    repeat while (still waiting after 3 secs?) is (yes)
+  else (no)
+    :Move to the resource;
+  endif
+}
+
+partition CollectResources {
+  :Gather the resource;
+  :Pick it up;
+  :Deposit it;
+}
+
+repeat while
+
+@enduml

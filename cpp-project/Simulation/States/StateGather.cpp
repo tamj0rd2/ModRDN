@@ -38,12 +38,19 @@ const bool ShouldExit = true;
 
 StateGather::StateGather(EntityDynamics *e_dynamics) : State(e_dynamics), m_pStateMove(NULL),
                                                        m_InternalState(SG_Invalid),
-                                                       m_pResourceTarget(NULL),
+                                                       m_pResourceEntity(NULL),
                                                        m_pDepositTarget(NULL),
                                                        m_TickToCheckNextInternalState(0),
                                                        m_pResourceExt(NULL),
-                                                       c_ResourceIncrements(20)
+                                                       c_ResourceIncrements(20),
+                                                       m_NearbyResources(EntityGroup()),
+                                                       m_TimeToMineCoal(3)
 {
+}
+
+State::StateIDType StateGather::GetStateID() const
+{
+  return (State::StateIDType)StateID;
 }
 
 void StateGather::Init(StateMove *pStateMove)
@@ -54,33 +61,26 @@ void StateGather::Init(StateMove *pStateMove)
 void StateGather::Enter(const Entity *pResourceEntity)
 {
   if (!GetEntity()->GetAnimator())
-  {
     dbFatalf("Entities that want to gather resources should have animators attached");
-  }
+
+  if (!pResourceEntity)
+    dbFatalf("No resource given");
 
   SetExitStatus(false);
-  SetTargetResource(pResourceEntity);
-}
 
-void StateGather::RequestExit()
-{
-  dbTracef("StateGather::RequestExit");
-  TriggerExit(GES_RequestedToStop);
+  ModObj::i()->GetWorld()->FindAll(
+      m_NearbyResources,
+      FindClosestEntityOfType(Coal_EC),
+      pResourceEntity->GetPosition(),
+      10);
+
+  m_pResourceEntity = pResourceEntity;
+  MoveToLeastBusyResource();
 }
 
 void StateGather::ReissueOrder() const
 {
   dbTracef("StateGather::ReissueOrder");
-}
-
-void StateGather::ForceExit()
-{
-  dbTracef("StateGather::ForceExit");
-}
-
-State::StateIDType StateGather::GetStateID() const
-{
-  return (State::StateIDType)StateID;
 }
 
 void StateGather::SaveState(BiFF &) const
@@ -94,11 +94,17 @@ void StateGather::LoadState(IFF &)
 
 bool StateGather::Update()
 {
-  if (m_pResourceExt->GetResources() <= 0.0f && !IsDepositing())
-    return HandleResourceDepleted();
+  if (IsExiting())
+    return IsExiting();
+
+  if (m_pResourceExt->IsDepleted() && !IsDepositing())
+    return MoveToLeastBusyResource();
 
   if (m_InternalState == SG_MoveToResource)
     return HandleMoveToResource();
+
+  if (m_InternalState == SG_WaitToGatherResource)
+    return HandleWaitToGatherResource();
 
   if (m_InternalState == SG_GatherResources)
     return HandleGatherResource();
@@ -115,10 +121,26 @@ bool StateGather::Update()
   dbFatalf("Unimplemented StateGather state %d", m_InternalState);
 }
 
-bool StateGather::ToMoveToResourceState()
+bool StateGather::MoveToLeastBusyResource()
 {
   m_InternalState = SG_MoveToResource;
-  m_pStateMove->Enter(m_pResourceTarget, 0);
+
+  // find a resource to move to
+  const Entity *pLeastBusyResource = FindLeastBusyResourceNearby(m_pResourceEntity);
+  if (!pLeastBusyResource)
+    return TriggerExit(GES_NearbyResourcesDepleted);
+
+  // cleanup previous target
+  if (m_pResourceExt)
+    m_pResourceExt->GathererRmv(GetEntity());
+
+  // setup new target
+  m_pResourceEntity = pLeastBusyResource;
+  m_pResourceExt = const_cast<ResourceExt *>(QIExt<ResourceExt>(pLeastBusyResource->GetController()));
+  m_pResourceExt->GathererAdd(GetEntity());
+
+  // move
+  m_pStateMove->Enter(m_pResourceEntity, 0);
   return Success;
 }
 
@@ -128,10 +150,31 @@ bool StateGather::HandleMoveToResource()
   {
     StateMove::MoveExitState moveExitState = m_pStateMove->GetExitState();
     if (moveExitState == StateMove::MES_ReachedTarget)
-      return ToGatherResourceState();
-    else
-      return TriggerExit(GES_CouldNotReachResource);
+      return ToWaitToGatherResourceState();
+
+    return TriggerExit(GES_CouldNotReachResource);
   }
+
+  return NothingHappened;
+}
+
+bool StateGather::ToWaitToGatherResourceState()
+{
+  m_InternalState = SG_WaitToGatherResource;
+  if (m_pResourceExt->CanGatherResourcesOnSiteNow(GetEntity()))
+    return ToGatherResourceState();
+
+  SetTimer(m_TimeToMineCoal);
+  return Success;
+}
+
+bool StateGather::HandleWaitToGatherResource()
+{
+  if (m_pResourceExt->CanGatherResourcesOnSiteNow(GetEntity()))
+    return ToGatherResourceState();
+
+  if (HasTimerElapsed())
+    return MoveToLeastBusyResource();
 
   return NothingHappened;
 }
@@ -139,23 +182,25 @@ bool StateGather::HandleMoveToResource()
 bool StateGather::ToGatherResourceState()
 {
   m_InternalState = SG_GatherResources;
-  GetEntity()->GetAnimator()->SetTargetLook(m_pResourceTarget);
+  m_pResourceExt->GatherersOnSiteAdd(GetEntity());
+  GetEntity()->GetAnimator()->SetTargetLook(m_pResourceEntity);
   GetEntity()->GetAnimator()->SetMotionTreeNode("PaSwing");
-  SetTimer(3);
+  SetTimer(m_TimeToMineCoal);
   return Success;
 }
 
 bool StateGather::HandleGatherResource()
 {
-  if (HasTimerElapsed())
-    return ToPickupResourceState();
+  if (!HasTimerElapsed())
+    return NothingHappened;
 
-  return NothingHappened;
+  return ToPickupResourceState();
 }
 
 bool StateGather::ToPickupResourceState()
 {
   m_InternalState = SG_PickupResource;
+  m_pResourceExt->GatherersOnSiteRmv(GetEntity());
   GetEntity()->GetAnimator()->SetMotionTreeNode("CpPickup");
   SetTimer(1.04f);
   return Success;
@@ -216,27 +261,8 @@ bool StateGather::HandleDropOffResource()
 
   RDNPlayer *player = static_cast<RDNPlayer *>(GetEntity()->GetOwner());
   player->IncResourceCash(c_ResourceIncrements, RDNPlayer::RES_Resourcing);
-  return ToMoveToResourceState();
-}
 
-bool StateGather::HandleResourceDepleted()
-{
-  Entity *nearestResource = FindResourceNearTargetResource();
-
-  if (nearestResource)
-    return SetTargetResource(nearestResource);
-
-  return TriggerExit(GES_ResourceDepleted);
-}
-
-bool StateGather::TriggerExit(StateGather::StateGatherExitState exitState)
-{
-  m_pResourceExt->GathererRmv(GetEntity());
-  m_pResourceExt->GatherersOnSiteRmv(GetEntity());
-
-  m_ExitState = exitState;
-  SetExitStatus(ShouldExit);
-  return ShouldExit;
+  return MoveToLeastBusyResource();
 }
 
 bool StateGather::IsDepositing()
@@ -254,32 +280,71 @@ void StateGather::SetTimer(float seconds)
   m_TickToCheckNextInternalState = GetTicks() + (k_SimStepsPerSecond * seconds);
 }
 
-bool StateGather::SetTargetResource(const Entity *pResourceEntity)
+const Entity *StateGather::FindLeastBusyResourceNearby(const Entity *pResourceEntity)
 {
-  m_pResourceTarget = pResourceEntity;
-  if (!m_pResourceTarget)
+  // TODO: remove resources from the nearbyResources vector once they're depleted
+  if (!pResourceEntity)
     dbFatalf("No resource entity given");
 
-  m_pResourceExt = const_cast<ResourceExt *>(QIExt<ResourceExt>(m_pResourceTarget->GetController()));
-  if (!m_pResourceExt)
-    dbFatalf("The given resource entity has no resource ext");
+  ResourceExt *pResourceExt = const_cast<ResourceExt *>(QIExt<ResourceExt>(pResourceEntity->GetController()));
+  if (!pResourceExt)
+    dbFatalf("The given entity has no resource extension");
 
-  m_pResourceExt->GathererAdd(GetEntity());
-  return ToMoveToResourceState();
-}
+  // target the specified resource if there are no other gatherers
+  if (!pResourceExt->IsDepleted() && pResourceExt->HasNoOtherGatherers(GetEntity()))
+    return pResourceEntity;
 
-Entity *StateGather::FindResourceNearTargetResource()
-{
-  FindClosestEntityOfType filter(Coal_EC);
+  Entity *resourceWithLeastGatherers = NULL;
+  size_t minGatherersFound = !pResourceExt->IsDepleted() ? pResourceExt->GetGathererCount() : 999;
 
-  return ModObj::i()->GetWorld()->FindClosestEntity(
-      filter,
-      m_pResourceTarget->GetPosition(),
-      10,
-      m_pResourceTarget);
+  EntityGroup::iterator iter;
+  for (iter = m_NearbyResources.begin(); iter != m_NearbyResources.end(); iter++)
+  {
+    ResourceExt *pResourceExt = QIExt<ResourceExt>((*iter)->GetController());
+    if (pResourceExt->IsDepleted())
+      continue;
+
+    // target a resource where there are no other registered gatherers
+    if (pResourceExt->HasNoOtherGatherers(GetEntity()))
+      return (*iter);
+
+    // keep track of the resource that has the least gatherers
+    size_t gathererCount = pResourceExt->GetGathererCount();
+    if (gathererCount < minGatherersFound)
+    {
+      resourceWithLeastGatherers = (*iter);
+      minGatherersFound = gathererCount;
+    }
+  }
+
+  if (resourceWithLeastGatherers)
+    return resourceWithLeastGatherers;
+
+  return pResourceExt->IsDepleted() ? NULL : pResourceEntity;
 }
 
 long StateGather::GetTicks()
 {
   return ModObj::i()->GetWorld()->GetGameTicks();
+}
+
+bool StateGather::TriggerExit(StateGather::StateGatherExitState exitState)
+{
+  dbTracef("Exiting StateGather for reason %d", exitState);
+  m_pResourceExt->GathererRmv(GetEntity());
+  m_ExitState = exitState;
+  SetExitStatus(ShouldExit);
+  return ShouldExit;
+}
+
+void StateGather::RequestExit()
+{
+  dbTracef("StateGather::RequestExit");
+  TriggerExit(GES_RequestedToStop);
+}
+
+void StateGather::ForceExit()
+{
+  dbTracef("StateGather::ForceExit");
+  TriggerExit(GES_RequestedToStop);
 }

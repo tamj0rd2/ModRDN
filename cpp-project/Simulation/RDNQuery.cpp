@@ -1025,11 +1025,14 @@ bool RDNQuery::CanBeGathered(const Entity *entity, const Player *player, bool bC
 
 	const ResourceExt *resource = QIExt<ResourceExt>(entity);
 
-	if (resource == 0 || resource->GetResources() <= 0.0f)
+	if (!resource)
 	{
-		dbTracef("Did not get resource using QI thingy, or no resources left within entity");
+		dbTracef("The target is not a resource");
 		return false;
 	}
+
+	if (resource->IsDepleted())
+		dbFatalf("The chosen resource is already depleted");
 
 	if (RDNQuery::CanBeSeen(entity, player, bCheckFOW) == 0)
 	{

@@ -17,6 +17,7 @@
 /////////////////////////////////////////////////////////////////////
 // Forward Declarations
 class TerrainCellMap;
+class ResourceExtInfo;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ResourceExt
@@ -30,36 +31,43 @@ public:
 		ExtensionID = EXTID_Resource,
 	};
 
+	// construction
+public:
+	ResourceExt(const ResourceExtInfo *);
+
 	// interface
 public:
 	virtual float GetResources() const;
-	virtual void SetResources(float amount);
-	bool HasResources();
+	bool IsDepleted() const;
 
 	// return amount decreased
-	virtual float DecResources(float amount);
+	float DecResources(float amount);
 
-	// list of henchmen actively gathering this site
 	const EntityGroup &Gatherers() const;
-	size_t GetGathererCount();
+
+	size_t GetGathererCount() const;
+	bool HasNoOtherGatherers(const Entity *pEntity) const;
 	void GathererAdd(const Entity *);
 	void GathererRmv(const Entity *);
 
-	// list of henchmen currently pickup up stuff from this site
 	const EntityGroup &GatherersOnSite() const;
-	bool GatherersOnSiteIsAtMax() const;
-	size_t GatherersOnSiteMax() const;
 	void GatherersOnSiteAdd(const Entity *);
 	void GatherersOnSiteRmv(const Entity *);
+	bool CanGatherResourcesOnSiteNow(const Entity *) const;
+
+	size_t GatherersOnSiteMax() const;
+	bool GatherersOnSiteIsAtMax() const;
 
 	void BurnInCantBuild(TerrainCellMap *);
 	void UnBurnCantBuild(TerrainCellMap *);
 
 protected:
+	void InitLooks();
 	virtual void OnZeroResources() = 0;
 
 private:
 	virtual void OnResourceProgress(float amount);
+	bool HasSpaceForGathererOnSite(const Entity *pEntity) const;
 
 	// inherited interface: Extension
 private:
@@ -69,14 +77,11 @@ private:
 	// Chunk Handlers
 	static unsigned long HandleERCE(IFF &, ChunkNode *, void *, void *);
 
-	// construction
-public:
-	ResourceExt();
-
 	// fields
 private:
 	float m_numResources;
 	float m_maxResources;
+	int m_maxGatherersOnSite;
 
 	// these are transient
 	// - they are only modified by entity states and will be re-established at load time

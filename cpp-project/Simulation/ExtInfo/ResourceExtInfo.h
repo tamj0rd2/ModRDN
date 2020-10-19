@@ -26,11 +26,14 @@ public:
 	// fields
 public:
 	float resourceMax;
+	int maxGatherers;
 
 	// construction
 public:
 	ResourceExtInfo(const ControllerBlueprint *cbp)
 	{
 		resourceMax = GetVal(cbp, "max_resources", 1.0f, 10000.0f);
+		maxGatherers = GetVal(cbp, "max_henchmen", 1);
+		dbTracef("Max gatherers: %d", maxGatherers);
 	}
 };

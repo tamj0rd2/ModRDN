@@ -30,14 +30,27 @@
 // Param.    :
 // Author    :
 //
-ResourceExt::ResourceExt()
-		: m_numResources(0)
+ResourceExt::ResourceExt(const ResourceExtInfo *pResourceExtInfo)
+		: m_numResources(0),
+			m_maxGatherersOnSite(0)
 {
+	dbAssert(pResourceExtInfo);
+
+	dbAssert(pResourceExtInfo->resourceMax > 0);
+	m_numResources = pResourceExtInfo->resourceMax;
+	m_maxResources = pResourceExtInfo->resourceMax;
+
+	m_maxGatherersOnSite = pResourceExtInfo->maxGatherers;
 }
 
-bool ResourceExt::HasResources()
+void ResourceExt::InitLooks()
 {
-	return m_numResources > 0.0f;
+	OnResourceProgress(m_numResources / m_maxResources);
+}
+
+bool ResourceExt::IsDepleted() const
+{
+	return m_numResources <= 0.0f;
 }
 
 float ResourceExt::DecResources(float amount)
@@ -78,22 +91,6 @@ float ResourceExt::DecResources(float amount)
 float ResourceExt::GetResources() const
 {
 	return m_numResources;
-}
-
-void ResourceExt::SetResources(float amount)
-{
-	// validate parm
-	dbAssert(amount > 0);
-
-	//
-	m_numResources = amount;
-	m_maxResources = amount;
-
-	const float progress = m_numResources / m_maxResources;
-
-	OnResourceProgress(progress);
-
-	return;
 }
 
 void ResourceExt::OnResourceProgress(float progress)
@@ -207,9 +204,18 @@ const EntityGroup &ResourceExt::Gatherers() const
 	return m_gatherers;
 }
 
-size_t ResourceExt::GetGathererCount()
+size_t ResourceExt::GetGathererCount() const
 {
 	return m_gatherers.size();
+}
+
+bool ResourceExt::HasNoOtherGatherers(const Entity *pEntity) const
+{
+	size_t count = GetGathererCount();
+	if (m_gatherers.find(pEntity) != m_gatherers.end())
+		count = count - 1;
+
+	return count == 0;
 }
 
 void ResourceExt::GathererAdd(const Entity *p_Entity)
@@ -220,16 +226,37 @@ void ResourceExt::GathererAdd(const Entity *p_Entity)
 void ResourceExt::GathererRmv(const Entity *p_Entity)
 {
 	m_gatherers.remove(p_Entity);
+	m_gatherersOnSite.remove(p_Entity);
 }
 
 void ResourceExt::GatherersOnSiteAdd(const Entity *p_Entity)
 {
+	if (GatherersOnSiteIsAtMax())
+		dbFatalf("ResourceExt::GatherersOnSiteAdd Resource is already at max capacity");
+
 	m_gatherersOnSite.push_back(const_cast<Entity *>(p_Entity));
-	dbTracef("num on site: %d", m_gatherersOnSite.size());
 }
 
 void ResourceExt::GatherersOnSiteRmv(const Entity *p_Entity)
 {
 	m_gatherersOnSite.remove(p_Entity);
-	dbTracef("num on site: %d", m_gatherersOnSite.size());
+}
+
+bool ResourceExt::GatherersOnSiteIsAtMax() const
+{
+	return m_gatherersOnSite.size() >= m_maxGatherersOnSite;
+}
+
+bool ResourceExt::HasSpaceForGathererOnSite(const Entity *pEntity) const
+{
+	size_t count = m_gatherersOnSite.size();
+	if (m_gatherersOnSite.find(pEntity) != m_gatherersOnSite.end())
+		count = count - 1;
+
+	return count < m_maxGatherersOnSite;
+}
+
+bool ResourceExt::CanGatherResourcesOnSiteNow(const Entity *pEntity) const
+{
+	return !IsDepleted() && HasSpaceForGathererOnSite(pEntity);
 }

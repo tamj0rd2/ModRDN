@@ -8,10 +8,7 @@
 class EntityDynamics;
 class ResourceExt;
 
-/////////////////////////////////////////////////////////////////////
-// StateGather
-// This state is responsible for gathering resources
-
+// check StateGather.puml for a flow diagram
 class StateGather : public State
 {
   // types
@@ -24,7 +21,7 @@ public:
   enum StateGatherExitState
   {
     GES_Invalid,
-    GES_ResourceDepleted,
+    GES_NearbyResourcesDepleted,
     GES_RequestedToStop,
     GES_CouldNotReachResource,
     GES_CouldNotReachDeposit,
@@ -61,6 +58,7 @@ private:
   {
     SG_Invalid,
     SG_MoveToResource,
+    SG_WaitToGatherResource,
     SG_GatherResources,
     SG_PickupResource,
     SG_MoveToDeposit,
@@ -72,15 +70,17 @@ private:
   float m_TickToCheckNextInternalState;
   StateGatherExitState m_ExitState;
 
-  const Entity *m_pResourceTarget;
+  const Entity *m_pResourceEntity;
   const Entity *m_pDepositTarget;
   ResourceExt *m_pResourceExt;
+  EntityGroup m_NearbyResources;
+  float m_TimeToMineCoal;
 
   // TODO: these constants should come from tuning or something
   const float c_ResourceIncrements;
 
   // these methods return Success if the state should exit
-  bool StateGather::ToMoveToResourceState();
+  bool StateGather::ToWaitToGatherResourceState();
   bool StateGather::ToGatherResourceState();
   bool StateGather::ToPickupResourceState();
   bool StateGather::ToMoveToDepositState();
@@ -88,6 +88,7 @@ private:
 
   // these methods return Success if the state should exit
   bool StateGather::HandleMoveToResource();
+  bool StateGather::HandleWaitToGatherResource();
   bool StateGather::HandleGatherResource();
   bool StateGather::HandlePickupResource();
   bool StateGather::HandleMoveToDeposit();
@@ -101,10 +102,11 @@ private:
   bool StateGather::IsDepositing();
   long StateGather::GetTicks();
 
-  // sets the resource to mine to be the given entity
-  bool StateGather::SetTargetResource(const Entity *pResourceEntity);
-  // find the resource closest to the current targetted resource
-  Entity *StateGather::FindResourceNearTargetResource();
+  // sets the resource to gather and moves to it
+  bool StateGather::MoveToLeastBusyResource();
+
+  // find the resource closest to the current targetted resource, or nothing
+  const Entity *StateGather::FindLeastBusyResourceNearby(const Entity *pResourceEntity);
 
   // set the time that a future operation should occur, in seconds
   void StateGather::SetTimer(float seconds);
