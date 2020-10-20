@@ -7,6 +7,7 @@ import os
 import argparse
 from shutil import copyfile
 import sys
+from zipfile import ZIP_DEFLATED, ZipFile
 
 
 class Logger:
@@ -162,13 +163,97 @@ def buildLocale(settings: Settings):
     Logger.success("Locale built\n")
 
 
-def installAsset(srcPath: str, installLocation: str):
-    displayName = re.search(r"([^\\]+)$", srcPath)[0] or srcPath
-    copyfile(srcPath, installLocation)
-    Logger.info("{} installed to {}".format(displayName, installLocation))
+def getAllFilesInFolder(folderPath: str):
+    files = []
+    for folder in os.walk(folderPath):
+        for fileName in folder[2]:
+            files.append(os.path.join(folder[0], fileName))
+    return files
 
 
-def start(install: bool, launch: bool, targets: list):
+def installFiles(settings: Settings, targets: list):
+    runProcess(["taskkill", "/f", "/im", "IC.exe"], False)
+    time.sleep(1)
+
+    def installAsset(srcPath: str, installLocation: str):
+        displayName = re.search(r"([^\\]+)$", srcPath)[0] or srcPath
+        copyfile(srcPath, installLocation)
+        Logger.info("{} installed to {}".format(displayName, installLocation))
+
+    if "mod" in targets:
+        installAsset(
+            settings.dllOutputPath, settings.dllInstallPath)
+
+    if "locale" in targets:
+        installAsset(settings.modTextDllOutputPath,
+                     settings.modTextInstallPath)
+
+    if "assets" in targets:
+        installAsset(settings.emptySgaPath, settings.modSgaInstallPath)
+        installAsset(settings.emptySgaPath, settings.modlocInstallPath)
+
+        with open(settings.moduleTemplatePath, "r") as templateFile:
+            moduleContent = templateFile.read().replace("{{modName}}", settings.modName).replace(
+                "{{modDescription}}", settings.modDescription).replace("{{modVersion}}", settings.modVersion)
+
+            with open(settings.moduleInstallPath, "w") as moduleFile:
+                moduleFile.write(moduleContent)
+        Logger.info("template.module installed to {}".format(
+            settings.moduleInstallPath))
+
+        for installedDataFile in getAllFilesInFolder(settings.dataInstallFolder):
+            if (installedDataFile.endswith(".lua")):
+                os.remove(installedDataFile)
+
+        for sourceDataFile in getAllFilesInFolder(settings.dataFolder):
+            relativePath = sourceDataFile.split(settings.dataFolder)[1]
+            installPath = "{}{}".format(settings.dataInstallFolder, relativePath)
+            copyfile(sourceDataFile, installPath)
+
+        Logger.info("{} installed to {}".format(settings.dataFolder, settings.dataInstallFolder))
+
+
+def packFiles(settings: Settings):
+    def writeFileToZip(zipf: ZipFile, filePath, installPath: str = None, zipName: str = None):
+        installPath = installPath or filePath
+        sanitizedZipLocation = re.sub(r"^(\.\.\\)+", "", os.path.relpath(installPath, settings.repoFolder))
+        zipf.write(filePath, sanitizedZipLocation)
+
+    if os.path.exists(settings.modExcludingDataZip):
+        os.remove(settings.modExcludingDataZip)
+
+    with ZipFile(settings.modExcludingDataZip, 'a', ZIP_DEFLATED) as zipfExcludingData:
+        writeFileToZip(zipfExcludingData, settings.dllInstallPath)
+        writeFileToZip(zipfExcludingData, settings.moduleInstallPath)
+        writeFileToZip(zipfExcludingData, settings.emptySgaPath, installPath=settings.modSgaInstallPath)
+        writeFileToZip(zipfExcludingData, settings.emptySgaPath, installPath=settings.modlocInstallPath)
+        writeFileToZip(zipfExcludingData, settings.modTextInstallPath)
+    Logger.log("Copied dll, metadata and locale files")
+
+    copyfile(settings.modExcludingDataZip, settings.modIncludingDataZip)
+    dataFiles = getAllFilesInFolder(settings.dataFolder)
+
+    with ZipFile(settings.modIncludingDataZip, 'a', ZIP_DEFLATED) as zipfIncludingData:
+        for dataFile in dataFiles:
+            installPath = dataFile.replace("assets", settings.modName)
+            writeFileToZip(zipfIncludingData, dataFile, installPath=installPath,
+                           zipName="ModIncludingData.zip")
+    Logger.log("Copied {} data files".format(len(dataFiles)))
+
+    if os.path.exists(settings.luasOnlyZip):
+        os.remove(settings.luasOnlyZip)
+
+    with ZipFile(settings.luasOnlyZip, 'a', ZIP_DEFLATED) as zipfLuasOnly:
+        for dataFile in dataFiles:
+            if dataFile.endswith(".lua"):
+                installPath = dataFile.replace("assets", settings.modName)
+                writeFileToZip(zipfLuasOnly, dataFile, installPath=installPath,
+                               zipName="LuasOnly.zip")
+
+    Logger.success("Done packing zip files")
+
+
+def start(install: bool, launch: bool, targets: list, pack: bool):
     settings = parseSettingsFile()
     vm = VmManager(settings)
 
@@ -178,47 +263,11 @@ def start(install: bool, launch: bool, targets: list):
         if "locale" in targets:
             buildLocale(settings)
 
-    if install or launch:
-        runProcess(["taskkill", "/f", "/im", "IC.exe"], False)
-        time.sleep(1)
+    if install or launch or pack:
+        installFiles(settings, targets)
 
-        if "mod" in targets:
-            installAsset(
-                settings.dllOutputPath, settings.dllInstallPath)
-
-        if "locale" in targets:
-            installAsset(settings.modTextDllOutputPath,
-                         settings.modTextInstallPath)
-
-        if "assets" in targets:
-            installAsset(settings.emptySgaPath, settings.modSgaInstallPath)
-            installAsset(settings.emptySgaPath, settings.modlocInstallPath)
-
-            with open(settings.moduleTemplatePath, "r") as templateFile:
-                moduleContent = templateFile.read().replace("{{modName}}", settings.modName).replace(
-                    "{{modDescription}}", settings.modDescription).replace("{{modVersion}}", settings.modVersion)
-
-                with open(settings.moduleInstallPath, "w") as moduleFile:
-                    moduleFile.write(moduleContent)
-            Logger.info("template.module installed to {}".format(
-                settings.moduleInstallPath))
-
-            for folder in os.walk(settings.dataInstallFolder):
-                for fileName in folder[2]:
-                    fileToDelete = "{}\\{}".format(folder[0], fileName)
-                    if (fileToDelete.endswith(".lua")):
-                        os.remove(fileToDelete)
-
-            for folder in os.walk(settings.dataFolder):
-                for fileName in folder[2]:
-                    fileToCopy = "{}\\{}".format(folder[0], fileName)
-                    relativePath = fileToCopy.split(settings.dataFolder)[1]
-                    installPath = "{}{}".format(
-                        settings.dataInstallFolder, relativePath)
-                    copyfile(fileToCopy, installPath)
-
-            Logger.info("{} installed to {}".format(
-                settings.dataFolder, settings.dataInstallFolder))
+    if pack:
+        packFiles(settings)
 
     if launch:
         subprocess.Popen([settings.icExePath, "-moddev"])
@@ -231,10 +280,13 @@ if __name__ == "__main__":
                             help="installs the DLL after the build")
         parser.add_argument("--launch", action="store_true",
                             help="launches IC after the build")
+        parser.add_argument("--pack", action="store_true",
+                            help="packages the files into a zip folder")
         possibleTargets = ["mod", "locale", "assets"]
         parser.add_argument("--targets", nargs="+",
                             default=possibleTargets, choices=possibleTargets)
         start(**parser.parse_args().__dict__)
     except Exception as err:
+        print(err)
         Logger.error(getattr(err, 'message', repr(err)))
         sys.exit(1)

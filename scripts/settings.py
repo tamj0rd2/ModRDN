@@ -1,11 +1,15 @@
 import os
 import sys
 import json
+from os import path
 
 
 class Settings:
     def __init__(self, repoFolder: str, vmName: str, guestMount: str, icInstallDirectory: str, modName: str, modDescription: str, modVersion: str):
         self.repoFolder = repoFolder
+        self.modExcludingDataZip = path.join(repoFolder, "ModExcludingData.zip")
+        self.modIncludingDataZip = path.join(repoFolder, "ModIncludingData.zip")
+        self.luasOnlyZip = path.join(repoFolder, "LuasOnly.zip")
 
         self.modName = modName
         self.modVersion = modVersion
@@ -40,12 +44,12 @@ class Settings:
         self.guestBuildScriptLocation = "{0}\\scripts\\build-guest-code.bat".format(
             guestProjectFolder)
 
-        assetsFolder = "{}\\assets".format(repoFolder)
-        self.moduleTemplatePath = "{}\\template.module".format(assetsFolder)
+        self.assetsFolder = "{}\\assets".format(repoFolder)
+        self.moduleTemplatePath = "{}\\template.module".format(self.assetsFolder)
         self.moduleInstallPath = "{}\\{}.module".format(
             icInstallDirectory, modName.lower())
-        self.emptySgaPath = "{}\\empty.sga".format(assetsFolder)
-        self.dataFolder = "{}\\Data".format(assetsFolder)
+        self.emptySgaPath = "{}\\empty.sga".format(self.assetsFolder)
+        self.dataFolder = "{}\\Data".format(self.assetsFolder)
         self.dataInstallFolder = "{}\\{}\\Data".format(
             icInstallDirectory, modName)
         self.modSgaInstallPath = "{}\\{}Data.sga".format(

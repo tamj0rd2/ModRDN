@@ -34,3 +34,6 @@ Locale/
 **/*.scr
 **/*.lsc
 **/*.events
+ModExcludingData.zip
+ModIncludingData.zip
+LuasOnly.zip

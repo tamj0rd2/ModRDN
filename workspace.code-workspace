@@ -41,5 +41,8 @@
     "python.autoComplete.extraPaths": [
       "./scripts"
     ],
+    "python.formatting.autopep8Args": [
+      "--max-line-length=110"
+    ]
   }
 }
