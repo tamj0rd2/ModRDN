@@ -11,8 +11,6 @@
 
 #include <ModInterface/DllInterface.h>
 
-#include "RaceTypes.h"
-
 // forward declarations
 class RDNWorld;
 

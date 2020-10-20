@@ -190,7 +190,7 @@ float MovingExt::GetNoOverrideSpeed() const
 	const MovingExtInfo *pMovInfo = QIExtInfo<MovingExtInfo>(GetSelf());
 
 	const RDNPlayer *pPlayer = static_cast<const RDNPlayer *>(GetSelf()->GetEntity()->GetOwner());
-	float raceMult = pPlayer->GetRaceBonusSpeed(GetSelf()->GetEntity()->GetControllerBP());
+	float raceMult = 1;
 
 	switch (pMovInfo->movingType)
 	{
@@ -280,8 +280,7 @@ float MovingExt::GetMaxNormalSpeed() const
 	const MovingExtInfo *pMovInfo = QIExtInfo<MovingExtInfo>(GetSelf());
 
 	const RDNPlayer *pPlayer = static_cast<const RDNPlayer *>(GetSelf()->GetEntity()->GetOwner());
-	float raceMult = pPlayer->GetRaceBonusSpeed(GetSelf()->GetEntity()->GetControllerBP());
-
+	float raceMult = 1;
 	float speed = 0.0f;
 
 	switch (pMovInfo->movingType)

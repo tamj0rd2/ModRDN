@@ -12,7 +12,6 @@
 #include "HealthExt.h"
 
 #include "../../ModObj.h"
-#include "../../RaceTypes.h"
 
 #include "../RDNWorld.h"
 #include "../RDNPlayer.h"
@@ -450,13 +449,6 @@ void HealthExt::SelfDestroy()
 //
 float HealthExt::GetHealthMax() const
 {
-	const RDNPlayer *pPlayer =
-			static_cast<const RDNPlayer *>(GetSelf()->GetEntity()->GetOwner());
-	if (pPlayer != NULL)
-	{
-		return m_maxHealth * pPlayer->GetRaceBonusHealthMax(GetSelf()->GetEntity()->GetControllerBP());
-	}
-
 	return m_maxHealth;
 }
 

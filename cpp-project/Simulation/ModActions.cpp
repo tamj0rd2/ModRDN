@@ -1283,7 +1283,7 @@ bool SpawnEntityAction::Evaluate(TExpression::EvaluateParms &ep)
 	RDNPlayer *player = static_cast<RDNPlayer *>(ep.player);
 
 	// give Cash
-	player->IncResourceCash(cost->costCash * player->GetRaceBonusCost(pCBP));
+	player->IncResourceCash(cost->costCash);
 
 	// do spawning
 	ep.world->DoCommandEntity(
@@ -2269,7 +2269,7 @@ bool MoveGroupAction::Evaluate(TExpression::EvaluateParms &ep)
 			Entity* pEntity = *ei;
 
 			Vec3f newLocation = pEntity->GetPosition() + offset;
-			
+
 			ep.world->DeSpawnEntity(pEntity);
 
 			Matrix43f m = pEntity->GetTransform();

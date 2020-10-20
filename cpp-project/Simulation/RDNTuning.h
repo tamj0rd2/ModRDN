@@ -96,7 +96,6 @@ private:                                    \
 
 	// fields
 	ADDTUNINGSET(PlayerInfo);
-	ADDTUNINGSET(RaceInfo)
 	ADDTUNINGSET(LabInfo)
 	ADDTUNINGSET(EffectInfo)
 	ADDTUNINGSET(FogOfWarInfo)

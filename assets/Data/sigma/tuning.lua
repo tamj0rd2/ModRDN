@@ -1,23 +1,5 @@
 -- testing. these ones are from original RND\tuning.lua
 
-----------------------------------------------------------
--- Race
-
-Race =
-{
-	stronger_healthMultiplier = 2.0,
-	stronger_costMultiplier   = 1.0,
-	stronger_speedMultiplier  = 1.0,
-
-	cheaper_healthMultiplier  = 1.0,
-	cheaper_costMultiplier    = 0.5,
-	cheaper_speedMultiplier   = 1.0,
-
-	faster_healthMultiplier   = 1.0,
-	faster_costMultiplier     = 1.0,
-	faster_speedMultiplier    = 2.0,
-}
-
 ---------------------------------------------------------------------
 -- Effect
 

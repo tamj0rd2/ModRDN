@@ -2699,7 +2699,7 @@ void RDNTaskbar::BindLabelToEBPCostCash(const char *label, int ebpid)
 	entry.hud = label;
 
 	// get the cost
-	float costCash = cost->costCash * m_pimpl->m_proxy->GetPlayer()->GetRaceBonusCost(cbp);
+	float costCash = cost->costCash;
 
 	// set text
 	wchar_t chbuf[32];

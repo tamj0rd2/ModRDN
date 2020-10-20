@@ -73,15 +73,6 @@ public:
 
 	// interface
 public:
-	// race
-	void SetRace(size_t race);
-	size_t GetRace() const;
-
-	// race-based info
-	float GetRaceBonusCost(const ControllerBlueprint *pCBP) const;
-	float GetRaceBonusHealthMax(const ControllerBlueprint *pCBP) const;
-	float GetRaceBonusSpeed(const ControllerBlueprint *pCBP) const;
-
 	// hq
 	const Entity *GetLabEntity() const;
 	Entity *GetLabEntity();

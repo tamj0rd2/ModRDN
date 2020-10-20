@@ -124,7 +124,6 @@ def buildCppCode(settings: Settings, vm: VmManager):
 
     shouldStartPrinting = False
     stdout: str = result.stdout
-    print(stdout)
 
     for line in stdout.strip().split("\n"):
         trimmedLine = line.strip()

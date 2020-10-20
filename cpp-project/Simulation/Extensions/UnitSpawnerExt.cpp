@@ -117,7 +117,7 @@ void UnitSpawnerExt::UnitList(ControllerBPList &l) const
 
 	/***
 	// validate object state
-	const RDNPlayer* player = 
+	const RDNPlayer* player =
 		static_cast< const RDNPlayer* >( const_cast< UnitSpawnerExt* >( this )->GetSelf()->GetEntity()->GetOwner() );
 
 	if( player == 0 )
@@ -129,7 +129,7 @@ void UnitSpawnerExt::UnitList(ControllerBPList &l) const
 	const EntityFactory* ef = ModObj::i()->GetEntityFactory();
 
 	const ControllerBlueprint* henchman = const_cast< EntityFactory* >( ef )->GetControllerBP
-		( 
+		(
 		RDNEBP::Henchman.folder,
 		RDNEBP::Henchman.file
 		);
@@ -252,7 +252,7 @@ bool UnitSpawnerExt::BuildPay(const ControllerBlueprint *cbp)
 	}
 
 	// pay the piper
-	player->DecResourceCash(cost->costCash * player->GetRaceBonusCost(cbp));
+	player->DecResourceCash(cost->costCash);
 
 	return true;
 }
@@ -267,9 +267,7 @@ bool UnitSpawnerExt::BuildRefund(RDNPlayer *pPlayer, const ControllerBlueprint *
 
 	dbAssert(cost != 0);
 
-	pPlayer->IncResourceCash(
-			cost->costCash * pPlayer->GetRaceBonusCost(cbp),
-			pPlayer->RES_Refund);
+	pPlayer->IncResourceCash(cost->costCash, pPlayer->RES_Refund);
 
 	return true;
 }

@@ -314,7 +314,7 @@ RDNPlayer::BuildResult RDNPlayer::BlueprintCanBuild(const ControllerBlueprint *c
 
 	if (cost != 0)
 	{
-		if (GetResourceCash() < (cost->costCash * GetRaceBonusCost(cbp)))
+		if (GetResourceCash() < (cost->costCash))
 			return BR_NeedResourceCash;
 	}
 
@@ -412,46 +412,6 @@ float RDNPlayer::IncResourceCash(float amount, ResourceIncreased reason)
 	}
 
 	return m_resourceCash;
-}
-
-/////////////////////////////////////////////////////////////////////
-//	Desc.	:
-//	Result	:
-//	Param.	:
-//	Author	:
-//
-void RDNPlayer::SetRace(size_t race)
-{
-	m_race = race;
-}
-
-/////////////////////////////////////////////////////////////////////
-//	Desc.	:
-//	Result	:
-//	Param.	:
-//	Author	:
-//
-size_t RDNPlayer::GetRace() const
-{
-	return m_race;
-}
-
-float RDNPlayer::GetRaceBonusCost(const ControllerBlueprint *pCBP) const
-{
-	float cost = 1.0f;
-	return cost;
-}
-
-float RDNPlayer::GetRaceBonusHealthMax(const ControllerBlueprint *pCBP) const
-{
-	float health = 1.0f;
-	return health;
-}
-
-float RDNPlayer::GetRaceBonusSpeed(const ControllerBlueprint *pCBP) const
-{
-	float speed = 1.0f;
-	return speed;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -685,7 +645,7 @@ int RDNPlayer::GetStructureBudget(const ControllerBlueprint *cbp) const
 
 	if (cost->costCash > 0)
 	{
-		budget = (int)(GetResourceCash() / (cost->costCash * GetRaceBonusCost(cbp)));
+		budget = (int)(GetResourceCash() / (cost->costCash));
 	}
 
 	return budget;

@@ -1014,8 +1014,6 @@ void RDNWorld::PreSetPlayerInfo()
 		{
 			player->SetName(RDNDllSetup::Instance()->PlayerName(player->GetID()));
 		}
-
-		player->SetRace(RDNDllSetup::Instance()->PlayerRace(player->GetID()));
 	}
 
 	return;

@@ -269,9 +269,6 @@
 			<File
 				RelativePath="RDNDllSetup.h">
 			</File>
-			<File
-				RelativePath="RaceTypes.h">
-			</File>
 			<Filter
 				Name="Debug"
 				Filter="">

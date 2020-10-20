@@ -36,37 +36,6 @@ static void LoadInfo(RDNTuning::PlayerInfo &inf, LuaConfig &lc)
 /////////////////////////////////////////////////////////////////////
 //
 
-static void LoadRace(const char *name, unsigned long id, RDNTuning::RaceInfo::Race &race, LuaConfig &lc)
-{
-	char field[64];
-
-	strcpy(field, name);
-	strcat(field, "_healthMultiplier");
-	LCGetValW(lc, "tuning : health,", id, field, 100.f, race.healthMultiplier);
-
-	strcpy(field, name);
-	strcat(field, "_costMultiplier");
-	LCGetValW(lc, "tuning : cost,", id, field, 100.f, race.costMultiplier);
-
-	strcpy(field, name);
-	strcat(field, "_speedMultiplier");
-	LCGetValW(lc, "tuning : speed,", id, field, 100.f, race.speedMultiplier);
-}
-
-static void LoadInfo(RDNTuning::RaceInfo &inf, LuaConfig &lc)
-{
-	lc.PushTableEx("Race");
-
-	LoadRace("stronger", 'RDNM', inf.stronger, lc);
-	LoadRace("cheaper", 'RDNM', inf.cheaper, lc);
-	LoadRace("faster", 'RDNM', inf.faster, lc);
-
-	lc.PopTable();
-}
-
-/////////////////////////////////////////////////////////////////////
-//
-
 static void LoadInfo(RDNTuning::LabInfo &inf, LuaConfig &lc)
 {
 	lc.PushTableEx("Lab");
@@ -216,7 +185,6 @@ void RDNTuning::LoadFrom(const char *file)
 	LoadInfo(m_##inf, lc);
 
 	LOADINFO(PlayerInfo)
-	LOADINFO(RaceInfo)
 	LOADINFO(LabInfo)
 	LOADINFO(EffectInfo)
 	LOADINFO(FogOfWarInfo)
@@ -242,7 +210,6 @@ unsigned long RDNTuning::GetSyncToken() const
 	crc.AddValues(&s_instance->Get##name(), sizeof(name));
 
 	ADDTUNINGSTRUCT(PlayerInfo)
-	ADDTUNINGSTRUCT(RaceInfo)
 	ADDTUNINGSTRUCT(LabInfo)
 	//	ADDTUNINGSTRUCT( EffectInfo )
 	ADDTUNINGSTRUCT(FogOfWarInfo)

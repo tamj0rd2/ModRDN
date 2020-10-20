@@ -222,9 +222,6 @@ public:
 
 	SetupPlayerArray m_players;
 
-	std::vector<SetupRace>
-			m_race;
-
 	unsigned long m_randomSeed;
 
 	std::smallvector<unsigned long, MAXPLAYERS>
@@ -315,18 +312,6 @@ void RDNDllSetup::Reset()
 	m_pimpl->m_statsScenFile.clear();
 
 	m_pimpl->m_statsGameId = GUIDNil();
-
-	m_pimpl->m_race.resize(RACE_COUNT);
-	m_pimpl->m_race[RACE_Faster].name = L"Faster";
-	m_pimpl->m_race[RACE_Faster].desc = L"They are faster.";
-	m_pimpl->m_race[RACE_Faster].imagename = "data:RDN/faster_icon.tga";
-	m_pimpl->m_race[RACE_Stronger].name = L"Stronger";
-	m_pimpl->m_race[RACE_Stronger].desc = L"They are stronger.";
-	m_pimpl->m_race[RACE_Stronger].imagename = "data:RDN/stronger_icon.tga";
-	m_pimpl->m_race[RACE_Cheaper].name = L"Cheaper";
-	m_pimpl->m_race[RACE_Cheaper].desc = L"They are cheaper.";
-	m_pimpl->m_race[RACE_Cheaper].imagename = "data:RDN/cheaper_icon.tga";
-
 	return;
 }
 
@@ -752,28 +737,22 @@ void RDNDllSetup::OptionSet(unsigned long optionID, size_t val)
 
 size_t RDNDllSetup::RaceGetCount() const
 {
-	return RACE_COUNT;
+	return 0;
 }
 
 const wchar_t *RDNDllSetup::RaceGetName(size_t index) const
 {
-	dbAssert(index < m_pimpl->m_race.size());
-
-	return m_pimpl->m_race[index].name.c_str();
+	return NULL;
 }
 
 const wchar_t *RDNDllSetup::RaceGetDesc(size_t index) const
 {
-	dbAssert(index < m_pimpl->m_race.size());
-
-	return m_pimpl->m_race[index].desc.c_str();
+	return NULL;
 }
 
 const char *RDNDllSetup::RaceGetImageFilename(size_t index) const
 {
-	dbAssert(index < m_pimpl->m_race.size());
-
-	return m_pimpl->m_race[index].imagename.c_str();
+	return NULL;
 }
 
 bool RDNDllSetup::TeamGetEnabled() const
