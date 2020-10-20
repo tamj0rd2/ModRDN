@@ -28,7 +28,7 @@ static void LoadInfo(RDNTuning::PlayerInfo &inf, LuaConfig &lc)
 {
 	lc.PushTableEx("Player");
 
-	LCGetValW(lc, "tuning: player,", 'RDNM', "startingcash", 1.0f, inf.startingCash);
+	LCGetValW(lc, "tuning: player,", 'RDNM', "startingcash", 1.0f, inf.startingGatherRes);
 
 	lc.PopTable();
 }
@@ -71,7 +71,7 @@ static void LoadInfo(RDNTuning::LabInfo &inf, LuaConfig &lc)
 {
 	lc.PushTableEx("Lab");
 
-	/** 
+	/**
 	 * LCGetValW - As far as I can tell, the interface for this is:
 	 * lc
 	 * <filename>: <podname>,
@@ -146,9 +146,8 @@ bool RDNTuning::Initialize()
 {
 	dbAssert(s_instance == NULL);
 
-	//
 	s_instance = new RDNTuning;
-	s_instance->LoadFrom("data:RDN/tuning.lua");
+	s_instance->LoadFrom("data:SIGMA/tuning.lua");
 
 	return true;
 }

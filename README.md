@@ -180,6 +180,13 @@ or repurpose GuyController into Henchmen controller.
 - i for indexes and iterators
 - e for events
 
+### Motions, animations and effects
+
+- Motions can be triggered using the EntityAnimator
+- Animations cannot be triggered (as far as I know)
+- Effects can be triggered using the EntityAnimator, but they need to be preloaded first (see RDNUIProxy.cpp)
+
+
 ### Game lifecycle
 
 Once the game has started, a Game Start Event gets fired. Enums for the events are in GameEventDefs.h

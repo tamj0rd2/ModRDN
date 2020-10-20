@@ -1005,7 +1005,7 @@ void RDNUIProxy::DispatchMessage(const std::vector<unsigned char> &msg, unsigned
 	}
 
 	/***
-	const unsigned long magic = *reinterpret_cast<const unsigned long*>( &msg[0] );				
+	const unsigned long magic = *reinterpret_cast<const unsigned long*>( &msg[0] );
 	switch (magic)
 	{
 	default:
@@ -1025,6 +1025,7 @@ void RDNUIProxy::LoadUIOptions()
 
 void RDNUIProxy::Preload()
 {
+	// what the FUCK?
 	// preload all fx used by the game
 	const RDNTuning::EffectInfo &inf = RDNTuning::Instance()->GetEffectInfo();
 

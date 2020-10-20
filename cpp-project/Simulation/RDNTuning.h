@@ -42,23 +42,16 @@ public:
 	// Player
 	struct PlayerInfo
 	{
-		float startingCash;
-	};
+		float startingGatherRes;
+		float startingRenewRes;
 
-	/////////////////////////////////////////////////////////////////////
-	// Race
-	struct RaceInfo
-	{
-		struct Race
-		{
-			float healthMultiplier;
-			float costMultiplier;
-			float speedMultiplier;
-		};
+		float quickstartGatherRes;
+		float quickstartRenewRes;
 
-		Race stronger;
-		Race cheaper;
-		Race faster;
+		float resourceModLow;
+		float resourceModHigh;
+
+		float donationPenaltyPercentage;
 	};
 
 	/////////////////////////////////////////////////////////////////////

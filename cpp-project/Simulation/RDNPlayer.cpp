@@ -108,7 +108,7 @@ RDNPlayer::RDNPlayer(WorldFOW *pWorldFOW)
 	// initialize lab position incase there never is a lab
 	m_hqPosition = Vec3f(0, 0, 0);
 
-	m_resourceCash = RDNTuning::Instance()->GetPlayerInfo().startingCash;
+	m_resourceCash = RDNTuning::Instance()->GetPlayerInfo().startingGatherRes;
 
 	return;
 }

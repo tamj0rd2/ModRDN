@@ -192,8 +192,6 @@ def start(install: bool, launch: bool, targets: list):
                          settings.modTextInstallPath)
 
         if "assets" in targets:
-            Logger.warn(
-                "Need to implement installing the module, including replacement")
             installAsset(settings.emptySgaPath, settings.modSgaInstallPath)
             installAsset(settings.emptySgaPath, settings.modlocInstallPath)
 
@@ -205,6 +203,12 @@ def start(install: bool, launch: bool, targets: list):
                     moduleFile.write(moduleContent)
             Logger.info("template.module installed to {}".format(
                 settings.moduleInstallPath))
+
+            for folder in os.walk(settings.dataInstallFolder):
+                for fileName in folder[2]:
+                    fileToDelete = "{}\\{}".format(folder[0], fileName)
+                    if (fileToDelete.endswith(".lua")):
+                        os.remove(fileToDelete)
 
             for folder in os.walk(settings.dataFolder):
                 for fileName in folder[2]:
