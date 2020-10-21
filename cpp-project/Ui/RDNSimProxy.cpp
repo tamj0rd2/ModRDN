@@ -730,55 +730,61 @@ void RDNSimProxy::GetCursorInfo(char *cursor, size_t len, int &ttStrId, const En
 	{
 		// modal cursors are handled in the taskbar
 		dbBreak();
-	}
-	// non-modal cursors
-	else
-	{
-		//
-		if (mouseOverEntity == 0)
-		{
-			relicstring_copyN(cursor, "default", len);
-		}
-		else
-				// check if over something in the selection
-				if (m_pimpl->m_selection->GetSelection().find(mouseOverEntity) != m_pimpl->m_selection->GetSelection().end())
-		{
-			relicstring_copyN(cursor, "default", len);
-		}
-		else
-				// nothing is currently selected, or an entity not owned by the player is selected
-				if (m_pimpl->m_selection->GetSelection().empty() ||
-						m_pimpl->m_selection->GetSelection().front()->GetOwner() != m_pimpl->m_player)
-		{
-			if (mouseOverEntity->GetEntityFlag(EF_Selectable))
-			{
-				relicstring_copyN(cursor, "eye", len);
-			}
-			else
-			{
-				relicstring_copyN(cursor, "default", len);
-			}
-		}
-		else if (RDNQuery::CanAttack(m_pimpl->m_selection->GetSelection(), mouseOverEntity))
-		{
-			// cursor over an enemy, soldiers in the selection
-			relicstring_copyN(cursor, "attack", len);
-		}
-		else
-				// check for guard: do this after heal
-				if (RDNQuery::CanGuard(m_pimpl->m_selection->GetSelection(), mouseOverEntity, m_pimpl->m_player))
-		{
-			relicstring_copyN(cursor, "modal_guard", len);
-		}
-		else
-				// this should be last.  If no other context-sensitive cursors applies the selection "eye" and tooltip should be shown
-				if (mouseOverEntity->GetEntityFlag(EF_Selectable))
-		{
-			relicstring_copyN(cursor, "eye", len);
-		}
+		return;
 	}
 
-	return;
+	if (mouseOverEntity == 0)
+	{
+		relicstring_copyN(cursor, "default", len);
+		return;
+	}
+
+	if (m_pimpl->m_selection->GetSelection().find(mouseOverEntity) != m_pimpl->m_selection->GetSelection().end())
+	{
+		relicstring_copyN(cursor, "default", len);
+		return;
+	}
+
+	// nothing is currently selected, or an entity not owned by the player is selected
+	if (m_pimpl->m_selection->GetSelection().empty() ||
+			m_pimpl->m_selection->GetSelection().front()->GetOwner() != m_pimpl->m_player)
+	{
+		if (mouseOverEntity->GetEntityFlag(EF_Selectable))
+		{
+			relicstring_copyN(cursor, "eye", len);
+			return;
+		}
+
+		relicstring_copyN(cursor, "default", len);
+		return;
+	}
+
+	if (RDNQuery::CanGather(m_pimpl->m_selection->GetSelection(), mouseOverEntity))
+	{
+		relicstring_copyN(cursor, "modal_gather", len);
+		return;
+	}
+
+	if (RDNQuery::CanAttack(m_pimpl->m_selection->GetSelection(), mouseOverEntity))
+	{
+		// cursor over an enemy, soldiers in the selection
+		relicstring_copyN(cursor, "attack", len);
+		return;
+	}
+
+	// check for guard: do this after heal
+	if (RDNQuery::CanGuard(m_pimpl->m_selection->GetSelection(), mouseOverEntity, m_pimpl->m_player))
+	{
+		relicstring_copyN(cursor, "modal_guard", len);
+		return;
+	}
+
+	// this should be last.  If no other context-sensitive cursors applies the selection "eye" and tooltip should be shown
+	if (mouseOverEntity->GetEntityFlag(EF_Selectable))
+	{
+		relicstring_copyN(cursor, "eye", len);
+		return;
+	}
 }
 
 void RDNSimProxy::DoModalCommand(int mode, float x, float y, float z, int entityID, bool bQueueCommand)
@@ -803,6 +809,7 @@ void RDNSimProxy::DoModalCommand(int mode, float x, float y, float z, int entity
 					0, 0,							 // MC_BuildStructure
 					CMD_AttackMove, 0, // MC_AttackMove
 					CMD_RallyPoint, 0, // MC_SetRallyPoint
+					CMD_Unload, 0,		 // MC_Unload
 			};
 
 	if (mode < 0 || mode >= (sizeof(mode2command) / sizeof(mode2command[0])))
