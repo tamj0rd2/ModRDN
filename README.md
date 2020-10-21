@@ -186,6 +186,16 @@ or repurpose GuyController into Henchmen controller.
 - Animations cannot be triggered (as far as I know)
 - Effects can be triggered using the EntityAnimator, but they need to be preloaded first (see RDNUIProxy.cpp)
 
+**Conditionals** seen in ObjectEditor can be applied using the SetMotionVariable method of EntityAnimator.
+
+To apply an effect, use the AttachEffect method of the EntityAnimator
+
+- arg 1: the name of the effect (effects can be found in Engine.sga\Data\art\fx)
+- arg 2: the marker to attach the effect to. Can be `random` or a marker. You can check which
+  marker an effect is applied to by opening an EBP and looking at the EventEditor panel.
+- arg 3: how many instances of the effect you want to apply
+
+It returns an event handle which I assume can be used to later delete the effect
 
 ### Game lifecycle
 

@@ -32,9 +32,13 @@
 #include <SimEngine/EntityAnimator.h>
 #include <SimEngine/BuildingDynamics.h>
 
-const bool Success = false;
-const bool NothingHappened = false;
-const bool ShouldExit = true;
+const bool c_success = false;
+const bool c_nothingHappened = false;
+const bool c_shouldExit = true;
+
+const char *c_paSwing = "PaSwing";
+const char *c_cpPickup = "CpPickup";
+const char *c_cpPutdown = "CpPutdown";
 
 StateGather::StateGather(EntityDynamics *e_dynamics) : State(e_dynamics), m_pStateMove(NULL),
                                                        m_InternalState(SG_Invalid),
@@ -141,7 +145,8 @@ bool StateGather::MoveToLeastBusyResource()
 
   // move
   m_pStateMove->Enter(m_pResourceEntity, 0);
-  return Success;
+  SetIsHoldingPickaxe(true);
+  return c_success;
 }
 
 bool StateGather::HandleMoveToResource()
@@ -155,7 +160,7 @@ bool StateGather::HandleMoveToResource()
     return TriggerExit(GES_CouldNotReachResource);
   }
 
-  return NothingHappened;
+  return c_nothingHappened;
 }
 
 bool StateGather::ToWaitToGatherResourceState()
@@ -165,7 +170,7 @@ bool StateGather::ToWaitToGatherResourceState()
     return ToGatherResourceState();
 
   SetTimer(m_TimeToMineCoal);
-  return Success;
+  return c_success;
 }
 
 bool StateGather::HandleWaitToGatherResource()
@@ -176,23 +181,24 @@ bool StateGather::HandleWaitToGatherResource()
   if (HasTimerElapsed())
     return MoveToLeastBusyResource();
 
-  return NothingHappened;
+  return c_nothingHappened;
 }
 
 bool StateGather::ToGatherResourceState()
 {
   m_InternalState = SG_GatherResources;
   m_pResourceExt->GatherersOnSiteAdd(GetEntity());
+  SetIsHoldingPickaxe(false);
   GetEntity()->GetAnimator()->SetTargetLook(m_pResourceEntity);
-  GetEntity()->GetAnimator()->SetMotionTreeNode("PaSwing");
+  GetEntity()->GetAnimator()->SetMotionTreeNode(c_paSwing);
   SetTimer(m_TimeToMineCoal);
-  return Success;
+  return c_success;
 }
 
 bool StateGather::HandleGatherResource()
 {
   if (!HasTimerElapsed())
-    return NothingHappened;
+    return c_nothingHappened;
 
   return ToPickupResourceState();
 }
@@ -201,15 +207,15 @@ bool StateGather::ToPickupResourceState()
 {
   m_InternalState = SG_PickupResource;
   m_pResourceExt->GatherersOnSiteRmv(GetEntity());
-  GetEntity()->GetAnimator()->SetMotionTreeNode("CpPickup");
+  GetEntity()->GetAnimator()->SetMotionTreeNode(c_cpPickup);
   SetTimer(1.04f);
-  return Success;
+  return c_success;
 }
 
 bool StateGather::HandlePickupResource()
 {
   if (!HasTimerElapsed())
-    return NothingHappened;
+    return c_nothingHappened;
 
   m_pResourceExt->DecResources(c_ResourceIncrements);
   return ToMoveToDepositState();
@@ -227,8 +233,8 @@ bool StateGather::ToMoveToDepositState()
 
   // maybe CpOverlay motion
   m_pStateMove->Enter(depositEntity, 0);
-  GetEntity()->GetAnimator()->SetMotionTreeNode("CpOverlay");
-  return Success;
+  SetIsHoldingCoalpails(true);
+  return c_success;
 }
 
 bool StateGather::HandleMoveToDeposit()
@@ -242,22 +248,22 @@ bool StateGather::HandleMoveToDeposit()
       dbFatalf("Hench could not reach the deposit. state: %d", moveExitState);
   }
 
-  return NothingHappened;
+  return c_nothingHappened;
 }
 
 bool StateGather::ToDropOffResourceState()
 {
   m_InternalState = SG_DropOffResource;
-
-  GetEntity()->GetAnimator()->SetMotionTreeNode("CpPutdown");
+  SetIsHoldingCoalpails(false);
+  GetEntity()->GetAnimator()->SetMotionTreeNode(c_cpPutdown);
   SetTimer(1.03f);
-  return Success;
+  return c_success;
 }
 
 bool StateGather::HandleDropOffResource()
 {
   if (!HasTimerElapsed())
-    return NothingHappened;
+    return c_nothingHappened;
 
   RDNPlayer *player = static_cast<RDNPlayer *>(GetEntity()->GetOwner());
   player->IncResourceCash(c_ResourceIncrements, RDNPlayer::RES_Resourcing);
@@ -323,6 +329,16 @@ const Entity *StateGather::FindLeastBusyResourceNearby(const Entity *pResourceEn
   return pResourceExt->IsDepleted() ? NULL : pResourceEntity;
 }
 
+void StateGather::SetIsHoldingPickaxe(bool bShouldHold)
+{
+  GetEntity()->GetAnimator()->SetMotionVariable("Pickaxe", bShouldHold ? 50 : 0);
+}
+
+void StateGather::SetIsHoldingCoalpails(bool bShouldHold)
+{
+  GetEntity()->GetAnimator()->SetMotionVariable("CoalPail", bShouldHold ? 50 : 0);
+}
+
 long StateGather::GetTicks()
 {
   return ModObj::i()->GetWorld()->GetGameTicks();
@@ -331,10 +347,13 @@ long StateGather::GetTicks()
 bool StateGather::TriggerExit(StateGather::StateGatherExitState exitState)
 {
   dbTracef("Exiting StateGather for reason %d", exitState);
-  m_pResourceExt->GathererRmv(GetEntity());
   m_ExitState = exitState;
-  SetExitStatus(ShouldExit);
-  return ShouldExit;
+  SetExitStatus(c_shouldExit);
+
+  m_pResourceExt->GathererRmv(GetEntity());
+  SetIsHoldingPickaxe(false);
+  SetIsHoldingCoalpails(false);
+  return c_shouldExit;
 }
 
 void StateGather::RequestExit()

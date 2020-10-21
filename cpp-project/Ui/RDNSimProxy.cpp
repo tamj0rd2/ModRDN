@@ -69,6 +69,7 @@ namespace
 	const char *k_FXMovePatrol = "patroldest";
 	const char *k_FXMoveGuard = "guarddest";
 	const char *k_FXMove = "movedest";
+	const char *k_FXCoalPail = "coalpailloop";
 
 	const long BUILDUNIT_MULTIPLEUNITS = 5;
 } // namespace
@@ -1533,4 +1534,5 @@ void RDNSimProxy::Preload()
 	m_pimpl->m_fx->FXPreload(k_FXMovePatrol);
 	m_pimpl->m_fx->FXPreload(k_FXMoveGuard);
 	m_pimpl->m_fx->FXPreload(k_FXMove);
+	m_pimpl->m_fx->FXPreload(k_FXCoalPail);
 }

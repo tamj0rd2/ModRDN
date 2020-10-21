@@ -112,4 +112,7 @@ private:
   void StateGather::SetTimer(float seconds);
   // check if the set timer has elapsed
   bool StateGather::HasTimerElapsed();
+
+  void StateGather::SetIsHoldingPickaxe(bool bShouldHold);
+  void StateGather::SetIsHoldingCoalpails(bool bShouldHold);
 };
