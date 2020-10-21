@@ -71,13 +71,21 @@ def writeTemplateSettingsFile(filePath):
 
 def parseSettingsFile():
     repoFolder = os.getcwd().replace("\\", "/")
-    settingsFilePath = "{}\\script-settings.json".format(repoFolder)
+    settingsFilePath = os.path.join(repoFolder, "script-settings.json")
+    modOptionsFilePath = os.path.join(repoFolder, "mod-options.json")
 
     if not os.path.isfile(settingsFilePath):
         writeTemplateSettingsFile(settingsFilePath)
 
+    settingsJson = None
+    optionsJson = None
+
     with open(settingsFilePath) as f:
-        return Settings(repoFolder, **json.load(f))
+        settingsJson = json.load(f)
+    with open(modOptionsFilePath) as f:
+        optionsJson = json.load(f)
+
+    return Settings(repoFolder, **settingsJson, **optionsJson)
 
 
 if __name__ == "__main__":
