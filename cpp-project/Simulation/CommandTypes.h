@@ -43,7 +43,8 @@ enum CommandType
 	CMD_Pause = 9,
 	CMD_UnPause = 10,
 
-	CMD_Gather = 11,
+	CMD_Gather = 11, // gather from a resource
+	CMD_Unload = 12, // assuming this means unloading a gyrocopter
 
 	CMD_COUNT
 };

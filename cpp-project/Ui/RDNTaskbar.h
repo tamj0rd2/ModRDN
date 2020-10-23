@@ -53,6 +53,7 @@ public:
 		MC_Attack,
 		MC_AttackMove,
 		MC_SetRallyPoint,
+		MC_Unload,
 	};
 
 	enum EnableType

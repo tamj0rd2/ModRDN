@@ -986,16 +986,12 @@ bool RDNQuery::CanGather(const EntityGroup &group, const Entity *target, bool bC
 {
 	if (group.empty())
 	{
-		dbTracef("Group is somehow empty");
 		dbBreak();
 		return false;
 	}
 
 	if (!CanBeGathered(target, group.front()->GetOwner(), bCheckFOW))
-	{
-		dbTracef("Coal cannot be gathered :(");
 		return false;
-	}
 
 	// check if any dude in the group can do it
 	EntityGroup::const_iterator entityIterator = group.begin();
@@ -1016,29 +1012,20 @@ bool RDNQuery::CanBeGathered(const Entity *entity, const Player *player, bool bC
 	if (entity == 0)
 		return false;
 
+	// can only gather from nature resources, unowned by players
 	if (entity->GetOwner() != 0)
-	{
-		// can only gather from nature resources, unowned by players
-		dbTracef("Entity owner is not 0");
 		return false;
-	}
 
 	const ResourceExt *resource = QIExt<ResourceExt>(entity);
 
 	if (!resource)
-	{
-		dbTracef("The target is not a resource");
 		return false;
-	}
 
 	if (resource->IsDepleted())
 		dbFatalf("The chosen resource is already depleted");
 
 	if (RDNQuery::CanBeSeen(entity, player, bCheckFOW) == 0)
-	{
-		dbTracef("Item cannot be seen");
 		return false;
-	}
 
 	return true;
 }

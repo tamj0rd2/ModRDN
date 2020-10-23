@@ -25,15 +25,30 @@
 	HK_Camera_ZoomCameraIn	= "keygroups.cameracontrolfree.keys.keyzoomin"
 	HK_Camera_ZoomCameraOut	= "keygroups.cameracontrolfree.keys.keyzoomout"
 
-	-- Guy
-	HK_Guy_Stop			= "keygroups.guycommands.keys.stop"
-	HK_Guy_Move			= "keygroups.guycommands.keys.move"
-	HK_Guy_Attack			= "keygroups.guycommands.keys.attack"
-	HK_Guy_Kill				= "keygroups.guycommands.keys.kill"
+	-- HENCHMEN
+	HK_Henchman_Build			= "keygroups.basicunitcommands.keys.buildmenu"
+	HK_Henchman_BuildAdvanced		= "keygroups.basicunitcommands.keys.buildmenuadvanced"
+	HK_Henchman_Repair			= "keygroups.basicunitcommands.keys.repair"
+	HK_Henchman_Gyrocopter		= "keygroups.henchmancommands.keys.gyrocopter"
+	HK_Henchman_Heal			= "keygroups.henchmancommands.keys.heal"
+	HK_Henchman_Gather			= "keygroups.basicunitcommands.keys.gather"
+	HK_Henchman_Tag			= "keygroups.henchmancommands.keys.tag"
+	HK_Henchman_BuildToggle		= "keygroups.henchmanbuildcommands.keys.buildtoggle"
+	HK_Henchman_Unload			= "keygroups.henchmancommands.keys.unload"
+	HK_Henchman_Airlift			= "keygroups.henchmancommands.keys.airlift"
+	HK_Henchman_Untag			= "keygroups.henchmancommands.keys.untag"
 
 	-- Lab
 
 	HK_Lab_SpawnHenchmen		= "keygroups.hqcommands.keys.spawnhenchmen"
+
+	-- basic unit
+	HK_Generic_Stop	= "keygroups.basicunitcommands.keys.stop"
+	HK_Generic_Move	= "keygroups.basicunitcommands.keys.move"
+	HK_Generic_Kill = "keygroups.basicunitcommands.keys.kill"
+	HK_Generic_Attack		= "keygroups.basicunitcommands.keys.attack"
+	HK_Generic_Guard		= "keygroups.creaturecommands.keys.guard"
+	HK_Generic_Patrol		= "keygroups.creaturecommands.keys.patrol"
 
 	-- selection
 	HK_Select_UnitsOnScreen	= "keygroups.select.keys.unitsonscreen"
@@ -47,12 +62,25 @@
 		{ 40950, HK_System_Chat,			42380, },
 	}
 
-	guy_commands =
+	-- 2: hotkey. 4: tga
+	henchman_commands =
 	{
-		{ 40800,	HK_Guy_Stop,			40800,	"ui/ingame/henchmen_stop.tga" },
-		{ 40800,	HK_Guy_Move,			40800,	"ui/ingame/henchmen_move.tga" },
-		{ 40800,	HK_Guy_Attack,			40800,	"ui/ingame/henchmen_attack.tga" },
-		{ 40800,	HK_Guy_Kill,			40800,	"ui/ingame/kill.tga"	},
+		{ 40820,	HK_Generic_Move,			42320,	"ui/ingame/henchmen_move.tga" },
+		{ 40821,	HK_Henchman_Gather,			42322,	"ui/ingame/gather.tga" },
+		{ 40822,	HK_Generic_Guard,			42323,	"ui/ingame/henchmen_guard.tga" },
+		{ 40823,	HK_Henchman_Repair,			42324,	"ui/ingame/repair.tga" },
+		{ 40824,	HK_Generic_Stop,			42326,	"ui/ingame/henchmen_stop.tga" },
+
+		{ 40825,	HK_Henchman_Build,			42327,	"ui/ingame/build_structure.tga" },
+		{ 40834,	HK_Henchman_BuildAdvanced,	42345,	"ui/ingame/build_structure_advanced.tga" },
+
+		{ 40826,	HK_Henchman_Heal,			42325,	"ui/ingame/heal.tga" },
+		{ 40827,	HK_Henchman_Tag,			42332,	"ui/ingame/tag.tga" },
+		{ 40829,	HK_Generic_Kill,			42329,	"ui/ingame/kill.tga" },
+		{ 40835,	HK_Henchman_Unload,			42346,	"ui/ingame/unload.tga" },
+		{ 40856,	HK_Generic_Attack,			42330,	"ui/ingame/henchmen_attack.tga" },
+		{ 40836,	HK_Henchman_Airlift,		42348,	"ui/ingame/airlift.tga" },
+		{ 40837,	HK_Henchman_Untag,		42349,  "ui/ingame/untag.tga" },
 	}
 
 	hq_commands =
@@ -60,10 +88,22 @@
 		{ 40930,	HK_Lab_SpawnHenchmen,		42370,	"ui/ingame/spawn_rock.tga" },
 	}
 
-	guy_modalmodes =
+	henchman_modalmodes =
 	{
 		{ MM_Cursor,	MC_Move },
+		{ MM_Cursor,	MC_Gather },
+		{ MM_Cursor,	MC_Guard },
+		{ MM_Cursor,	MC_Repair },
+		{ MM_None,		MC_None },				-- stop
+		{ MM_Cursor,	MC_BuildStructure },	-- build basic
+		{ MM_Cursor,	MC_BuildStructure },	-- build advanced
+		{ MM_Cursor,	MC_Heal },
+		{ MM_Cursor,	MC_Tag },
+		{ MM_None,		MC_None },				-- kill
+		{ MM_Cursor,	MC_Unload },			-- unload
 		{ MM_Cursor,	MC_AttackMove },
+		{ MM_Cursor,	MC_Airlift },
+		{ MM_Cursor,	MC_UnTag },
 	}
 
 	singleselectinfotable =
@@ -548,17 +588,27 @@ creaturemodalselection = function( id )
 end
 
 --
-guyselection = function()
+henchmantooltip = function( enabled, index )
 
-	local id = SelectionId( 0 )
-
-	--
-	cleartaskbar()
+	tooltip_command( enabled, index, henchman_commands )
 
 end
 
 --
-hqselection = function()
+henchmanselection = function()
+	cleartaskbar()
+
+	BindButton( "command_modal_icon01",		henchman_commands[ 1][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[ 1][4],  1 )		-- move
+	BindButton( "command_modal_icon02",		henchman_commands[ 2][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[ 2][4],  2 )		-- gather
+	BindButton( "command_modal_icon03",		henchman_commands[ 3][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[ 3][4],  3 )		-- guard
+	BindButton( "command_modal_icon04",		henchman_commands[ 4][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[ 4][4],  4 )		-- repair
+	BindButton( "command_modal_icon05",		henchman_commands[12][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[12][4], 12 )		-- attack
+	BindButton( "command_modal_icon07",		henchman_commands[ 5][2],  "dostop",			"henchmantooltip", henchman_commands[ 5][4],  5 )		-- stop
+
+end
+
+--
+labSelection = function()
 
 	local id = SelectionId( 0 )
 
@@ -566,7 +616,7 @@ hqselection = function()
 	cleartaskbar()
 
 	-- spawn guys
-	BindButtonToUnitEBP( "command_big_icon01", HK_Lab_SpawnHenchmen, "dobuildunit", "commandstooltip", id, HenchmenEBP() )
+	BindButtonToUnitEBP( "command_modal_icon01", HK_Lab_SpawnHenchmen, "dobuildunit", "commandstooltip", id, HenchmenEBP() )
 
 	-- command area
 		-- background
@@ -596,11 +646,8 @@ end
 --
 friendlyselection = function()
 
-	--
-	cleartaskbar()
-
 	-- just need one id for each type
-	guyId			= -1
+	henchmanId			= -1
 	buildingId		= -1
 
 	-- check what's in our selection
@@ -614,8 +661,7 @@ friendlyselection = function()
 
 		if type == Henchmen_EC then
 
-			-- guy
-			guyId = id
+			henchmanId = id
 
 		elseif type == Lab_EC then
 
@@ -628,11 +674,14 @@ friendlyselection = function()
 
 	if not (buildingId == -1) then
 
-		hqselection()
+		labSelection()
 
 	else
 
-		guyselection( creatureId )
+		if not (henchmanId == -1) then
+			henchmanselection( henchmanId )
+			showStance = 0
+		end
 
 	end
 
@@ -770,70 +819,6 @@ buildbuilding_updateui = function()
 
 end
 
---
-dospawnmodal = function( index )
-
-	-- register function for refresh calls
-	menucontext = { "dospawnmodal(" .. index .. ")", "", "ModalUIEnd()" }
-
-	-- translate mode in game usable mode (only one here)
-	local mode		= MM_LockCursor
-	local command	= MC_SetRallyPoint
-
-	--
-	local result = ModalUIBegin( "domodalclick", "domodalcancel", mode, command )
-
-	if result == 0 then
-
-		--
-		cleartaskbar()
-
-		-- command area
-			-- cancel button
-		BindButton( "command_formation_icon07", HK_System_Escape, "domodalcancel", "", "UI/InGame/Cancel.tga", 0 )
-
-	else
-
-		-- failed
-		failedcommand( result )
-
-	end
-
-end
-
---
-docreaturemodal = function( index )
-
-	-- register function for refresh calls
-	menucontext = { "docreaturemodal(" .. index .. ")", "mcqualifier_creaturemodal", "ModalUIEnd()" }
-
-	-- translate mode in game usable mode
-	local mode		= creature_modalmodes[ index ][1];
-	local command	= creature_modalmodes[ index ][2];
-
-	-- let creature modal commands be queued
-	CommandQueueEnable( HK_System_CommandQueue, "commandqueuecancel" )
-
-	--
-	local result = ModalUIBegin( "domodalclick", "domodalcancel", mode, command )
-
-	if result == 0 then
-
-		--
-		cleartaskbar()
-
-		-- command area
-			-- cancel button
-		BindButton( "command_formation_icon07", HK_System_Escape, "domodalcancel", "", "UI/InGame/Cancel.tga", 0 )
-
-	else
-
-		-- failed
-		failedcommand( result )
-
-	end
-
-end
 
 --
 domodalclick = function( mode, x, y, z, ebpid )
@@ -860,100 +845,6 @@ domodalcancel = function( dummy )
 
 	--
 	on_selection()
-
-end
-
---
-
---
-commandarearesearch = function( id, research, tooltipcb )
-
-	--
-	local buttons =
-	{
-		"command_big_icon01",
-		"command_big_icon02",
-		"command_big_icon03",
-		"command_big_icon04",
-		"command_big_icon05",
-		"command_big_icon06",
-		"command_big_icon07",
-		"command_big_icon08",
-		"command_big_icon09",
-		"command_big_icon10",
-	}
-
-	local countbuttons  = getn( buttons  )
-	local countresearch = getn( research )
-
-	local count
-
-	if countbuttons < countresearch then
-
-		count = countbuttons
-
-	else
-
-		count = countresearch
-
-	end
-
-	for i = 1, count
-	do
-
-		if ResearchIsOpen( research[ i ][1] ) == 1 then
-
-			BindButtonToResearch( buttons[ i ], research[ i ][2], "doresearch", tooltipcb, id, research[ i ][1] )
-
-		end
-
-	end
-
-end
-
---
-commandareaupgrade = function( id, ebpnetid, upgrade, tooltipcb )
-
-	--
-	local buttons =
-	{
-		"command_big_icon01",
-		"command_big_icon02",
-		"command_big_icon03",
-		"command_big_icon04",
-		"command_big_icon05",
-		"command_big_icon06",
-		"command_big_icon07",
-		"command_big_icon08",
-		"command_big_icon09",
-		"command_big_icon10",
-	}
-
-	local countbuttons  = getn( buttons  )
-	local countupgrade = getn( upgrade )
-
-	local count
-
-	if countbuttons < countupgrade then
-
-		count = countbuttons
-
-	else
-
-		count = countupgrade
-
-	end
-
-	for i = 1, count
-	do
-
-		if CreatureUpgradeIsOpen( ebpnetid, upgrade[ i ][1] ) == 1 then
-
-			BindButtonToCreatureUpgrade( buttons[ i ], upgrade[ i ][2], "docreatureupgrade", tooltipcb, id, ebpnetid, upgrade[ i ][1] )
-
-		end
-
-	end
 
 end
 
@@ -1153,4 +1044,95 @@ end
 
 selecthq = function()
 	SelectLab()
+end
+
+--
+mcqualifier_henchman = function( id )
+
+	local type = EntityType( id )
+	if 	(type == Henchman_EC) then
+		return 1
+	end
+
+	return 0
+
+end
+
+--
+dohenchmanmodal = function( index )
+	-- register function for refresh calls
+	menucontext = { "dohenchmanmodal(" .. index .. ")", "mcqualifier_henchman", "ModalUIEnd()" }
+
+	-- translate mode in game usable mode
+	local mode		= henchman_modalmodes[ index ][1];
+	local command	= henchman_modalmodes[ index ][2];
+
+	-- let henchman modal commands be queued
+	CommandQueueEnable( HK_System_CommandQueue, "commandqueuecancel" )
+
+	-- inplace commands
+	local result = 0
+
+	if (command == MC_Unload) then
+
+		result = ModalUIBegin( "domodalclick", "dounloadmodalcancel", mode, command )
+	else
+
+		result = ModalUIBegin( "domodalclick", "domodalcancel", mode, command )
+	end
+
+	if result == 0 then
+
+		--
+		cleartaskbar()
+
+		-- command area
+
+		-- TODO: all of this stuff needs implementing
+		-- inplace commands
+		if (command == MC_Unload) then
+
+			-- Need to refresh passenger icons on the left-hand-side hud
+			-- Get selection id's (there should only be one entity selected)
+			local count = SelectionCount()
+			local id = SelectionId( 0 )
+
+			-- Make sure it is a gyrocopter and only one selection
+			local type = EntityType( id )
+			if (type == Gyrocopter_EC) and (count == 1) then
+				gyrocopterpassengermulti( id );
+			end
+
+			local t = henchman_commands[ index ];
+			BindButton( "command_normal_icon03", t[2], "dohenchmanunloadnow", "henchmantooltip", t[4], index )
+
+			-- cancel button
+			BindButton( "command_formation_icon07", HK_System_Escape, "dounloadmodalcancel", "", "UI/InGame/Cancel.tga", 0 )
+
+		else
+			-- cancel button
+			BindButton( "command_formation_icon07", HK_System_Escape, "domodalcancel", "", "UI/InGame/Cancel.tga", 0 )
+		end
+
+	else
+
+		-- failed
+		failedcommand( result )
+
+	end
+
+end
+
+--
+dounloadmodalcancel = function( dummy )
+
+	-- clear out pending unload list
+	DoCancelPendingUnload()
+
+	-- stop ui
+	ModalUIEnd()
+
+	--
+	on_selection()
+
 end

@@ -500,6 +500,11 @@ static void DetermineModalCursor(char *cursor, size_t len, int &ttStrId, unsigne
 		strcpy(cursor, "modal_waypoints");
 	}
 	break;
+	case RDNTaskbar::MC_Unload:
+	{
+		strcpy(cursor, "modal_unload");
+	}
+	break;
 	case RDNTaskbar::MC_SetRallyPoint:
 	{
 		if (RDNQuery::CanRallyTo(mouseOverEntity, player))
@@ -1021,8 +1026,30 @@ void RDNTaskbar::BindButton(
 		const char *texture,
 		int parm)
 {
+	if (!button)
+		dbFatalf("RDNTaskbar::BindButton No button provided");
+
+	if (!hotkeyLuaName)
+		dbFatalf("RDNTaskbar::BindButton No hotkeyLuaName provided");
+
+	if (!callback)
+		dbFatalf("RDNTaskbar::BindButton No callback provided");
+
+	if (!tooltipcb)
+		dbFatalf("RDNTaskbar::BindButton No tooltipcb provided");
+
 	// delegate
-	ButtonInternal(button, hotkeyLuaName, callback, "", tooltipcb, texture, true, parm, 0, BindingButton::BHUD_BUTTON_NORMAL);
+	ButtonInternal(
+			button,
+			hotkeyLuaName,
+			callback,
+			"",
+			tooltipcb,
+			texture,
+			true,
+			parm,
+			0,
+			BindingButton::BHUD_BUTTON_NORMAL);
 
 	return;
 }
@@ -1484,6 +1511,7 @@ void RDNTaskbar::LuaSetup()
 	BINDINNERCONSTANT(RDNTaskbar, MC_Attack);
 	BINDINNERCONSTANT(RDNTaskbar, MC_AttackMove);
 	BINDINNERCONSTANT(RDNTaskbar, MC_SetRallyPoint);
+	BINDINNERCONSTANT(RDNTaskbar, MC_Unload);
 
 #undef BINDINNERCONSTANT
 	return;
