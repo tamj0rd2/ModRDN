@@ -616,7 +616,7 @@ labSelection = function()
 	cleartaskbar()
 
 	-- spawn guys
-	BindButtonToUnitEBP( "command_modal_icon01", HK_Lab_SpawnHenchmen, "dobuildunit", "commandstooltip", id, HenchmenEBP() )
+	BindButtonToUnitEBP( "command_big_icon01", HK_Lab_SpawnHenchmen, "dobuildunit", "commandstooltip", id, HenchmenEBP() )
 
 	-- command area
 		-- background
