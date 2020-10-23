@@ -5,14 +5,14 @@
       "includePath": [
         "${workspaceFolder}/cpp-project/**",
         "${workspaceFolder}/cpp-project/Pch/**",
-        "${workspaceFolder}/../Include/**",
-        "${workspaceFolder}/../Include/stl/**",
+        "${workspaceFolder}/cpp-project/Include/**",
+        "${workspaceFolder}/cpp-project/Include/stl/**",
         "D:/icdev/Microsoft_Visual_Studio_2002_64_fixed/Program Files/Microsoft Visual Studio .NET/Vc7/include/**"
       ],
       "defines": [
         "RELIC_PC",
         "WIN32",
-        "NDEBUG",
+        // "NDEBUG",
         "_WINDOWS",
         "_USRDLL",
         "_MBCS",
@@ -20,7 +20,7 @@
       ],
       "intelliSenseMode": "msvc-x86",
       "cppStandard": "c++03",
-      "forcedInclude": ["${workspaceFolder}/../Obj/Target/ModRDN/ModRDN.pch"]
+      "forcedInclude": ["${workspaceFolder}/Obj/Target/ModRDN/ModRDN.pch"]
     }
   ],
   "version": 4
