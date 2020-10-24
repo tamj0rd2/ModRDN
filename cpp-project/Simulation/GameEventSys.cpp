@@ -79,9 +79,12 @@ void GameEventSys::PublishEvent(const Event &event)
 		(*i)->OnEvent(event);
 	}
 
+	dbTracef("GameEventSys::PublishEvent events done publishing");
+
 	//
 	dbAssert(n == m_pimpl->m_listenerList.size());
 
+	dbTracef("GameEventSys::PublishEvent returning");
 	return;
 }
 

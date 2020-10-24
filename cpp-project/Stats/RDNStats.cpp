@@ -100,6 +100,8 @@ void RDNStats::Shutdown()
 
 void RDNStats::OnEvent(const GameEventSys::Event &event)
 {
+	dbTracef("RDNStats::OnEvent");
+
 	switch (event.GetType())
 	{
 	case GE_PlayerKilled:

@@ -301,7 +301,7 @@ RDNPlayer::BuildResult RDNPlayer::BlueprintCanBuild(const ControllerBlueprint *c
 	// validate parm
 	if (cbp == 0)
 	{
-		dbBreak();
+		dbFatalf("RDNPlayer::BlueprintCanBuild cbp id 0");
 		return BR_Never;
 	}
 
@@ -504,20 +504,20 @@ void RDNPlayer::CommandDoProcess(
 		const unsigned int flags,
 		Player *sender)
 {
+	dbTracef("RDNPlayer::CommandDoProcess");
+
 	UNREF_P(flags);
 
 	switch (cmd)
 	{
 	case PCMD_CheatCash:
-		CmdCheatCash(sender, param);
-		break;
+		return CmdCheatCash(sender, param);
 
 	case PCMD_CheatKillSelf:
-		CmdCheatKillSelf(sender);
-		break;
+		return CmdCheatKillSelf(sender);
 	}
 
-	return;
+	dbFatalf("RDNPLayer::CommandDoProcess unhandled PlayerPlayer case %d", cmd);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -544,7 +544,16 @@ void RDNPlayer::CommandDoProcess(
 	UNREF_P(pos);
 	UNREF_P(posCount);
 
-	return;
+	switch (cmd)
+	{
+	case CMD_BuildBuilding:
+		/* code */
+		dbFatalf("Buildling buildings is unimplemented right now");
+		break;
+
+	default:
+		dbFatalf("RDNPLayer::CommandDoProcess unhandled PlayerPlayer case %d", cmd);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////

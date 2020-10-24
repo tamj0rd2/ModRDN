@@ -38,6 +38,20 @@
 	HK_Henchman_Airlift			= "keygroups.henchmancommands.keys.airlift"
 	HK_Henchman_Untag			= "keygroups.henchmancommands.keys.untag"
 
+	-- HENCHMEN BUILD MENU
+	HK_Henchman_Build_Lightning			= "keygroups.henchmanbuildcommands.keys.lightning"
+	HK_Henchman_Build_Electrical		= "keygroups.henchmanbuildcommands.keys.electrical"
+	HK_Henchman_Build_Bramble			= "keygroups.henchmanbuildcommands.keys.bramble"
+	HK_Henchman_Build_Remote			= "keygroups.henchmanbuildcommands.keys.remote"
+	HK_Henchman_Build_Water				= "keygroups.henchmanbuildcommands.keys.water"
+	HK_Henchman_Build_Aviary			= "keygroups.henchmanbuildcommands.keys.aviary"
+	HK_Henchman_Build_VetClinic			= "keygroups.henchmanbuildcommands.keys.vetclinic"
+	HK_Henchman_Build_Foundry			= "keygroups.henchmanbuildcommands.keys.foundry"
+	HK_Henchman_Build_AntiAirTower		= "keygroups.henchmanbuildcommands.keys.antiairtower"
+	HK_Henchman_Build_SoundBeamTower	= "keygroups.henchmanbuildcommands.keys.soundbeamtower"
+	HK_Henchman_Build_LandingPad		= "keygroups.henchmanbuildcommands.keys.landingpad"
+	HK_Henchman_Build_GeneticAmplifier	= "keygroups.henchmanbuildcommands.keys.geneticamp"
+
 	-- Lab
 
 	HK_Lab_SpawnHenchmen		= "keygroups.hqcommands.keys.spawnhenchmen"
@@ -113,6 +127,18 @@
 		{38414, 38415},		-- entity damage
 		{38416, 38417},		-- entity endurance
 		{38418, 38419},		-- entity name
+	}
+
+	structures =
+	{
+		{ ResourceRenew_EC,		HK_Henchman_Build_Lightning, 		42250 },
+		{ RemoteChamber_EC,		HK_Henchman_Build_Remote, 			42253 },
+		{ SoundBeamTower_EC,	HK_Henchman_Build_SoundBeamTower, 	42259 },
+		{ BrambleFence_EC,		HK_Henchman_Build_Bramble, 			42252 },
+		{ Foundry_EC,			HK_Henchman_Build_Foundry, 			42257 },
+		{ ElectricGenerator_EC,	HK_Henchman_Build_Electrical,		42251 },
+		{ Aviary_EC,			HK_Henchman_Build_Aviary, 			42255 },
+		{ WaterChamber_EC,		HK_Henchman_Build_Water, 			42254 },
 	}
 
 	-- Record the taskbar menu context so that we can refresh the menu without losing
@@ -595,8 +621,100 @@ henchmantooltip = function( enabled, index )
 end
 
 --
-henchmanselection = function()
+buildingsmenu  = function()
+
+	local id = SelectionId( 0 )
+
+	-- command area
+
+		-- back
+	BindButton( "command_formation_icon01", HK_System_Escape, "on_selection", "backbuttontooltipcb", "UI/InGame/Back.tga", 0 )
+
+		-- background
+	ShowBitmapLabel( "command_bigicon_back" )
+
+		-- buildings
+	local bigbuttons =
+	{
+		"command_big_icon01",
+		"command_big_icon02",
+		"command_big_icon03",
+		"command_big_icon04",
+		"command_big_icon05",
+		"command_big_icon06",
+		"command_big_icon07",
+		"command_big_icon08",
+		"command_big_icon09",
+		"command_big_icon10"
+	}
+
+	local countbuttons    = getn( bigbuttons )
+	local countstructures = getn( currentstructures )
+
+	local count
+
+	if countbuttons < countstructures then
+
+		count = countbuttons
+
+	else
+
+		count = countstructures
+
+	end
+
+	for i = 1, count
+	do
+
+		local ebpNetworkId = BuildingEBPFromType( currentstructures[i][1] )
+		BindButtonToBuildingEBP( bigbuttons[i], currentstructures[i][2], "dobuildbuilding", "tooltipbuilding", ebpNetworkId )
+
+	end
+
+end
+
+
+-- check to see if the given entity can build buildings
+mcqualifier_buildbuilding = function( id )
+
+	local type = EntityType( id )
+
+	-- only Henchman and Lucy can build
+	if type == Henchman_EC then
+		return 1
+	elseif type == Lucy_EC then
+		return 1
+	end
+
+	return 0
+
+end
+
+
+buildbasicbuildingsmenu  = function()
+
+	-- post event to indicate that the build button was pressed
+	BuildButtonPressed()
+
+	-- register function for refresh calls
+	menucontext = { "buildbasicbuildingsmenu()", "mcqualifier_buildbuilding", "" }
+
+	currentstructures = structures
+
+	--
 	cleartaskbar()
+
+	-- toggle to advanced building
+	-- if ( IsHudEnabled( ENABLE_HenchmanAdvancedBuild ) == 1) then
+	-- 	BindButtonToHenchmanAdvancedBuild( "command_buildhenchman", HK_Henchman_BuildToggle, "buildadvancedbuildingsmenu", "tooltipbuildingtoggle", henchman_commands[7][4], 0 )
+	-- end
+
+	buildingsmenu()
+
+end
+
+--
+henchmanselection = function()
 
 	BindButton( "command_modal_icon01",		henchman_commands[ 1][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[ 1][4],  1 )		-- move
 	BindButton( "command_modal_icon02",		henchman_commands[ 2][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[ 2][4],  2 )		-- gather
@@ -604,6 +722,10 @@ henchmanselection = function()
 	BindButton( "command_modal_icon04",		henchman_commands[ 4][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[ 4][4],  4 )		-- repair
 	BindButton( "command_modal_icon05",		henchman_commands[12][2],  "dohenchmanmodal",	"henchmantooltip", henchman_commands[12][4], 12 )		-- attack
 	BindButton( "command_modal_icon07",		henchman_commands[ 5][2],  "dostop",			"henchmantooltip", henchman_commands[ 5][4],  5 )		-- stop
+
+	if ( IsHudEnabled( ENABLE_HenchmanBuild ) == 1) then
+		BindButton( "command_normal_icon01",	henchman_commands[ 6][2],  "buildbasicbuildingsmenu", "henchmantooltip", henchman_commands[ 6][4],  6 )		-- basic build
+	end
 
 end
 
@@ -646,9 +768,17 @@ end
 --
 friendlyselection = function()
 
+	cleartaskbar()
+
 	-- just need one id for each type
-	henchmanId			= -1
+	creatureId		= -1
+	rexId			= -1
+	lucyId			= -1
+	henchmanId		= -1
+	gyrocopterId	= -1
 	buildingId		= -1
+	buildingType	= -1
+	showStance		= 1
 
 	-- check what's in our selection
 	for i = 1, SelectionCount()
@@ -797,6 +927,54 @@ doresearch = function( research )
 end
 
 --
+dobuildbuilding = function( ebpid )
+
+	-- register function for refresh calls
+	--   we want the verify the context but we don't want to recall this function;
+	--   thus the dummy function
+	menucontext = { "buildbuilding_updateui()", "mcqualifier_buildbuilding", "BuildUIEnd()" }
+
+	-- post event to indicate that a build-building button is pressed
+	BuildEBPButtonPressed( ebpid )
+
+	local result
+
+	-- let building modal commands be queued
+	CommandQueueEnable( HK_System_CommandQueue, "commandqueuecancel" )
+
+	-- start plain building ui
+	result = BuildUIBegin( "dobuildbuildingclick", "dobuildbuildingabort", ebpid )
+
+	-- -- detemine if this ebpid is a fence or not
+	-- if TypeFromEBP( ebpid ) == BrambleFence_EC then
+
+	-- 	-- start fence ui
+	-- 	result = BuildUIBegin( "dobuildfenceclick", "dobuildbuildingabort", ebpid )
+
+	-- else
+
+	-- 	-- start plain building ui
+	-- 	result = BuildUIBegin( "dobuildbuildingclick", "dobuildbuildingabort", ebpid )
+
+	-- end
+
+	if result == 0 then
+
+		buildbuilding_updateui( )
+
+
+	else
+
+		-- failed
+		failedcommand( result )
+
+	end
+
+
+end
+
+
+--
 dobuildbuildingcancel = function( dummy )
 
 	-- stop ui
@@ -818,6 +996,63 @@ buildbuilding_updateui = function()
 	BindButton( "command_formation_icon07", HK_System_Escape, "dobuildbuildingcancel", "", "UI/InGame/Cancel.tga", 0 )
 
 end
+
+--
+dobuildbuildingabort = function( ebpid )
+
+	-- stop ui
+	BuildUIEnd()
+
+	-- reset info center & command area
+	on_selection()
+
+end
+
+--
+dobuildbuildingclick = function( ebpid, x, y, z, dummy )
+
+	-- are we in command queue mode?
+	local queue = ModalCommandQueueRequest()
+
+	if queue == 0 then
+
+		-- stop ui, we aren't queuing
+		BuildUIEnd()
+
+	end
+
+	-- send command
+	local result
+
+	-- TODO: implement this
+	result = DoBuildBuilding( ebpid, x, y, z, queue )
+
+	if not( result == 0 ) then
+
+		failedcommand( result )
+
+	end
+
+end
+
+
+dobuildfenceclick = function( ebpid, x, y, z, x2, y2, z2, dummy )
+
+	-- are we in command queue mode?
+	local queue = ModalCommandQueueRequest()
+
+	if queue == 0 then
+
+		-- stop ui, we aren't queuing
+		BuildUIEnd()
+
+	end
+
+	-- send command
+	DoBuildFence( ebpid, x, y, z, x2, y2, z2, queue )
+
+end
+
 
 
 --
@@ -1070,56 +1305,56 @@ dohenchmanmodal = function( index )
 	-- let henchman modal commands be queued
 	CommandQueueEnable( HK_System_CommandQueue, "commandqueuecancel" )
 
-	-- inplace commands
-	local result = 0
+	-- -- inplace commands
+	-- local result = 0
 
-	if (command == MC_Unload) then
+	-- if (command == MC_Unload) then
 
-		result = ModalUIBegin( "domodalclick", "dounloadmodalcancel", mode, command )
-	else
+	-- 	result = ModalUIBegin( "domodalclick", "dounloadmodalcancel", mode, command )
+	-- else
 
-		result = ModalUIBegin( "domodalclick", "domodalcancel", mode, command )
-	end
+	-- 	result = ModalUIBegin( "domodalclick", "domodalcancel", mode, command )
+	-- end
 
-	if result == 0 then
+	-- if result == 0 then
 
-		--
-		cleartaskbar()
+	-- 	--
+	-- 	cleartaskbar()
 
-		-- command area
+	-- 	-- command area
 
-		-- TODO: all of this stuff needs implementing
-		-- inplace commands
-		if (command == MC_Unload) then
+	-- 	-- TODO: all of this stuff needs implementing
+	-- 	-- inplace commands
+	-- 	if (command == MC_Unload) then
 
-			-- Need to refresh passenger icons on the left-hand-side hud
-			-- Get selection id's (there should only be one entity selected)
-			local count = SelectionCount()
-			local id = SelectionId( 0 )
+	-- 		-- Need to refresh passenger icons on the left-hand-side hud
+	-- 		-- Get selection id's (there should only be one entity selected)
+	-- 		local count = SelectionCount()
+	-- 		local id = SelectionId( 0 )
 
-			-- Make sure it is a gyrocopter and only one selection
-			local type = EntityType( id )
-			if (type == Gyrocopter_EC) and (count == 1) then
-				gyrocopterpassengermulti( id );
-			end
+	-- 		-- Make sure it is a gyrocopter and only one selection
+	-- 		local type = EntityType( id )
+	-- 		if (type == Gyrocopter_EC) and (count == 1) then
+	-- 			gyrocopterpassengermulti( id );
+	-- 		end
 
-			local t = henchman_commands[ index ];
-			BindButton( "command_normal_icon03", t[2], "dohenchmanunloadnow", "henchmantooltip", t[4], index )
+	-- 		local t = henchman_commands[ index ];
+	-- 		BindButton( "command_normal_icon03", t[2], "dohenchmanunloadnow", "henchmantooltip", t[4], index )
 
-			-- cancel button
-			BindButton( "command_formation_icon07", HK_System_Escape, "dounloadmodalcancel", "", "UI/InGame/Cancel.tga", 0 )
+	-- 		-- cancel button
+	-- 		BindButton( "command_formation_icon07", HK_System_Escape, "dounloadmodalcancel", "", "UI/InGame/Cancel.tga", 0 )
 
-		else
-			-- cancel button
-			BindButton( "command_formation_icon07", HK_System_Escape, "domodalcancel", "", "UI/InGame/Cancel.tga", 0 )
-		end
+	-- 	else
+	-- 		-- cancel button
+	-- 		BindButton( "command_formation_icon07", HK_System_Escape, "domodalcancel", "", "UI/InGame/Cancel.tga", 0 )
+	-- 	end
 
-	else
+	-- else
 
-		-- failed
-		failedcommand( result )
+	-- 	-- failed
+	-- 	failedcommand( result )
 
-	end
+	-- end
 
 end
 

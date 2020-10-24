@@ -26,6 +26,14 @@ public:
 
 	static const EBPName Lab;
 	static const EBPName Henchmen;
+	static const EBPName CreatureChamber;
+	static const EBPName WaterChamber;
+	static const EBPName AirChamber;
+	static const EBPName GeoGenerator;
+	static const EBPName BrambleFence;
+	static const EBPName Workshop;
+	static const EBPName SoundBeamTower;
+	static const EBPName LightningRod;
 
 	static void Preload();
 

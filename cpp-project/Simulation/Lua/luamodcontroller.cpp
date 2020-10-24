@@ -265,8 +265,17 @@ void LuaModControllerLib::Initialize(LuaConfig *lc)
 #define BINDCONSTANT(c) \
 	lc->SetNumber(#c, double(c))
 
-	BINDCONSTANT(Henchmen_EC);
+	// this is probably not the place I want to edit
 	BINDCONSTANT(Lab_EC);
+	BINDCONSTANT(Henchmen_EC);
+	BINDCONSTANT(RemoteChamber_EC);
+	BINDCONSTANT(WaterChamber_EC);
+	BINDCONSTANT(Aviary_EC);
+	BINDCONSTANT(ElectricGenerator_EC);
+	BINDCONSTANT(BrambleFence_EC);
+	BINDCONSTANT(Foundry_EC);
+	BINDCONSTANT(SoundBeamTower_EC);
+	BINDCONSTANT(ResourceRenew_EC);
 
 #undef BINDCONSTANT
 }

@@ -222,6 +222,14 @@ void RDNSimProxy::LuaSetup()
 
 	BINDCONSTANT(Lab_EC);
 	BINDCONSTANT(Henchmen_EC);
+	BINDCONSTANT(RemoteChamber_EC);
+	BINDCONSTANT(WaterChamber_EC);
+	BINDCONSTANT(Aviary_EC);
+	BINDCONSTANT(ElectricGenerator_EC);
+	BINDCONSTANT(BrambleFence_EC);
+	BINDCONSTANT(Foundry_EC);
+	BINDCONSTANT(SoundBeamTower_EC);
+	BINDCONSTANT(ResourceRenew_EC);
 
 	BINDCONSTANT(ATTACKTYPE_Melee);
 
@@ -253,6 +261,9 @@ void RDNSimProxy::LuaSetup()
 	BINDFUNC(UnitCanBeBuiltHere);
 	BINDFUNC(BuildQueueLength);
 	BINDFUNC(BuildingEBPFromType);
+
+	// TODO: what the fuck do the bindings in this file even do?! I suppose their for luas
+	// other than taskbar.lua
 	BINDFUNC(TypeFromEBP);
 
 	BINDFUNC(LocalPlayerLabId);
@@ -262,6 +273,8 @@ void RDNSimProxy::LuaSetup()
 	BINDFUNC(DoCommandStop);
 	BINDFUNC(DoDestroy);
 	BINDFUNC(DoModalCommand);
+
+	BINDFUNC(DoBuildBuilding);
 
 #undef BINDFUNC
 
@@ -655,7 +668,6 @@ int RDNSimProxy::HenchmenEBP() const
 
 int RDNSimProxy::BuildingEBPFromType(int type)
 {
-	dbTracef(">>>DEBUG trying to get building EBP from type %d", type);
 	const RDNEBP::EBPName *ebp = 0;
 
 	switch (type)
@@ -663,10 +675,33 @@ int RDNSimProxy::BuildingEBPFromType(int type)
 	case Lab_EC:
 		ebp = &RDNEBP::Lab;
 		break;
-
+	case ResourceRenew_EC:
+		ebp = &RDNEBP::LightningRod;
+		break;
+	case RemoteChamber_EC:
+		ebp = &RDNEBP::CreatureChamber;
+		break;
+	case WaterChamber_EC:
+		ebp = &RDNEBP::WaterChamber;
+		break;
+	case Aviary_EC:
+		ebp = &RDNEBP::AirChamber;
+		break;
+	case ElectricGenerator_EC:
+		ebp = &RDNEBP::GeoGenerator;
+		break;
+	case BrambleFence_EC:
+		ebp = &RDNEBP::BrambleFence;
+		break;
+	case Foundry_EC:
+		ebp = &RDNEBP::Workshop;
+		break;
+	case SoundBeamTower_EC:
+		ebp = &RDNEBP::SoundBeamTower;
+		break;
 	default:
 		// oops!
-		dbBreak();
+		dbFatalf("RDNSimProxy::BuildingEBPFromType could not get EBP from type %d", type);
 		return 0;
 	}
 
@@ -679,7 +714,7 @@ int RDNSimProxy::BuildingEBPFromType(int type)
 
 int RDNSimProxy::TypeFromEBP(int ebpid)
 {
-	dbTracef("Getting a type from ebp with id %s", ebpid);
+	dbTracef("RDNSimProxy::TypeFromEBP Getting a type from ebp with id %s", ebpid);
 	const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
 	const ControllerBlueprint *cbp = ef->GetControllerBP(ebpid);
 
@@ -1116,12 +1151,85 @@ void RDNSimProxy::DoCancelBuildUnit(int unitIndex)
 	return;
 }
 
+int RDNSimProxy::DoBuildBuilding(long ebpid, float x, float y, float z, bool shouldQueue)
+{
+	dbTracef("RDNSimProxy::DoBuildBuilding");
+
+	// validate parms
+	const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
+
+	const ControllerBlueprint *cbp = ef->GetControllerBP(ebpid);
+	if (cbp == 0 || (cbp->GetControllerType() != RemoteChamber_EC))
+	{
+		dbFatalf("RDNSimProxy::DoBuildBuilding wrong controller type. Only supports creature chambers right now");
+		return FC_Other;
+	}
+
+	// validate object state
+	if (!SelectionCanReceiveCommand(1))
+	{
+		dbFatalf("RDNSimProxy::DoBuildBuilding entity cannot receive command");
+		return FC_Other;
+	}
+
+	// quick check player
+	const RDNPlayer::BuildResult br = m_pimpl->m_player->BlueprintCanBuild(cbp);
+
+	if (br != RDNPlayer::BR_AllowBuild)
+	{
+		// ignore command
+		FailedCommand fc;
+
+		if (br == RDNPlayer::BR_NeedResourceCash)
+			fc = FC_NeedCash;
+		else
+			fc = FC_Other;
+
+		return fc;
+	}
+
+	// check if there is room in the build queue
+	int queueLengthLeft = UnitSpawnerExt::MAXQUEUELENGTH - BuildQueueLength(m_pimpl->m_selection->GetSelection().front()->GetID());
+	if (queueLengthLeft <= 0)
+	{
+		dbFatalf("No room in build queue");
+		// ignore command
+		return FC_BuildQueueFull;
+	}
+
+	dbTracef("Sending a DoEntity command");
+	const Vec3f destination(x, y, z);
+
+	// send the appropriate network message
+	m_pimpl->m_command->DoPlayerEntity(
+			CMD_BuildBuilding,
+			ebpid,
+			0,
+			m_pimpl->m_player,
+			m_pimpl->m_player,
+			m_pimpl->m_selection->GetSelection(),
+			&destination,
+			1);
+
+	dbTracef("Doing things with build order");
+	// store the build order
+	const Entity *building =
+			m_pimpl->m_selection->GetSelection().front();
+	m_pimpl->m_proxyUnit[building->GetID()] = ebpid;
+
+	// assume the selected object has changed
+	m_pimpl->m_dirty = true;
+
+	dbTracef("Finishing up");
+	return 0;
+}
+
 void RDNSimProxy::DoCommandStop()
 {
 	// validate object state
 	if (!SelectionCanReceiveCommand(0))
 	{
-		dbBreak();
+		dbFatalf("RDNSimProxy::DoBuildBuilding wrong controller type");
 		return;
 	}
 
@@ -1249,6 +1357,8 @@ void RDNSimProxy::OnEvent(const GameEventSys::Event &event)
 		break;
 	}
 	}
+
+	dbTracef("got to end of func");
 
 	return;
 }

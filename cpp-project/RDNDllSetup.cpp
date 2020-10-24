@@ -320,7 +320,7 @@ unsigned long RDNDllSetup::MapPlayerToSimulation(const RDNWorld *w, size_t playe
 	// find player
 	if (playerIndex >= m_pimpl->m_players.size())
 	{
-		dbBreak();
+		dbFatalf("Player index out of range");
 		return 0;
 	}
 
@@ -508,7 +508,7 @@ void RDNDllSetup::OptionName(wchar_t *out, size_t outlen, unsigned long optionID
 	// validate parm
 	if (out == 0 || outlen == 0)
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionName bad option or something");
 		return;
 	}
 
@@ -525,7 +525,7 @@ void RDNDllSetup::OptionName(wchar_t *out, size_t outlen, unsigned long optionID
 	// validate option
 	if (option >= OptionsCount())
 	{
-		dbBreak();
+		dbFatalf("Option out of bounds");
 		return;
 	}
 
@@ -540,7 +540,7 @@ void RDNDllSetup::OptionTooltip(wchar_t *out, size_t outlen, unsigned long optio
 	// validate parm
 	if (out == 0 || outlen == 0)
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionTooltip bad option or something");
 		return;
 	}
 
@@ -557,7 +557,7 @@ void RDNDllSetup::OptionTooltip(wchar_t *out, size_t outlen, unsigned long optio
 	// validate option
 	if (option >= OptionsCount())
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionTooltip option out of range");
 		return;
 	}
 
@@ -579,7 +579,7 @@ size_t RDNDllSetup::OptionChoices(unsigned long optionID) const
 	// validate option
 	if (option >= OptionsCount())
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionChoices option out of range");
 		return 0;
 	}
 
@@ -599,7 +599,7 @@ size_t RDNDllSetup::OptionChoiceDef(unsigned long optionID) const
 	// validate option
 	if (option >= OptionsCount())
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionChoiceDef option out of range");
 		return 0;
 	}
 
@@ -619,7 +619,7 @@ bool RDNDllSetup::OptionChoiceValid(unsigned long optionID, size_t choice) const
 	// validate option
 	if (option >= OptionsCount() || choice >= OptionChoices(optionID))
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionChoiceValid option out of range");
 		return 0;
 	}
 
@@ -643,7 +643,7 @@ void RDNDllSetup::OptionChoiceName(wchar_t *out, size_t outlen, unsigned long op
 	// validate parm
 	if (out == 0 || outlen == 0)
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionChoiceName option out of range");
 		return;
 	}
 
@@ -660,7 +660,7 @@ void RDNDllSetup::OptionChoiceName(wchar_t *out, size_t outlen, unsigned long op
 	// validate option & choice
 	if (option >= OptionsCount() || choice >= OptionChoices(optionID))
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionChoiceName option out of range");
 		return;
 	}
 
@@ -699,7 +699,7 @@ void RDNDllSetup::OptionSet(unsigned long optionID, size_t val)
 	// validate option & choice
 	if (option >= OptionsCount() || val >= OptionChoices(optionID))
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::OptionChoiceSet option out of range");
 		return;
 	}
 
@@ -900,7 +900,7 @@ const wchar_t *RDNDllSetup::PlayerPassportFromId(unsigned long id, const RDNWorl
 	if (i == e)
 	{
 		// wtf??
-		dbBreak();
+		dbFatalf("RDNDllSetup::PlayerPassportFromId failed");
 		return 0;
 	}
 

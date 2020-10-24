@@ -488,3 +488,9 @@ void HenchmenController::OnDoTriggeredAttack(const AttackPackage &, Entity *)
 {
 	// do nothing
 }
+
+bool HenchmenController::CommandDoProcessNow(const EntityCommand *ec)
+{
+	dbTracef("HenchmenController::CommandDoProcessNow");
+	return ModController::CommandDoProcessNow(ec);
+}

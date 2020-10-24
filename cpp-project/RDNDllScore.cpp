@@ -265,7 +265,7 @@ namespace
 			UNREF_P(out);
 			UNREF_P(outlen);
 
-			dbBreak();
+			dbFatalf("ScoresTabColumn value badness");
 
 			return;
 		}

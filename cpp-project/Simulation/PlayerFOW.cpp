@@ -93,7 +93,7 @@ static void GetEntityFOWPoints(const ControllerBlueprint *pCBP, const Matrix43f 
 				if (i == numcells - 1)
 				{
 					outcells[i - 1] = size_t(-1);
-					dbBreak();
+					dbTracef("GetEntityFOWPoints possibly ran out of memory?");
 					return;
 				}
 				cellnum++;
@@ -947,7 +947,7 @@ void PlayerFOW::FillSpan(size_t x, size_t y, size_t width, FOWChannelMask mask, 
 		}
 		else
 		{
-			dbBreak();
+			dbFatalf("PlayerFOW::FillSpan bad case 1");
 		}
 	}
 	else
@@ -958,7 +958,7 @@ void PlayerFOW::FillSpan(size_t x, size_t y, size_t width, FOWChannelMask mask, 
 		}
 		else
 		{
-			dbBreak();
+			dbFatalf("PlayerFOW::FillSpan bad case 2");
 		}
 	}
 }

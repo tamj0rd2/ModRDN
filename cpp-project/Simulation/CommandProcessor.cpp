@@ -470,7 +470,7 @@ bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 
 	default:
 		// unhandled case
-		dbBreak();
+		dbFatalf("CommandProcessor::CommandDoProcessNow unhandled case");
 	}
 
 	// if we don't want to process the command now
@@ -494,6 +494,8 @@ bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 //
 bool CommandProcessor::CommandIsClearQueue(const EntityCommand *pEntCmd) const
 {
+	dbTracef("CommandProcessor::CommandIsClearQueue");
+
 	// Un-Pause commands never clear the queue
 	if (pEntCmd->GetCommandType() == EntityCommand::CT_Entity)
 	{
@@ -757,7 +759,7 @@ bool CommandProcessor::ProcessQueuedCommandNow(const EntityCommand *pEntCmd)
 
 	default:
 		// unhandled case
-		dbBreak();
+		dbFatalf("ComandProcessor::ProcessQueuedCommandNow unhandled case");
 	}
 
 	return false;
@@ -772,6 +774,8 @@ bool CommandProcessor::ProcessQueuedCommandNow(const EntityCommand *pEntCmd)
 //
 bool CommandProcessor::EatUpdateCommand(const EntityCommand *pEntCmd)
 {
+	dbTracef("CommandProcessor::EatUpdateCommand");
+
 	unsigned long command = pEntCmd->GetCommand();
 
 	switch (pEntCmd->GetCommandType())
@@ -815,7 +819,7 @@ bool CommandProcessor::EatUpdateCommand(const EntityCommand *pEntCmd)
 
 	default:
 		// unhandled case
-		dbBreak();
+		dbTracef("CommandProessor::EatUpdateCommand unhandled case");
 	}
 
 	return false;

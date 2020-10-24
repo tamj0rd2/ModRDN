@@ -12,8 +12,19 @@ enum ControllerType
 	Henchmen_EC = 3,
 	Coal_EC = 4,
 	Lab_EC = 5,
-	Workshop_EC = 17,
+	// lightning rod
+	ResourceRenew_EC = 6,
+	// creature chamber
+	RemoteChamber_EC = 7,
+	WaterChamber_EC = 8,
+	// air chamber
+	Aviary_EC = 9,
+	BrambleFence_EC = 13,
+	// workshop
+	Foundry_EC = 17,
+	SoundBeamTower_EC = 19,
+	// this is actually the geogenerator
+	ElectricGenerator_EC = 30,
 
-	// needs to be bigger than all the other values
 	MAX_EC
 };

@@ -193,7 +193,7 @@ void DrawRectOnTerrain(const TerrainHMBase *pTer, const Vec3f &pos, const float 
 {
 	float theta = acosf(lookat%Vec3f(0.0f,0.0f,1.0f));
 	if(lookat%Vec3f(1.0f,0.0f,0.0f) < 0.0f)
-		theta = -theta; 
+		theta = -theta;
 
 	DrawRectOnTerrain(pTer, pos, x, z, theta, r, g, b, bSolid);
 }
@@ -278,15 +278,15 @@ void DrawScreenAlignedCircle(const Vec3f &pos, const float radius, const Colour 
 // Terrain Line helper class
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 TerrainLine::TerrainLine(const TerrainHMBase *pTer, float stepsize)
 {
 	m_pTer = pTer;
-	
+
 	m_p1 = Vec2f(FLT_MAX, FLT_MAX);
 	m_p2 = Vec2f(FLT_MAX, FLT_MAX);
 	m_col = Colour(0,0,0,0);
@@ -296,10 +296,10 @@ TerrainLine::TerrainLine(const TerrainHMBase *pTer, float stepsize)
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 TerrainLine::TerrainLine(const TerrainHMBase *pTer, const Vec2f &p1, const Vec2f &p2, const Colour col, float stepsize)
 {
@@ -316,10 +316,10 @@ TerrainLine::TerrainLine(const TerrainHMBase *pTer, const Vec2f &p1, const Vec2f
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 TerrainLine::~TerrainLine()
 {
@@ -338,10 +338,10 @@ float TerrainLine::GetHeight( const Vec2f &xzpos) const
 
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 void TerrainLine::Render( void ) const
 {
@@ -354,10 +354,10 @@ void TerrainLine::Render( void ) const
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 void TerrainLine::SetPoints(const Vec2f &p1, const Vec2f &p2)
 {
@@ -370,10 +370,10 @@ void TerrainLine::SetPoints(const Vec2f &p1, const Vec2f &p2)
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 void TerrainLine::SetPoints(const Vec2f &p1, const Vec2f &p2, const Colour col)
 {
@@ -389,10 +389,10 @@ void TerrainLine::SetPoints(const Vec2f &p1, const Vec2f &p2, const Colour col)
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 void TerrainLine::SetColour(Colour col)
 {
@@ -407,10 +407,10 @@ void TerrainLine::SetColour(Colour col)
 }
 
 /////////////////////////////////////////////////////////////////////
-//	Name	: 
-//	Desc.	: 
-//	Param.	: 
-//	Result	: 
+//	Name	:
+//	Desc.	:
+//	Param.	:
+//	Result	:
 //
 void TerrainLine::CreatePrimitives( void ) const
 {
@@ -420,7 +420,7 @@ void TerrainLine::CreatePrimitives( void ) const
 	size_t				count;
 
 	m_linelist.clear();
-	
+
 	// The (x,z) start position
 	start.x = m_p1.x;
 	start.y = m_p1.y;
@@ -554,7 +554,7 @@ void DrawTerrainOverlayPalette(size_t palIndex, const Colour &col)
 	// validate parm
 	if (palIndex > UCHAR_MAX)
 	{
-		dbBreak();
+		dbFatalf("RDNDllSetup::DrawTerrainOverlayPalette failed");
 		return;
 	}
 

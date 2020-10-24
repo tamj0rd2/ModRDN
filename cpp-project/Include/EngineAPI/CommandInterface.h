@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : ModCommandVI.h
-// Desc    : 
+// Desc    :
 // Created : Thursday, February 15, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -15,10 +15,10 @@ class Vec3f;
 class Player;
 class EntityGroup;
 
-///////////////////////////////////////////////////////////////////// 
+/////////////////////////////////////////////////////////////////////
 // CommandInterface
 
-// NOTE: this class MUST remain an abstract base class, without any 
+// NOTE: this class MUST remain an abstract base class, without any
 // non-virtual member function or member variables
 
 // all these functions take the same set of parameters
@@ -48,7 +48,7 @@ class CommandInterface
 public:
 		// example: gather
 	virtual void DoEntity
-		( 
+		(
 		const unsigned int				cmd,
 		const unsigned long				cmdparm,
 		const unsigned int				cmdflags,
@@ -58,7 +58,7 @@ public:
 
 		// example: move to
 	virtual void DoEntityPoint
-		( 
+		(
 		const unsigned int				cmd,
 		const unsigned long				cmdparm,
 		const unsigned int				cmdflags,
@@ -70,7 +70,7 @@ public:
 
 		// example: attack
 	virtual void DoEntityEntity
-		( 
+		(
 		const unsigned int				cmd,
 		const unsigned long				cmdparm,
 		const unsigned int				cmdflags,
@@ -80,8 +80,9 @@ public:
 		) = 0;
 
 		// example: research
+		// RDNPlayer handles these commands in CommandDoProcess
 	virtual void DoPlayerPlayer
-		( 
+		(
 		const unsigned int				cmd,
 		const unsigned long				cmdparm,
 		const unsigned int				cmdflags,
@@ -90,8 +91,9 @@ public:
 		) = 0;
 
 		// example: build structure
+		// RDNPlayer handles these commands in CommandDoProcess
 	virtual void DoPlayerEntity
-		( 
+		(
 		const unsigned int				cmd,
 		const unsigned long				cmdparm,
 		const unsigned int				cmdflags,

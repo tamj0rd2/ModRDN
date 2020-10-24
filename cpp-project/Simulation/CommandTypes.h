@@ -46,6 +46,9 @@ enum CommandType
 	CMD_Gather = 11, // gather from a resource
 	CMD_Unload = 12, // assuming this means unloading a gyrocopter
 
+	// TODO: create a new PlayerEntityCommandType
+	CMD_BuildBuilding = 13, // build a building
+
 	CMD_COUNT
 };
 

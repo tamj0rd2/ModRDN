@@ -306,6 +306,8 @@ static int world_doentityentity(lua_State *state)
 
 static int world_doplayerplayer(lua_State *state)
 {
+	dbTracef("world_doplayerplayer");
+
 	unsigned long command = 0;
 	unsigned long parm = 0;
 	unsigned long player0 = 0;
@@ -336,6 +338,8 @@ static int world_doplayerplayer(lua_State *state)
 
 static int world_doplayerentity(lua_State *state)
 {
+	dbTracef("world_doplayerentity");
+
 	if (lua_type(state, 1) == LUA_TNUMBER &&
 			lua_type(state, 2) == LUA_TNUMBER &&
 			lua_type(state, 3) == LUA_TNUMBER &&
@@ -459,6 +463,7 @@ void LuaRDNWorldLib::Initialize(LuaConfig *lc)
 	BINDCONSTANT(CMD_Move);
 	BINDCONSTANT(CMD_Attack);
 	BINDCONSTANT(CMD_AttackMove);
+	BINDCONSTANT(CMD_Unload);
 
 	BINDCONSTANT(CMD_RallyPoint);
 

@@ -164,6 +164,8 @@ public:
 	void DoDestroy();
 	void DoModalCommand(int mode, float x, float y, float z, int ebpid, bool bAddCommand);
 
+	int DoBuildBuilding(long ebpId, float x, float y, float z, bool shouldQueue);
+
 	// inherited -- ModController::Observer
 private:
 	virtual void OnEvent(const GameEventSys::Event &);

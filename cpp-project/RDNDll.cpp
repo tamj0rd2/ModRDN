@@ -77,6 +77,8 @@ static void RegisterControllers(SimEngineInterface *p)
 
 static void EntityCreate(const Entity *pEntity)
 {
+	dbTracef("RDNDLL::EntityCreate");
+
 	//	Give the RDNHud a chance to see the entity spawning
 	if (RDNHUD::IsInitialized())
 		RDNHUD::instance()->OnEntityCreate(pEntity);
@@ -159,7 +161,7 @@ static void KillSimPlayer(unsigned long idplayer, DLLSimInterface::NetworkKillTy
 
 	if (p == 0)
 	{
-		dbBreak();
+		dbFatalf("No player id given");
 		return;
 	}
 
@@ -184,7 +186,7 @@ static void KillSimPlayer(unsigned long idplayer, DLLSimInterface::NetworkKillTy
 			break;
 
 		default:
-			dbBreak();
+			dbFatalf("Unhandled player death reason");
 		}
 
 		p->KillPlayer(RDNReason);
@@ -355,7 +357,7 @@ namespace
 
 			if (player == 0)
 			{
-				dbBreak();
+				dbFatalf("IsScenarioSuccess bad path");
 				return false;
 			}
 
@@ -518,11 +520,13 @@ namespace
 
 		virtual void DoCommand(const EntityGroup &g)
 		{
+			dbTracef("RDNDll::DoCommand for group");
 			RDNHUD::instance()->DoCommand(g);
 		}
 
 		virtual void DoCommand(const Vec3f *v, unsigned long n)
 		{
+			dbTracef("RDNDll::DoCommand for vec3f");
 			RDNHUD::instance()->DoCommand(v, n);
 		}
 

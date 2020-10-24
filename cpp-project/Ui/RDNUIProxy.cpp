@@ -493,6 +493,7 @@ void RDNUIProxy::BuildButtonPressed()
 void RDNUIProxy::BuildEBPButtonPressed(long ebpid)
 {
 	GameEventSys::Instance()->PublishEvent(GameEvent_UIStartBuildUnit(ebpid));
+	dbTracef("RDNUIProxy::BuildEBPButtonPressed good shit");
 }
 
 void RDNUIProxy::FocusOnEntity(int entityId, bool focusOnEntity, bool jump)
@@ -921,6 +922,7 @@ void RDNUIProxy::Update()
 
 void RDNUIProxy::OnEvent(const GameEventSys::Event &ev)
 {
+	dbTracef("RDNUIProxy::OnEvent");
 	if (ev.GetType() == GE_GameStart)
 	{
 		// defer processing of this event

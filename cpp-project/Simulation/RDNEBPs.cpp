@@ -13,6 +13,14 @@
  * */
 const RDNEBP::EBPName RDNEBP::Lab = {"structures", "lab"};
 const RDNEBP::EBPName RDNEBP::Henchmen = {"gatherers", "henchmen"};
+const RDNEBP::EBPName RDNEBP::LightningRod = {"structures", "lightning_rod"};
+const RDNEBP::EBPName RDNEBP::CreatureChamber = {"structures", "remote_chamber"};
+const RDNEBP::EBPName RDNEBP::WaterChamber = {"structures", "water_chamber"};
+const RDNEBP::EBPName RDNEBP::AirChamber = {"structures", "aviary"};
+const RDNEBP::EBPName RDNEBP::GeoGenerator = {"structures", "geogenerator"};
+const RDNEBP::EBPName RDNEBP::BrambleFence = {"structures", "bramble_fences"};
+const RDNEBP::EBPName RDNEBP::Workshop = {"structures", "foundry"};
+const RDNEBP::EBPName RDNEBP::SoundBeamTower = {"structures", "soundbeamtower"};
 
 void RDNEBP::Preload()
 {
@@ -21,6 +29,14 @@ void RDNEBP::Preload()
 
 	LOAD(Lab);
 	LOAD(Henchmen);
+	LOAD(CreatureChamber);
+	LOAD(WaterChamber);
+	LOAD(AirChamber);
+	LOAD(GeoGenerator);
+	LOAD(BrambleFence);
+	LOAD(Workshop);
+	LOAD(SoundBeamTower);
+	LOAD(LightningRod);
 
 #undef LOAD
 

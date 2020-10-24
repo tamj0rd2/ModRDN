@@ -447,6 +447,14 @@ static bool IsControllerTypeBuilding(unsigned long ctype)
 	switch (ctype)
 	{
 	case Lab_EC:
+	case ResourceRenew_EC:
+	case RemoteChamber_EC:
+	case WaterChamber_EC:
+	case Aviary_EC:
+	case ElectricGenerator_EC:
+	case BrambleFence_EC:
+	case Foundry_EC:
+	case SoundBeamTower_EC:
 		r = true;
 		break;
 
@@ -1174,12 +1182,16 @@ void RDNTaskbar::BindHudToTooltip(const char *hud, const char *tooltipcb, int pa
 
 void RDNTaskbar::CommandQueueEnable(const char *hotkeyLuaName, const char *releaseCallback)
 {
+	dbTracef("RDNTaskbar::CommandQueueEnable");
+
 	// we ignore the hotkeyLuaname for now
 	UNREF_P(hotkeyLuaName);
 
 	m_pimpl->m_commandQueueEnable = true;
 	m_pimpl->m_commandQueueReleaseCB = releaseCallback;
 	m_pimpl->m_commandQueueCount = 0;
+
+	dbTracef("RDNTaskbar::CommandQueueEnable exiting");
 }
 
 void RDNTaskbar::EnableHud(EnableType type, bool enable)
@@ -1388,6 +1400,7 @@ void RDNTaskbar::Update(float elapsedSeconds)
 
 void RDNTaskbar::OnEvent(const GameEventSys::Event &ev)
 {
+	dbTracef("RDNTaskbar::OnEvent");
 	/***
 	// these should force an update of the taskbar
 	if( ev.GetType() == GE_ConstructionComplete  )
@@ -1424,6 +1437,7 @@ void RDNTaskbar::LuaSetup()
 #define BIND(f) \
 	m_pimpl->m_exported.push_back(LuaBinding::Bind(m_pimpl->m_lua, #f, this, &RDNTaskbar::f))
 
+	// these are the bindings that actually get used by taskbar.lua
 	BIND(Clear);
 
 	BIND(PreloadTexture);
@@ -1495,6 +1509,8 @@ void RDNTaskbar::LuaSetup()
 	BIND(HelpTextShortcut);
 	BIND(HelpTextTextWithoutRequirements);
 	BIND(HelpTextChat);
+
+	BIND(TypeFromEBP);
 #undef BIND
 
 #define BINDINNERCONSTANT(t, c) \
@@ -1512,6 +1528,10 @@ void RDNTaskbar::LuaSetup()
 	BINDINNERCONSTANT(RDNTaskbar, MC_AttackMove);
 	BINDINNERCONSTANT(RDNTaskbar, MC_SetRallyPoint);
 	BINDINNERCONSTANT(RDNTaskbar, MC_Unload);
+
+	BINDINNERCONSTANT(RDNTaskbar, ENABLE_HenchmanKill);
+	BINDINNERCONSTANT(RDNTaskbar, ENABLE_HenchmanBuild);
+	BINDINNERCONSTANT(RDNTaskbar, ENABLE_HenchmanAdvancedBuild);
 
 #undef BINDINNERCONSTANT
 	return;
@@ -1971,6 +1991,8 @@ void RDNTaskbar::BuildUIEnd()
 
 int RDNTaskbar::ModalUIBegin(const char *callbackOk, const char *callbackAbort, int mode, int command)
 {
+	dbTracef("RDNTaskbar::ModalUIBegin");
+
 	// validate player
 	if (m_pimpl->m_proxy->GetPlayer() == 0 ||
 			m_pimpl->m_proxy->GetPlayer()->IsPlayerDead())
@@ -2892,14 +2914,14 @@ void RDNTaskbar::BindButtonToBuildingEBP(
 	if (cbp == 0)
 	{
 		// oops!
-		dbBreak();
+		dbFatalf("RDNTaskbar::BindButtonToBuildingEBP No controller blueprint for %d", ebpId);
 		return;
 	}
 
 	if (IsControllerTypeBuilding(cbp->GetControllerType()) == 0)
 	{
 		// buildings only
-		dbBreak();
+		dbFatalf("RDNTaskbar::BindButtonToBuildingEBP The given controller was not for a building %d", ebpId);
 		return;
 	}
 
@@ -3578,7 +3600,7 @@ int RDNTaskbar::GetModalCommandMode()
 void RDNTaskbar::HelpTextTitle(int modtextId)
 {
 	std::wstring helpText(Localizer::GetString(modtextId));
-	dbTracef("RDNTaskbar::HelpTextTitle %S", helpText);
+	// dbTracef("RDNTaskbar::HelpTextTitle %S", helpText);
 
 	m_pimpl->m_hud->SetText(CURRENTSCREEN, "ingame_helptext_title", helpText.c_str());
 }
@@ -3588,11 +3610,11 @@ void RDNTaskbar::HelpTextShortcut(const char *hotkeyLuaName)
 	const RDNInputBinder::HotKey *p_hk = m_pimpl->m_pInputBinder->GetHotKeyByTableName(hotkeyLuaName);
 	if (p_hk)
 	{
-		dbTracef("RDNTaskbar::HelpTextShortcut Hotkey for %s is: %s", hotkeyLuaName, p_hk->keyCombo);
+		// dbTracef("RDNTaskbar::HelpTextShortcut Hotkey for %s is: %s", hotkeyLuaName, p_hk->keyCombo);
 	}
 	else
 	{
-		dbTracef("RDNTaskbar::HelpTextShortcut Could not find hot key string for %s", hotkeyLuaName);
+		// dbTracef("RDNTaskbar::HelpTextShortcut Could not find hot key string for %s", hotkeyLuaName);
 		std::wstring fallbackText(std::wstring(L"FallbackText"));
 		m_pimpl->m_hud->SetText(CURRENTSCREEN, "ingame_helptext_shortcut", fallbackText.c_str());
 	}
@@ -3601,12 +3623,32 @@ void RDNTaskbar::HelpTextShortcut(const char *hotkeyLuaName)
 void RDNTaskbar::HelpTextTextWithoutRequirements(int modtextId)
 {
 	std::wstring helpText(Localizer::GetString(modtextId));
-	dbTracef("RDNTaskbar::HelpTextTextWithoutRequirements %S", helpText);
+	// dbTracef("RDNTaskbar::HelpTextTextWithoutRequirements %S", helpText);
 
 	m_pimpl->m_hud->SetText(CURRENTSCREEN, "ingame_helptext_without_requirements", helpText.c_str());
 }
 
 void RDNTaskbar::HelpTextChat()
 {
-	dbTracef("RDNTaskbar::HelpTextChat");
+	// dbTracef("RDNTaskbar::HelpTextChat");
+}
+
+int RDNTaskbar::TypeFromEBP(long ebpid)
+{
+	dbTracef("RDNTaskbar::TypeFromEBP id %d", ebpid);
+
+	const EntityFactory *ef = m_pimpl->m_proxy->GetWorld()->GetEntityFactory();
+
+	dbTracef("got entity factory");
+	const ControllerBlueprint *cbp = ef->GetControllerBP(ebpid);
+	dbTracef("tried to get a blueprint");
+
+	if (cbp)
+	{
+		dbTracef("got a blueprint");
+		return cbp->GetControllerType();
+	}
+
+	dbTracef("got nada");
+	return NULL_EC;
 }

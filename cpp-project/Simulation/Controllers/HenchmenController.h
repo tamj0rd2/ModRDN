@@ -96,6 +96,8 @@ private:
 
 	virtual void SetActiveState(unsigned char StateID);
 
+	virtual bool CommandDoProcessNow(const EntityCommand *);
+
 	// Save and Load functions
 public:
 	virtual void Save(BiFF &) const;

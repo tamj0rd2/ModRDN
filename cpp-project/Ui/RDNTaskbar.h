@@ -175,6 +175,7 @@ public:
 	// return a value from enum RDNSimProxy::FailedCommand
 	int BuildUIBegin(const char *callbackOk, const char *callbackAbort, int ebpid);
 	void BuildUIEnd();
+	void DoBuildBuilding(long ebpId, float x, float y, float z, bool shouldQueue);
 
 	void RallyPointShow(int entityId);
 	void RallyPointHide();
@@ -195,6 +196,8 @@ public:
 	void HelpTextShortcut(const char *hotkeyLuaName);
 	void HelpTextTextWithoutRequirements(int modtextId);
 	void HelpTextChat();
+
+	int TypeFromEBP(long ebpId);
 
 	// inherited -- GameEventSys::Listener
 private:

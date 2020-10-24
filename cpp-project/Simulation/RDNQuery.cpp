@@ -282,7 +282,7 @@ bool FindClosestEnemyOfType::Check(const Entity *pEntity)
 bool FindClosestResourceDepsoit::Check(const Entity *pEntity)
 {
 	const unsigned long controllerType = pEntity->GetControllerBP()->GetControllerType();
-	return controllerType == Workshop_EC || controllerType == Lab_EC;
+	return controllerType == Foundry_EC || controllerType == Lab_EC;
 }
 
 // Used for finding the cloest entity that matches the given controller type
