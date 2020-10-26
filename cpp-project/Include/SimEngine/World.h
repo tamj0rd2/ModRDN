@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : World.h
-// Desc    : 
+// Desc    :
 // Created : Thursday, February 22, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -45,7 +45,7 @@ class SIM_API World
 
 // types
 public:
-	
+
 	enum
 	{
 		PLAYERMAX = 6,
@@ -138,7 +138,7 @@ public:
 	virtual bool IsEntitySpawned( const Entity* pEntity ) const;
 
 	// This function will add the entity to pathfinding in the next simulate call.
-	// This function is used to re-introduce an entity to the simulation after 
+	// This function is used to re-introduce an entity to the simulation after
 	// a call to SimDeSpawnEntity.
 	virtual void AddEntityPathfinding(Entity *, bool) {}
 
@@ -149,10 +149,10 @@ public:
 	// asks if the two players have the given relationship
 	virtual bool QueryRelationship( const Player* p1, const Player* p2, PlayerRelationship rel ) const;
 
-	///////////////////////////////////////////////////////////////////// 
+	/////////////////////////////////////////////////////////////////////
 	// Command Querry functions
-	///////////////////////////////////////////////////////////////////// 
-	
+	/////////////////////////////////////////////////////////////////////
+
 	bool					EntityHasCommand( Entity* );
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -290,7 +290,7 @@ public:
 
 	const EntityList&		GetEntities() const;
 
-	const EntityControllerList&	
+	const EntityControllerList&
 							GetEntityControllerList() const;
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -300,7 +300,7 @@ public:
 	// takes ownership of pointer
 	void					AddPlayer( Player* );
 	void					RmvPlayer( unsigned long playerId );
-	
+
 	size_t					GetPlayerCount() const;
 	const Player*			GetPlayerAt   ( size_t index ) const;
 	Player*					GetPlayerAt   ( size_t index );
@@ -314,11 +314,11 @@ public:
 
 	const TerrainHMBase*	GetTerrain() const;
 	TerrainHMBase*			GetTerrain();
-	
+
 	void					SetRandomSeed( unsigned long seed );
 	float					GetRand();
 	unsigned long			GetRandMax( unsigned long max );
-	
+
 	void					LockRandom();
 	void					UnLockRandom();
 
@@ -334,7 +334,7 @@ public:
 	virtual void			Save( BiFF& biff ) const;
 	virtual void			Load( IFF& iff );
 
-// fields	
+// fields
 private:
 	class Data;
 	Data* m_pimpl;
@@ -345,7 +345,7 @@ private:
 		// return an iterator to the next entity
 	EntityList::iterator	RemoveEntity( EntityList::iterator );
 
-	EntityControllerList::iterator 
+	EntityControllerList::iterator
 							RemoveEntityController( EntityControllerList::iterator );
 
 	void					SpawnNewbornControllers();
@@ -378,7 +378,7 @@ private:
 //	Desc.	: Utility function that issues a World::DoCommandEntityEntity but takes EntityGroups as parameters
 //	Param.	: pWorld - the world instance
 //			  The same params as World::DoCommandEntityEntity
-//
+// TODO: where the fuuuuck do these ones get dispatched to?
 extern void SIM_API WorldDoCommandEntity
 	(
 	World* world,
@@ -390,7 +390,7 @@ extern void SIM_API WorldDoCommandEntity
 	);
 
 extern void SIM_API WorldDoCommandEntityEntity
-	(	
+	(
 	World* world,
 	const unsigned int		cmd,
 	const unsigned long		cmdparm,
@@ -401,7 +401,7 @@ extern void SIM_API WorldDoCommandEntityEntity
 	);
 
 extern void SIM_API WorldDoCommandEntityPoint
-	(	
+	(
 	World* world,
 	const unsigned int		cmd,
 	const unsigned long		cmdparm,

@@ -102,6 +102,7 @@
 		{ 40930,	HK_Lab_SpawnHenchmen,		42370,	"ui/ingame/spawn_rock.tga" },
 	}
 
+	-- mode, command
 	henchman_modalmodes =
 	{
 		{ MM_Cursor,	MC_Move },
@@ -942,26 +943,12 @@ dobuildbuilding = function( ebpid )
 	-- let building modal commands be queued
 	CommandQueueEnable( HK_System_CommandQueue, "commandqueuecancel" )
 
-	-- start plain building ui
+	-- -- start plain building ui
 	result = BuildUIBegin( "dobuildbuildingclick", "dobuildbuildingabort", ebpid )
-
-	-- -- detemine if this ebpid is a fence or not
-	-- if TypeFromEBP( ebpid ) == BrambleFence_EC then
-
-	-- 	-- start fence ui
-	-- 	result = BuildUIBegin( "dobuildfenceclick", "dobuildbuildingabort", ebpid )
-
-	-- else
-
-	-- 	-- start plain building ui
-	-- 	result = BuildUIBegin( "dobuildbuildingclick", "dobuildbuildingabort", ebpid )
-
-	-- end
 
 	if result == 0 then
 
 		buildbuilding_updateui( )
-
 
 	else
 
@@ -969,6 +956,31 @@ dobuildbuilding = function( ebpid )
 		failedcommand( result )
 
 	end
+
+	-- -- -- detemine if this ebpid is a fence or not
+	-- -- if TypeFromEBP( ebpid ) == BrambleFence_EC then
+
+	-- -- 	-- start fence ui
+	-- -- 	result = BuildUIBegin( "dobuildfenceclick", "dobuildbuildingabort", ebpid )
+
+	-- -- else
+
+	-- -- 	-- start plain building ui
+	-- -- 	result = BuildUIBegin( "dobuildbuildingclick", "dobuildbuildingabort", ebpid )
+
+	-- -- end
+
+	-- if result == 0 then
+
+	-- 	buildbuilding_updateui( )
+
+
+	-- else
+
+	-- 	-- failed
+	-- 	failedcommand( result )
+
+	-- end
 
 
 end
@@ -1304,6 +1316,14 @@ dohenchmanmodal = function( index )
 
 	-- let henchman modal commands be queued
 	CommandQueueEnable( HK_System_CommandQueue, "commandqueuecancel" )
+
+	result = ModalUIBegin( "domodalclick", "domodalcancel", mode, command )
+
+	if result == 0 then
+		cleartaskbar()
+	else
+		failedcommand(result)
+	end
 
 	-- -- inplace commands
 	-- local result = 0

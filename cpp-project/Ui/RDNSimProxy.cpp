@@ -241,6 +241,7 @@ void RDNSimProxy::LuaSetup()
 	BINDINNERCONSTANT(UIInterface, MM_None);
 	BINDINNERCONSTANT(UIInterface, MM_Cursor);
 	BINDINNERCONSTANT(UIInterface, MM_LockCursor);
+	BINDINNERCONSTANT(UIInterface, MM_BuildStructure);
 
 #undef BINDINNERCONSTANT
 
@@ -824,7 +825,7 @@ void RDNSimProxy::GetCursorInfo(char *cursor, size_t len, int &ttStrId, const En
 
 void RDNSimProxy::DoModalCommand(int mode, float x, float y, float z, int entityID, bool bQueueCommand)
 {
-	dbTracef("RDNSimProxy::DoModalCommand");
+	dbTracef("RDNSimProxy::DoModalCommand mode %d", mode);
 
 	// validate selection first
 	if (!SelectionCanReceiveCommand(0))
@@ -849,13 +850,14 @@ void RDNSimProxy::DoModalCommand(int mode, float x, float y, float z, int entity
 
 	if (mode < 0 || mode >= (sizeof(mode2command) / sizeof(mode2command[0])))
 	{
-		dbBreak();
+		dbFatalf("RDNSimProxy::DoModalCommand bad mode %d", mode);
 		return;
 	}
 
 	// if this is an attackmove command on an entity from a creature, convert to point command
 	if ((mode2command[mode].command == CMD_AttackMove) && entityID)
 	{
+		dbTracef("RDNSimProxy::DoModalCommand is attack move");
 		const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
 		const Entity *e = ef->GetEntityFromEID(entityID);
 
@@ -1159,9 +1161,9 @@ int RDNSimProxy::DoBuildBuilding(long ebpid, float x, float y, float z, bool sho
 	const EntityFactory *ef = m_pimpl->m_world->GetEntityFactory();
 
 	const ControllerBlueprint *cbp = ef->GetControllerBP(ebpid);
-	if (cbp == 0 || (cbp->GetControllerType() != RemoteChamber_EC))
+	if (cbp == 0 || !cbp->IsBuilding())
 	{
-		dbFatalf("RDNSimProxy::DoBuildBuilding wrong controller type. Only supports creature chambers right now");
+		dbFatalf("RDNSimProxy::DoBuildBuilding no cbp or cbp is not for a building");
 		return FC_Other;
 	}
 

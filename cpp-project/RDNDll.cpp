@@ -26,6 +26,7 @@
 
 #include "Simulation/Controllers/ControllerTypes.h"
 #include "Simulation/Controllers/CoalController.h"
+#include "Simulation/Controllers/BuildingController.h"
 #include "Simulation/Controllers/LabController.h"
 #include "Simulation/Controllers/HenchmenController.h"
 
@@ -64,9 +65,17 @@ static void RegisterControllers(SimEngineInterface *p)
 #define RC(name, type, classtype) \
 	pEntityFactory->RegisterController(name, type, new EntityFactory_ControllerCreator_Templ<classtype::StaticInfo, classtype>);
 
-	RC("Lab", Lab_EC, LabController);
 	RC("Henchmen", Henchmen_EC, HenchmenController);
 	RC("Coal", Coal_EC, CoalController);
+	RC("Lab", Lab_EC, LabController);
+	RC("LightningRod", ResourceRenew_EC, BuildingController);
+	RC("CreatureChamber", RemoteChamber_EC, BuildingController);
+	RC("WaterChamber", WaterChamber_EC, BuildingController);
+	RC("AirChamber", Aviary_EC, BuildingController);
+	RC("BrambleFence", BrambleFence_EC, BuildingController);
+	RC("Workshop", Foundry_EC, BuildingController);
+	RC("SoundbeamTower", SoundBeamTower_EC, BuildingController);
+	RC("GeoGenerator", ElectricGenerator_EC, BuildingController);
 
 #undef RC
 
@@ -95,7 +104,7 @@ static void EntityCreate(const Entity *pEntity)
 	*/
 	if (!pEC || !pAnimator)
 	{
-		// dbTracef(">>>WARN no controller blueprint or animator for %s", pEntity->GetControllerBP()->GetFileName());
+		dbTracef("RDNDll::EntityCreate no controller blueprint or animator for %s", pEntity->GetControllerBP()->GetFileName());
 		return;
 	}
 

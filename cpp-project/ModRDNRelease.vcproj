@@ -469,6 +469,12 @@
 					<File
 						RelativePath="Simulation\Controllers\ModController.h">
 					</File>
+					<File
+						RelativePath="Simulation\Controllers\BuildingController.cpp">
+					</File>
+					<File
+						RelativePath="Simulation\Controllers\BuildingController.h">
+					</File>
 				</Filter>
 				<Filter
 					Name="ExtInfo"

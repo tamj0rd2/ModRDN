@@ -213,6 +213,7 @@ private:
 private:
 	void CmdCheatCash(Player *sender, unsigned long);
 	void CmdCheatKillSelf(Player *sender);
+	void RDNPlayer::CmdBuildBuilding(Player *sender, long ebpid, const EntityGroup &entities, const Vec3f *pos);
 };
 
 inline const PlayerFOW *RDNPlayer::GetFogOfWar() const

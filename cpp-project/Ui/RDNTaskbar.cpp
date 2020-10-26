@@ -1906,7 +1906,7 @@ int RDNTaskbar::BuildUIBegin(const char *callbackOk, const char *callbackAbort, 
 	if (m_pimpl->m_proxy->GetPlayer() == 0 ||
 			m_pimpl->m_proxy->GetPlayer()->IsPlayerDead())
 	{
-		dbBreak();
+		dbFatalf("RDNTaskbar::BuildUIBegin the player is dead or does not exist");
 		return RDNSimProxy::FC_Other;
 	}
 
@@ -1914,7 +1914,7 @@ int RDNTaskbar::BuildUIBegin(const char *callbackOk, const char *callbackAbort, 
 	if (callbackOk == 0 || strlen(callbackOk) == 0 ||
 			callbackAbort == 0 || strlen(callbackAbort) == 0)
 	{
-		dbBreak();
+		dbFatalf("RDNTaskbar::BuildUIBegin callbackOk or callbackAbort missing");
 		return RDNSimProxy::FC_Other;
 	}
 
@@ -1924,7 +1924,7 @@ int RDNTaskbar::BuildUIBegin(const char *callbackOk, const char *callbackAbort, 
 
 	if (cbp == 0)
 	{
-		dbBreak();
+		dbFatalf("RDNTaskbar::BuildUIBegin could not find an ebp for net id %d", ebpid);
 		return RDNSimProxy::FC_Other;
 	}
 
@@ -1932,7 +1932,10 @@ int RDNTaskbar::BuildUIBegin(const char *callbackOk, const char *callbackAbort, 
 	const int ok = m_pimpl->m_proxy->ValidateBuildUI(cbp);
 
 	if (ok != RDNSimProxy::FC_Ok)
+	{
+		dbFatalf("RDNTaskbar::BuildUIBegin could not validate build ui. result: %d", ok);
 		return ok;
+	}
 
 	// store
 	m_pimpl->m_modalCBOk = callbackOk;
@@ -2159,10 +2162,11 @@ void RDNTaskbar::ModalUiCBTwoClick(Vec3f v1, Vec3f v2, int ebpid)
 //
 void RDNTaskbar::ModalUiCBPlaceEntity(Matrix43f &position, bool &bCanPlace, const ControllerBlueprint *cbp, bool bRender) const
 {
-	UNREF_P(position);
-	UNREF_P(bCanPlace);
-	UNREF_P(cbp);
-	UNREF_P(bRender);
+	// TODO: implement this properly
+	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity TODO implement me");
+	bCanPlace = true;
+
+	// dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity cbp:%s", cbp->GetFileName());
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -2178,12 +2182,7 @@ void RDNTaskbar::ModalUiCBPlaceFence(const Vec3f &pos1,
 																		 int &canAfford,
 																		 const ControllerBlueprint *cbp) const
 {
-	UNREF_P(pos1);
-	UNREF_P(pos2);
-	UNREF_P(transList);
-	UNREF_P(canPlaceList);
-	UNREF_P(canAfford);
-	UNREF_P(cbp);
+	dbFatalf("RDNTaskbar::ModalUiCBPlaceFence not yet implemented");
 }
 
 /////////////////////////////////////////////////////////////////////

@@ -39,6 +39,8 @@
 #include <SimEngine/Entity.h>
 #include <SimEngine/EntityAnimator.h>
 #include <SimEngine/TerrainHMBase.h>
+#include <SimEngine/Pathfinding/Pathfinding.h>
+#include <SimEngine/Pathfinding/PathfinderQuery.h>
 
 #include <EngineAPI/ControllerBlueprint.h>
 
@@ -172,14 +174,25 @@ void RDNPlayer::AddEntity(Entity *e)
 	case Lab_EC:
 		// save starting position
 		m_hqPosition = e->GetPosition();
-		break;
+		return;
 
 	case Henchmen_EC:
 		++m_population;
-		break;
+		return;
+
+	case ResourceRenew_EC:
+	case RemoteChamber_EC:
+	case WaterChamber_EC:
+	case Aviary_EC:
+	case ElectricGenerator_EC:
+	case BrambleFence_EC:
+	case Foundry_EC:
+	case SoundBeamTower_EC:
+		dbTracef("RDNPlayer::AddEntity can handle extra steps for buildings later");
+		return;
 	}
 
-	return;
+	dbFatalf("RDNPlayer::AddEntity do not know how to add entty %d", ctype);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -547,9 +560,10 @@ void RDNPlayer::CommandDoProcess(
 	switch (cmd)
 	{
 	case CMD_BuildBuilding:
-		/* code */
-		dbFatalf("Buildling buildings is unimplemented right now");
-		break;
+		if (!param)
+			dbFatalf("RDNPlayer::CommandDoProcess CMD_BuildBuilding no ebpid given");
+
+		return CmdBuildBuilding(sender, param, entities, pos);
 
 	default:
 		dbFatalf("RDNPLayer::CommandDoProcess unhandled PlayerPlayer case %d", cmd);
@@ -878,6 +892,43 @@ void RDNPlayer::CmdCheatKillSelf(Player *sender)
 			0,
 			GetID(),
 			g);
+
+	return;
+}
+
+void RDNPlayer::CmdBuildBuilding(Player *sender, long ebpid, const EntityGroup &entities, const Vec3f *pos)
+{
+	if (sender != this)
+		dbFatalf("RDNPlayer::CmdBuildBuilding command came from an unexpected player");
+
+	const ControllerBlueprint *pCbp = ModObj::i()->GetEntityFactory()->GetControllerBP(ebpid);
+	if (!pCbp)
+		dbFatalf("RDNPlayer::CmdBuildBuilding Controller blueprint not found for EBP network ID (%d)", ebpid);
+
+	Entity *building = ModObj::i()->GetEntityFactory()->CreateEntity(pCbp, pos->x, pos->z);
+
+	Vec3f bestPosition;
+	bool bGotPosition = ModObj::i()->GetWorld()->GetPathfinder()->Query()->GiveClosestFreePosition(
+			Vec2f(pos->x, pos->z),
+			static_cast<const SimEntity *>(building),
+			0,
+			bestPosition);
+
+	if (!bGotPosition)
+		dbFatalf("Could not find a place to put the buildling :(");
+
+	Matrix43f m = building->GetTransform();
+	m.T = bestPosition;
+
+	building->SetTransform(m);
+	building->SetPrevTransform(m);
+	building->SetPrevPrevTransform(m);
+	building->SetEntityFlag(EF_IsVisible);
+	building->SetEntityFlag(EF_CanCollide);
+
+	AddEntity(building);
+	ModObj::i()->GetWorld()->DoSpawnEntity(building);
+	building->GetAnimator()->SetMotionVariable("Build", 100);
 
 	return;
 }
