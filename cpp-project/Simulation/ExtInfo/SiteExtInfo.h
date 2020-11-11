@@ -13,6 +13,8 @@
 
 #include "../Controllers/ControllerTypes.h"
 
+#include <SimEngine/TerrainHMBase.h>
+
 /////////////////////////////////////////////////////////////////////
 //	Forward Declarations
 //
@@ -68,4 +70,6 @@ public:
 	// construction
 public:
 	SiteExtInfo(const ControllerBlueprint *cbp);
+
+	bool CanPlaceOnTerrain(TerrainHMBase::TerrainType terrainType) const;
 };

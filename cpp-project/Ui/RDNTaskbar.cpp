@@ -48,6 +48,9 @@
 #include <EngineAPI/CameraInterface.h>
 
 #include <SimEngine/TerrainHMBase.h>
+#include <SimEngine/Pathfinding/ImpassMap.h>
+#include <SimEngine/Pathfinding/Pathfinding.h>
+#include <SimEngine/BuildingDynamics.h>
 
 #include <Lua/LuaBinding.h>
 #include <Util/Colour.h>
@@ -2165,50 +2168,88 @@ void RDNTaskbar::ModalUiCBTwoClick(Vec3f v1, Vec3f v2, int ebpid)
 //
 void RDNTaskbar::ModalUiCBPlaceEntity(Matrix43f &position, bool &bCanPlace, const ControllerBlueprint *cbp, bool bRender) const
 {
-	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity TODO implement me properly");
-
 	const ECStaticInfo *si = ModObj::i()->GetWorld()->GetEntityFactory()->GetECStaticInfo(cbp);
 	if (!si)
-	{
-		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity no static info for cbp type %d", cbp->GetControllerType());
-	}
+		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity no static info for cbp %s", cbp->GetFileName());
 
 	const SiteExtInfo *siteExtInfo = QIExtInfo<SiteExtInfo>(si);
 	if (!siteExtInfo)
-	{
-		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity no site info for cbp type %d", cbp->GetControllerType());
-	}
+		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity no site info for cbp type %s", cbp->GetFileName());
 
-	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity location type for cbp type %d is %d",
-					 cbp->GetControllerType(),
+	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity location type for cbp %s is %d",
+					 cbp->GetFileName(),
 					 siteExtInfo->canPlaceType);
-
-	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity T: x: %d, y: %d, z: %d", position.T.x, position.T.y, position.T.z);
 
 	TerrainHMBase *terrain = ModObj::i()->GetWorld()->GetTerrain();
 	TerrainHMBase::TerrainType terrainType = terrain->GetTerrainCellType(position.T.x, position.T.z);
-
 	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity got terrain type %d", terrainType);
 
-	switch (siteExtInfo->canPlaceType)
+	if (!siteExtInfo->CanPlaceOnTerrain(terrainType))
 	{
-	case SiteExtInfo::LT_NoWhere:
 		bCanPlace = false;
 		return;
-	case SiteExtInfo::LT_Land:
-		bCanPlace = (terrainType == TerrainHMBase::eLand);
-		return;
-	case SiteExtInfo::LT_Water:
-		bCanPlace = (terrainType == TerrainHMBase::eWater);
-		return;
-	case SiteExtInfo::LT_LandWater:
-		bCanPlace = (terrainType == TerrainHMBase::eLand) || (terrainType == TerrainHMBase::eWater);
-		return;
-	default:
-		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity unhandled location type %d", siteExtInfo->canPlaceType);
 	}
 
-	// dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity cbp:%s", cbp->GetFileName());
+	// TODO: check if the place is impassable
+	const TerrainCellMap *tcmap = ModObj::i()->GetWorld()->GetPathfinder()->GetTerrainCellMap();
+	long cellSize = (long)tcmap->GetCellSize();
+	long width, height;
+	BuildingDynamics::GetEntityWidthHeight(cbp, &position, width, height);
+	dbTracef("Width %d, height: %d", width, height);
+
+	switch (terrainType)
+	{
+	case TerrainHMBase::eLand:
+	{
+		bool isLandImpassable = tcmap->TestCells(position.T.x, position.T.z, width, height, eLandImpassible);
+		if (isLandImpassable)
+		{
+			dbTracef("Land is impassable");
+			bCanPlace = false;
+			return;
+		}
+
+		dbTracef("Land is not impassable");
+		break;
+	}
+	case TerrainHMBase::eWater:
+	{
+		bool isWaterImpassable = tcmap->TestCells(position.T.x, position.T.z, width, height, eWaterImpassible);
+		if (isWaterImpassable)
+		{
+			dbTracef("Water is impassable");
+			bCanPlace = false;
+			return;
+		}
+
+		dbTracef("Water is not impassable");
+		break;
+	}
+	default:
+		bCanPlace = false;
+		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity unhandled terrain type");
+		return;
+	}
+
+	bCanPlace = true;
+	// const TerrainCell terrainCell = tcmap->GetCell(position.T.x, position.T.z);
+	// bool isLand = TCIsLand(terrainCell);
+
+	// if (isLand)
+	// {
+	// 	dbTracef("It is land impassable");
+	// 	bCanPlace = false;
+	// 	return;
+	// }
+
+	// else
+	// {
+	// 	dbTracef("It is not land impassable");
+	// }
+
+	// dbTracef("RDNTaskbar::ModalUiCBPlaceEntity is position land impassable? %s", TCIsLand(terrainCell) ? 'yes' : 'no');
+
+	// TCMask test = eLandImpassible | eWaterImpassible | eAmphibianImpassible;
 }
 
 /////////////////////////////////////////////////////////////////////

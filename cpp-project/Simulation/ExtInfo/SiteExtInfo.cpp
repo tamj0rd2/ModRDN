@@ -100,3 +100,20 @@ EntityDynamics *SiteExtInfo::CreateDynamics(Entity *entity, const SiteExtInfo *s
 
 	return ed;
 }
+
+bool SiteExtInfo::CanPlaceOnTerrain(TerrainHMBase::TerrainType terrainType) const
+{
+	switch (canPlaceType)
+	{
+	case SiteExtInfo::LT_NoWhere:
+		return false;
+	case SiteExtInfo::LT_Land:
+		return terrainType == TerrainHMBase::eLand;
+	case SiteExtInfo::LT_Water:
+		return terrainType == TerrainHMBase::eWater;
+	case SiteExtInfo::LT_LandWater:
+		return (terrainType == TerrainHMBase::eLand) || (terrainType == TerrainHMBase::eWater);
+	default:
+		dbFatalf("SiteExtInfo::CanPlaceOnTerrain unhandled CanPlaceType %d", canPlaceType);
+	}
+}
