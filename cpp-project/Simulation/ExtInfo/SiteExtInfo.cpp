@@ -95,7 +95,7 @@ EntityDynamics *SiteExtInfo::CreateDynamics(Entity *entity, const SiteExtInfo *s
 	}
 	else
 	{ // should never hit this
-		dbBreak();
+		dbFatalf("SiteExtInfo::CreateDynamics apparently this line should never be hit");
 	}
 
 	return ed;

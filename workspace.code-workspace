@@ -40,6 +40,30 @@
     ],
     "python.formatting.autopep8Args": [
       "--max-line-length=110"
-    ]
+    ],
+    "files.associations": {
+      ".nycrc": "json",
+      ".releaserc": "json",
+      "xlocnum": "cpp",
+      "xmemory": "cpp",
+      "xstring": "cpp",
+      "xutility": "cpp",
+      "algorithm": "cpp",
+      "atomic": "cpp",
+      "cmath": "cpp",
+      "deque": "cpp",
+      "hash_map": "cpp",
+      "iterator": "cpp",
+      "list": "cpp",
+      "map": "cpp",
+      "memory": "cpp",
+      "new": "cpp",
+      "set": "cpp",
+      "tuple": "cpp",
+      "type_traits": "cpp",
+      "unordered_map": "cpp",
+      "vector": "cpp",
+      "xtree": "cpp"
+    }
   }
 }

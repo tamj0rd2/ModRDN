@@ -33,6 +33,7 @@
 #include "../Simulation/Extensions/ModifierExt.h"
 
 #include "../Simulation/ExtInfo/CostExtInfo.h"
+#include "../Simulation/ExtInfo/SiteExtInfo.h"
 
 #include "../Simulation/States/StateMove.h"
 #include "../Simulation/States/StateGroupMove.h"
@@ -45,6 +46,8 @@
 #include <EngineAPI/FXInterface.h>
 #include <EngineAPI/SelectionInterface.h>
 #include <EngineAPI/CameraInterface.h>
+
+#include <SimEngine/TerrainHMBase.h>
 
 #include <Lua/LuaBinding.h>
 #include <Util/Colour.h>
@@ -2162,9 +2165,48 @@ void RDNTaskbar::ModalUiCBTwoClick(Vec3f v1, Vec3f v2, int ebpid)
 //
 void RDNTaskbar::ModalUiCBPlaceEntity(Matrix43f &position, bool &bCanPlace, const ControllerBlueprint *cbp, bool bRender) const
 {
-	// TODO: implement this properly
-	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity TODO implement me");
-	bCanPlace = true;
+	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity TODO implement me properly");
+
+	const ECStaticInfo *si = ModObj::i()->GetWorld()->GetEntityFactory()->GetECStaticInfo(cbp);
+	if (!si)
+	{
+		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity no static info for cbp type %d", cbp->GetControllerType());
+	}
+
+	const SiteExtInfo *siteExtInfo = QIExtInfo<SiteExtInfo>(si);
+	if (!siteExtInfo)
+	{
+		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity no site info for cbp type %d", cbp->GetControllerType());
+	}
+
+	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity location type for cbp type %d is %d",
+					 cbp->GetControllerType(),
+					 siteExtInfo->canPlaceType);
+
+	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity T: x: %d, y: %d, z: %d", position.T.x, position.T.y, position.T.z);
+
+	TerrainHMBase *terrain = ModObj::i()->GetWorld()->GetTerrain();
+	TerrainHMBase::TerrainType terrainType = terrain->GetTerrainCellType(position.T.x, position.T.z);
+
+	dbTracef("RDNTaskbar::ModalUiCBPlaceEntity got terrain type %d", terrainType);
+
+	switch (siteExtInfo->canPlaceType)
+	{
+	case SiteExtInfo::LT_NoWhere:
+		bCanPlace = false;
+		return;
+	case SiteExtInfo::LT_Land:
+		bCanPlace = (terrainType == TerrainHMBase::eLand);
+		return;
+	case SiteExtInfo::LT_Water:
+		bCanPlace = (terrainType == TerrainHMBase::eWater);
+		return;
+	case SiteExtInfo::LT_LandWater:
+		bCanPlace = (terrainType == TerrainHMBase::eLand) || (terrainType == TerrainHMBase::eWater);
+		return;
+	default:
+		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity unhandled location type %d", siteExtInfo->canPlaceType);
+	}
 
 	// dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity cbp:%s", cbp->GetFileName());
 }
