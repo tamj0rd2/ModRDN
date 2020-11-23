@@ -36,6 +36,8 @@
 #include "ExtInfo/CostExtInfo.h"
 #include "ExtInfo/SiteExtInfo.h"
 
+#include "Simulation/States/StateBuild.h"
+
 #include <SimEngine/Entity.h>
 #include <SimEngine/EntityAnimator.h>
 #include <SimEngine/TerrainHMBase.h>
@@ -43,6 +45,7 @@
 #include <SimEngine/Pathfinding/PathfinderQuery.h>
 
 #include <EngineAPI/ControllerBlueprint.h>
+#include <EngineAPI/DecalInterface.h>
 
 #include <ModInterface/ECStaticInfo.h>
 
@@ -898,6 +901,7 @@ void RDNPlayer::CmdCheatKillSelf(Player *sender)
 
 void RDNPlayer::CmdBuildBuilding(Player *sender, long ebpid, const EntityGroup &entities, const Vec3f *pos)
 {
+	dbTracef("RDNPlayer::CmdBuildBuilding");
 	if (sender != this)
 		dbFatalf("RDNPlayer::CmdBuildBuilding command came from an unexpected player");
 
@@ -928,7 +932,27 @@ void RDNPlayer::CmdBuildBuilding(Player *sender, long ebpid, const EntityGroup &
 
 	AddEntity(building);
 	ModObj::i()->GetWorld()->DoSpawnEntity(building);
+
+	// TODO: move to buildingController onspawnentity
 	building->GetAnimator()->SetMotionVariable("Build", 100);
+
+	EntityGroup::const_iterator henchmanIter = entities.begin();
+	for (; henchmanIter != entities.end(); henchmanIter++)
+	{
+		ModController *henchmanController = static_cast<ModController *>((*henchmanIter)->GetController());
+
+		StateBuild *pStateBuild = static_cast<StateBuild *>(henchmanController->QIStateAll(StateBuild::StateID));
+		if (!pStateBuild)
+			dbFatalf("RDNPlayer::CmdBuildBuilding one of the selected entities does not have state build");
+
+		pStateBuild->Enter(building);
+		henchmanController->SetActiveState(StateBuild::StateID);
+	}
+
+	// dbTracef("Trying to attach the decal");
+	// building->GetAnimator()->AttachDecal("build_con", 10, true, true);
+
+	// ModObj::i()->GetDecalInterface()->AddDecal("build_con.tga", bestPosition.x, bestPosition.z, 1, 0);
 
 	return;
 }

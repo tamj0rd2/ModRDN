@@ -17,6 +17,7 @@
 #include "../States/StateDead.h"
 #include "../States/StateMove.h"
 #include "../States/StateGather.h"
+#include "../States/StateBuild.h"
 #include "../States/StateAttack.h"
 #include "../States/StateAttackMove.h"
 #include "../States/StateGroupMove.h"
@@ -116,6 +117,7 @@ private:
 	StateAttackMove m_stateattackmove;
 	StateGroupMove m_stategroupmove;
 	StatePause m_statepause;
+	StateBuild m_statebuild;
 
 	CommandProcessor m_commandproc;
 

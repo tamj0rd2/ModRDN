@@ -10,6 +10,7 @@
 #include "pch.h"
 
 #include "BuildingController.h"
+#include "ModController.h"
 
 #include "../../ModObj.h"
 #include "../RDNPlayer.h"
@@ -18,13 +19,16 @@
 
 #include <SimEngine/Entity.h>
 #include <SimEngine/EntityAnimator.h>
+#include <SimEngine/EntityController.h>
 #include <SimEngine/EntityCommand.h>
 #include <SimEngine/BuildingDynamics.h>
 
 #include <EngineAPI/EntityFactory.h>
 #include <EngineAPI/ControllerBlueprint.h>
+#include <EngineAPI/DecalInterface.h>
 
 #include <ModInterface/ECStaticInfo.h>
+#include "pch.h"
 
 /////////////////////////////////////////////////////////////////////
 //	Desc.	:
@@ -67,7 +71,6 @@ BuildingController::StaticInfo::QInfo(unsigned char id) const
 //
 BuildingController::BuildingController(Entity *pEntity, const ECStaticInfo *si) : ModController(pEntity, SiteExtInfo::CreateDynamics(pEntity, QIExtInfo<SiteExtInfo>(si)), si),
 																																									HealthExt(pEntity, QIExtInfo<HealthExtInfo>(si)),
-																																									UnitSpawnerExt(UnitSpawnerExt::BT_Spawn),
 																																									SightExt(QIExtInfo<SightExtInfo>(si)),
 																																									m_stateidle(GetEntityDynamics()),
 																																									m_statedead(GetEntityDynamics()),
@@ -83,6 +86,8 @@ BuildingController::BuildingController(Entity *pEntity, const ECStaticInfo *si) 
 	m_commandproc.Init(this);
 	SetCommandProcessor(&m_commandproc);
 
+	m_buildCompletion = 100;
+
 	return;
 }
 
@@ -94,6 +99,25 @@ BuildingController::BuildingController(Entity *pEntity, const ECStaticInfo *si) 
 //
 BuildingController::~BuildingController()
 {
+}
+
+void BuildingController::OnSpawnEntity()
+{
+	dbFatalf("BuildingController::OnSpawnEntity HAHAHAHAHAHA said will");
+
+	// GetEntity()->GetAnimator()->SetMotionVariable("Build", m_buildCompletion);
+	GetEntity()->GetAnimator()->AttachDecal("build_con", 1, true, true);
+	// Vec3f pos = GetEntity()->GetPosition();
+
+	// ModObj::i()->GetDecalInterface()->AddDecal("build_con", pos.x, pos.z, 20, 0);
+	// ModObj::i()->GetDecalInterface()->AddDynamicDecal("build_con", GetEntity()->GetOBB());
+
+	return ModController::OnSpawnEntity();
+}
+
+void BuildingController::OnDeSpawnEntity()
+{
+	return ModController::OnDeSpawnEntity();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -116,8 +140,6 @@ void BuildingController::Execute()
 	if (m_commandproc.IsDead())
 		return;
 
-	UnitBuild();
-
 	// Let my modifier extension run and update the active modifiers
 	ModifierExt::Execute();
 
@@ -133,36 +155,6 @@ void BuildingController::Execute()
 ModController *BuildingController::GetSelf()
 {
 	return this;
-}
-
-/////////////////////////////////////////////////////////////////////
-// Desc.     :
-// Result    :
-// Param.    :
-// Author    :
-//
-void BuildingController::OnUnitSpawn(Entity *entity)
-{
-	// make the henchmen conform to terrain
-	SimController *pSimController = static_cast<SimController *>(entity->GetController());
-	if (pSimController && pSimController->GetEntityDynamics())
-	{
-		Vec2f facing;
-		facing = Vec2f(entity->GetPosition().x, entity->GetPosition().z) - Vec2f(GetEntity()->GetPosition().x, GetEntity()->GetPosition().z);
-
-		// watch out for Normalizing 0 length vector
-		if (facing.LengthSqr() > 0.1)
-		{
-			facing.NormalizeSelf();
-		}
-		else
-		{
-			facing.Set(0.0, 1.0f);
-		}
-
-		// set the entities facing and also make the up vector point appropriately
-		pSimController->GetEntityDynamics()->SetEntityFacing(facing);
-	}
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -192,8 +184,6 @@ Extension *BuildingController::QIAll(unsigned char id)
 		return static_cast<HealthExt *>(this);
 	if (id == SightExt ::ExtensionID)
 		return static_cast<SightExt *>(this);
-	if (id == UnitSpawnerExt::ExtensionID)
-		return static_cast<UnitSpawnerExt *>(this);
 
 	return NULL;
 }
@@ -296,25 +286,6 @@ void BuildingController::Load(IFF &iff)
 unsigned long BuildingController::HandleLECD(IFF &, ChunkNode *, void *, void *)
 {
 	return 0;
-}
-
-/////////////////////////////////////////////////////////////////////
-// Desc.     :
-// Result    :
-// Param.    :
-// Author    :
-//
-void BuildingController::CancelBuildUnit(unsigned long unitIndex)
-{
-	// validate parm
-	if (unitIndex >= BuildQueueSize())
-		// old command -- ignore
-		return;
-
-	//
-	BuildQueueRmv(unitIndex);
-
-	return;
 }
 
 /////////////////////////////////////////////////////////////////////

@@ -78,6 +78,9 @@ protected:
 	// of entities death, this is hackish but will re-visit
 	friend class PlayerFOW;
 
+	// specifically needs access to QIStateAll. I don't understand why it's not public
+	friend class RDNPlayer;
+
 	// this class can be used by derived controllers to process all EntityCommands and perform
 	// the appropriate state change
 	friend class CommandProcessor;

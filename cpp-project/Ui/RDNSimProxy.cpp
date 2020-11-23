@@ -1168,7 +1168,7 @@ int RDNSimProxy::DoBuildBuilding(long ebpid, float x, float y, float z, bool sho
 	}
 
 	// validate object state
-	if (!SelectionCanReceiveCommand(1))
+	if (!SelectionCanReceiveCommand(0))
 	{
 		dbFatalf("RDNSimProxy::DoBuildBuilding entity cannot receive command");
 		return FC_Other;

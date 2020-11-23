@@ -12,7 +12,6 @@
 #include "ModController.h"
 
 #include "../Extensions/HealthExt.h"
-#include "../Extensions/UnitSpawnerExt.h"
 #include "../Extensions/SightExt.h"
 #include "../Extensions/ModifierExt.h"
 
@@ -38,10 +37,9 @@ class Vec3f;
 // BuildingController
 
 class BuildingController : private HealthExt,
-																	private UnitSpawnerExt,
-																	private SightExt,
-																	private ModifierExt,
-																	public ModController
+													 private SightExt,
+													 private ModifierExt,
+													 public ModController
 {
 	// types
 public:
@@ -68,6 +66,8 @@ public:
 public:
 	// commands issued to the entity controllers.
 	virtual bool CommandDoProcessNow(const EntityCommand *);
+	virtual void OnSpawnEntity();
+	virtual void OnDeSpawnEntity();
 
 	virtual void Execute();
 
@@ -96,13 +96,6 @@ private:
 private:
 	virtual ModController *GetSelf();
 
-	// inherited -- UnitSpawnerExt
-private:
-	virtual void OnUnitSpawn(Entity *);
-
-private:
-	void CancelBuildUnit(unsigned long unitIndex);
-
 	// inherited - HealthExt
 private:
 	virtual void NotifyHealthGone();
@@ -116,4 +109,6 @@ private:
 	State *m_pCurrentState;
 
 	CommandProcessor m_commandproc;
+
+	float m_buildCompletion;
 };

@@ -47,8 +47,9 @@ public:
 		SID_Pause = 7,
 
 		SID_Gather = 8,
+		SID_Build = 9,
 
-		SID_NULLState = 9,
+		SID_NULLState,
 	};
 
 	// fields

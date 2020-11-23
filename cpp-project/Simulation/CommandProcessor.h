@@ -96,6 +96,7 @@ private:
 	void ToStateAttackMove(Entity *);
 	void ToStatePause(bool bIgnoreCmds);
 	void ToStateGather(const Entity *);
+	void ToStateBuild(const Entity *);
 
 	void LeaveStatePause();
 };
