@@ -6,6 +6,7 @@
 
 // Forward Declarations
 class EntityDynamics;
+class BuildingExt;
 
 class StateBuild : public State
 {
@@ -64,35 +65,22 @@ private:
   StateBuildExitState m_ExitState;
 
   const Entity *m_pBuildingEntity;
+  BuildingExt *m_pBuildingExt;
 
   // these methods return Success if the state should exit
-  bool StateBuild::ToWaitToGatherResourceState();
   bool StateBuild::ToBuildBuildingState();
-  bool StateBuild::ToPickupResourceState();
-  bool StateBuild::ToMoveToDepositState();
-  bool StateBuild::ToDropOffResourceState();
 
   // these methods return Success if the state should exit
   bool StateBuild::HandleMoveToBuilding();
-  bool StateBuild::HandleWaitToGatherResource();
   bool StateBuild::HandleBuildBuilding();
-  bool StateBuild::HandlePickupResource();
-  bool StateBuild::HandleMoveToDeposit();
-  bool StateBuild::HandleDropOffResource();
-
-  bool StateBuild::HandleResourceDepleted();
 
   // returns true if the exit was successful
   bool StateBuild::TriggerExit(StateBuildExitState exitState);
 
-  bool StateBuild::IsDepositing();
   long StateBuild::GetTicks();
 
   // sets the resource to gather and moves to it
-  bool StateBuild::MoveToBuilding();
-
-  // find the resource closest to the current targetted resource, or nothing
-  const Entity *StateBuild::FindLeastBusyResourceNearby(const Entity *pResourceEntity);
+  bool StateBuild::MoveToBuildingSite(const Entity *pBuildingEntity);
 
   // set the time that a future operation should occur, in seconds
   void StateBuild::SetTimerSeconds(float seconds);

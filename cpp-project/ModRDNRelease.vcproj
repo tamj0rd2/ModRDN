@@ -433,6 +433,12 @@
 						RelativePath="Simulation\Extensions\SightExt.h">
 					</File>
 					<File
+						RelativePath="Simulation\Extensions\BuildingExt.cpp">
+					</File>
+					<File
+						RelativePath="Simulation\Extensions\BuildingExt.h">
+					</File>
+					<File
 						RelativePath="Simulation\Extensions\UnitSpawnerExt.cpp">
 					</File>
 					<File

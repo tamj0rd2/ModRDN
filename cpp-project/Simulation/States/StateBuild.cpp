@@ -1,12 +1,3 @@
-/////////////////////////////////////////////////////////////////////
-// File    : StateBuild.cpp
-// Desc    :
-// Created : Friday, January 25, 2002
-// Author  :
-//
-// (c) 2002 Relic Entertainment Inc.
-//
-
 #include "pch.h"
 #include "StateBuild.h"
 #include "StateMove.h"
@@ -16,12 +7,10 @@
 #include "../RDNWorld.h"
 #include "../RDNQuery.h"
 #include "../RDNPlayer.h"
-#include "../PlayerFoW.h"
 
 #include "../Controllers/ModController.h"
 
-#include "../Extensions/SightExt.h"
-#include "../Extensions/ResourceExt.h"
+#include "../Extensions/BuildingExt.h"
 
 #include "../Simulation/UnitConversion.h"
 #include "../Simulation/ExtInfo/CostExtInfo.h"
@@ -37,7 +26,7 @@ const bool c_success = false;
 const bool c_nothingHappened = false;
 const bool c_shouldExit = true;
 
-const char *c_lowBuild = "LowBuild";
+const char *c_swimBuild = "SwimBuild";
 const char *c_highBuild = "HighBuild";
 
 StateBuild::StateBuild(EntityDynamics *e_dynamics) : State(e_dynamics), m_pStateMove(NULL),
@@ -66,8 +55,7 @@ void StateBuild::Enter(const Entity *pBuildingEntity)
     dbFatalf("No resource given");
 
   SetExitStatus(false);
-  m_pBuildingEntity = pBuildingEntity;
-  MoveToBuilding();
+  MoveToBuildingSite(pBuildingEntity);
 }
 
 void StateBuild::ReissueOrder() const
@@ -96,19 +84,14 @@ bool StateBuild::Update()
     return IsExiting();
   }
 
-  // if (isTheBuildingComplete) {
-  //   return TriggerExit(BES_BuildComplete);
-  // }
+  if (m_pBuildingExt->IsBuilt())
+    return TriggerExit(BES_BuildComplete);
 
   if (m_InternalState == SB_MoveToBuilding)
-  {
     return HandleMoveToBuilding();
-  }
 
   if (m_InternalState == SB_BuildBuilding)
-  {
     return HandleBuildBuilding();
-  }
 
   // TODO
   // 1 - move to the building
@@ -119,11 +102,13 @@ bool StateBuild::Update()
   return c_shouldExit;
 }
 
-bool StateBuild::MoveToBuilding()
+bool StateBuild::MoveToBuildingSite(const Entity *pBuildingEntity)
 {
   m_InternalState = SB_MoveToBuilding;
 
-  // move
+  m_pBuildingEntity = pBuildingEntity;
+  m_pBuildingExt = const_cast<BuildingExt *>(QIExt<BuildingExt>(m_pBuildingEntity->GetController()));
+
   m_pStateMove->Enter(m_pBuildingEntity, 0);
   SetIsHoldingHammer(true);
   return c_success;
@@ -148,32 +133,33 @@ bool StateBuild::ToBuildBuildingState()
   m_InternalState = SB_BuildBuilding;
   SetIsHoldingHammer(true);
   GetEntity()->GetAnimator()->SetTargetLook(m_pBuildingEntity);
-  GetEntity()->GetAnimator()->SetMotionTreeNode(c_lowBuild);
+
+  long movementType = GetDynamics()->GetVisualMovementType();
+  GetEntity()->GetAnimator()->SetMotionTreeNode(movementType == EntityDynamics::eEDWater ? c_swimBuild : c_highBuild);
+
+  m_pBuildingExt->AddBuilder(GetEntity());
 
   const CostExtInfo *costExitInfo = QIExtInfo<CostExtInfo>(m_pBuildingEntity);
   if (!costExitInfo)
     dbFatalf("StateBuild::ToBuildBuildingState no cost ext info for entity %s", GetEntity()->GetControllerBP()->GetFileName());
 
-  SetTimerTicks(costExitInfo->constructionTicks);
+  SetTimerTicks(1);
   return c_success;
 }
 
 bool StateBuild::HandleBuildBuilding()
 {
-  // TODO: don't hardcode this
-  bool isBuildingComplete = false;
+  if (!HasTimerElapsed())
+    return c_nothingHappened;
 
-  if (HasTimerElapsed() && isBuildingComplete)
-  {
-    return TriggerExit(BES_BuildComplete);
-  }
-
+  m_pBuildingExt->IncrementCompletion();
+  SetTimerTicks(1);
   return c_nothingHappened;
 }
 
 void StateBuild::SetIsHoldingHammer(bool bShouldHold)
 {
-  GetEntity()->GetAnimator()->SetMotionVariable("Hammer", bShouldHold ? 50.0f : 0);
+  GetEntity()->GetAnimator()->SetMotionVariable("Hammer", bShouldHold ? 1.0f : 0);
 }
 
 long StateBuild::GetTicks()
@@ -198,6 +184,8 @@ bool StateBuild::TriggerExit(StateBuild::StateBuildExitState exitState)
   SetExitStatus(c_shouldExit);
 
   SetIsHoldingHammer(false);
+  m_pBuildingExt->RemoveBuilder(GetEntity());
+  GetEntity()->GetAnimator()->SetDefaultMotion();
   return c_shouldExit;
 }
 
@@ -209,7 +197,7 @@ void StateBuild::RequestExit()
 
 bool StateBuild::HasTimerElapsed()
 {
-  return GetTicks() > m_TickToCheckNextInternalState;
+  return GetTicks() >= m_TickToCheckNextInternalState;
 }
 
 void StateBuild::ForceExit()

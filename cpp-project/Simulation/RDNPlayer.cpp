@@ -23,7 +23,6 @@
 
 #include "Controllers/ModController.h"
 
-#include "Extensions/ResourceExt.h"
 #include "Extensions/SightExt.h"
 #include "Extensions/HealthExt.h"
 #include "Extensions/UnitSpawnerExt.h"
@@ -933,8 +932,8 @@ void RDNPlayer::CmdBuildBuilding(Player *sender, long ebpid, const EntityGroup &
 	AddEntity(building);
 	ModObj::i()->GetWorld()->DoSpawnEntity(building);
 
-	// TODO: move to buildingController onspawnentity
-	building->GetAnimator()->SetMotionVariable("Build", 100);
+	// TODO: move to buildingController onspawnentity or BuildingExt
+	building->GetAnimator()->SetMotionVariable("Build", 0);
 
 	EntityGroup::const_iterator henchmanIter = entities.begin();
 	for (; henchmanIter != entities.end(); henchmanIter++)

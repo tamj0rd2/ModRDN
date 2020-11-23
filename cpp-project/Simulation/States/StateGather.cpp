@@ -278,7 +278,7 @@ bool StateGather::IsDepositing()
 
 bool StateGather::HasTimerElapsed()
 {
-  return GetTicks() > m_TickToCheckNextInternalState;
+  return GetTicks() >= m_TickToCheckNextInternalState;
 }
 
 void StateGather::SetTimer(float seconds)
@@ -331,12 +331,12 @@ const Entity *StateGather::FindLeastBusyResourceNearby(const Entity *pResourceEn
 
 void StateGather::SetIsHoldingPickaxe(bool bShouldHold)
 {
-  GetEntity()->GetAnimator()->SetMotionVariable("Pickaxe", bShouldHold ? 50 : 0);
+  GetEntity()->GetAnimator()->SetMotionVariable("Pickaxe", bShouldHold ? 1.0f : 0);
 }
 
 void StateGather::SetIsHoldingCoalpails(bool bShouldHold)
 {
-  GetEntity()->GetAnimator()->SetMotionVariable("CoalPail", bShouldHold ? 50 : 0);
+  GetEntity()->GetAnimator()->SetMotionVariable("CoalPail", bShouldHold ? 1.0f : 0);
 }
 
 long StateGather::GetTicks()

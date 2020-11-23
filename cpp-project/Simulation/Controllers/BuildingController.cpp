@@ -72,6 +72,7 @@ BuildingController::StaticInfo::QInfo(unsigned char id) const
 BuildingController::BuildingController(Entity *pEntity, const ECStaticInfo *si) : ModController(pEntity, SiteExtInfo::CreateDynamics(pEntity, QIExtInfo<SiteExtInfo>(si)), si),
 																																									HealthExt(pEntity, QIExtInfo<HealthExtInfo>(si)),
 																																									SightExt(QIExtInfo<SightExtInfo>(si)),
+																																									BuildingExt(QIExtInfo<SiteExtInfo>(si), QIExtInfo<CostExtInfo>(si)),
 																																									m_stateidle(GetEntityDynamics()),
 																																									m_statedead(GetEntityDynamics()),
 																																									m_pCurrentState(NULL)
@@ -85,8 +86,6 @@ BuildingController::BuildingController(Entity *pEntity, const ECStaticInfo *si) 
 	//
 	m_commandproc.Init(this);
 	SetCommandProcessor(&m_commandproc);
-
-	m_buildCompletion = 100;
 
 	return;
 }
@@ -105,10 +104,7 @@ void BuildingController::OnSpawnEntity()
 {
 	dbFatalf("BuildingController::OnSpawnEntity HAHAHAHAHAHA said will");
 
-	// GetEntity()->GetAnimator()->SetMotionVariable("Build", m_buildCompletion);
-	GetEntity()->GetAnimator()->AttachDecal("build_con", 1, true, true);
 	// Vec3f pos = GetEntity()->GetPosition();
-
 	// ModObj::i()->GetDecalInterface()->AddDecal("build_con", pos.x, pos.z, 20, 0);
 	// ModObj::i()->GetDecalInterface()->AddDynamicDecal("build_con", GetEntity()->GetOBB());
 
@@ -182,8 +178,10 @@ Extension *BuildingController::QIAll(unsigned char id)
 {
 	if (id == HealthExt::ExtensionID)
 		return static_cast<HealthExt *>(this);
-	if (id == SightExt ::ExtensionID)
+	if (id == SightExt::ExtensionID)
 		return static_cast<SightExt *>(this);
+	if (id == BuildingExt::ExtensionID)
+		return static_cast<BuildingExt *>(this);
 
 	return NULL;
 }

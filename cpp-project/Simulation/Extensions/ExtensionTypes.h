@@ -24,8 +24,7 @@ enum ExtensionList
 	EXTID_Modifier,
 	EXTID_Moving,
 	EXTID_Sight,
-	EXTID_Gather,
-	EXTID_Gatherer,
+	EXTID_Build,
 
 	EXTID_Count,
 };

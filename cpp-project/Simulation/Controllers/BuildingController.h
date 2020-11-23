@@ -11,6 +11,7 @@
 
 #include "ModController.h"
 
+#include "../Extensions/BuildingExt.h"
 #include "../Extensions/HealthExt.h"
 #include "../Extensions/SightExt.h"
 #include "../Extensions/ModifierExt.h"
@@ -39,7 +40,8 @@ class Vec3f;
 class BuildingController : private HealthExt,
 													 private SightExt,
 													 private ModifierExt,
-													 public ModController
+													 public ModController,
+													 private BuildingExt
 {
 	// types
 public:
@@ -109,6 +111,4 @@ private:
 	State *m_pCurrentState;
 
 	CommandProcessor m_commandproc;
-
-	float m_buildCompletion;
 };
