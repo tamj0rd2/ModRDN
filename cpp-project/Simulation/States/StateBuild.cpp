@@ -54,6 +54,7 @@ void StateBuild::Enter(const Entity *pBuildingEntity)
   if (!pBuildingEntity)
     dbFatalf("No resource given");
 
+  dbTracef("Entering the build state");
   SetExitStatus(false);
   MoveToBuildingSite(pBuildingEntity);
 }

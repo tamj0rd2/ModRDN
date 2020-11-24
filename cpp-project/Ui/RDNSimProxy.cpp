@@ -797,7 +797,13 @@ void RDNSimProxy::GetCursorInfo(char *cursor, size_t len, int &ttStrId, const En
 
 	if (RDNQuery::CanGather(m_pimpl->m_selection->GetSelection(), mouseOverEntity))
 	{
-		relicstring_copyN(cursor, "modal_gather", len);
+		relicstring_copyN(cursor, "gather", len);
+		return;
+	}
+
+	if (RDNQuery::CanBuild(m_pimpl->m_selection->GetSelection(), mouseOverEntity))
+	{
+		relicstring_copyN(cursor, "build", len);
 		return;
 	}
 

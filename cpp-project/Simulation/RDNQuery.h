@@ -115,6 +115,12 @@ public:
 	// checks if an entity can be gathered by the given player
 	static bool CanBeGathered(const Entity *entity, const Player *player, bool bCheckFOW = true);
 
+	// checks if a group of entities can build an entity
+	static bool CanBuild(const Entity *self, const Entity *target, bool bCheckFOW = true);
+	static bool CanBuild(const EntityGroup &g, const Entity *target, bool bCheckFOW = true);
+	// check if an entity can be built by a player
+	static bool CanBeBuilt(const Entity *entity, const Player *player, bool bCheckFOW = true);
+
 	// has this entity been attacked in the last numTicks?
 	static bool HasBeenAttackedRecently(Entity *pEntity, long numTicks);
 
@@ -306,42 +312,35 @@ private:
 	unsigned long m_ControllerType;
 };
 
-
 // finds the cloest foundry/workshop
 class FindClosestResourceDepsoit : public FindClosestFilter
 {
 public:
 	FindClosestResourceDepsoit()
-			:	m_bFound(false)
-	{
-	};
+			: m_bFound(false){};
 
 	// Check to see if this entity is an enemy
 	virtual bool Check(const Entity *pEntity);
 
 private:
-  bool m_bFound;
+	bool m_bFound;
 };
-
 
 // finds the closest controller of the specified type
 class FindClosestEntityOfType : public FindClosestFilter
 {
 public:
 	FindClosestEntityOfType(ControllerType controllerType)
-			:	m_bFound(false),
-				m_ControllerType(controllerType)
-	{
-	};
+			: m_bFound(false),
+				m_ControllerType(controllerType){};
 
 	// Check to see if this entity is an enemy
 	virtual bool Check(const Entity *pEntity);
 
 private:
-  bool m_bFound;
-  ControllerType m_ControllerType;
+	bool m_bFound;
+	ControllerType m_ControllerType;
 };
-
 
 //-------------------------------------------------------------------------------------
 //

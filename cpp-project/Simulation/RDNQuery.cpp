@@ -20,6 +20,7 @@
 
 #include "Controllers/ModController.h"
 
+#include "Extensions/BuildingExt.h"
 #include "Extensions/ModifierExt.h"
 #include "Extensions/AttackExt.h"
 #include "Extensions/ResourceExt.h"
@@ -1023,6 +1024,74 @@ bool RDNQuery::CanBeGathered(const Entity *entity, const Player *player, bool bC
 
 	if (resource->IsDepleted())
 		dbFatalf("The chosen resource is already depleted");
+
+	if (RDNQuery::CanBeSeen(entity, player, bCheckFOW) == 0)
+		return false;
+
+	return true;
+}
+
+bool RDNQuery::CanBuild(const Entity *self, const Entity *target, bool bCheckFOW)
+{
+	if (self == 0)
+	{
+		dbBreak();
+		return 0;
+	}
+
+	dbTracef("RDNQuery::CanBuild | checking if %s can build %s",
+					 self->GetControllerBP()->GetFileName(), target->GetControllerBP()->GetFileName());
+
+	EntityGroup g;
+	g.push_back(const_cast<Entity *>(self));
+
+	return CanBuild(g, target, bCheckFOW);
+}
+
+bool RDNQuery::CanBuild(const EntityGroup &group, const Entity *target, bool bCheckFOW)
+{
+	if (group.empty())
+	{
+		dbBreak();
+		return false;
+	}
+
+	if (!CanBeBuilt(target, group.front()->GetOwner(), bCheckFOW))
+		return false;
+
+	// check if any dude in the group can do it
+	EntityGroup::const_iterator entityIterator = group.begin();
+	EntityGroup::const_iterator iteratorEnd = group.end();
+
+	for (; entityIterator != iteratorEnd; ++entityIterator)
+	{
+		Entity *theEntity = *entityIterator;
+		if (theEntity->GetControllerBP()->GetControllerType() == Henchmen_EC)
+			return true;
+	}
+
+	return false;
+}
+
+bool RDNQuery::CanBeBuilt(const Entity *entity, const Player *player, bool bCheckFOW)
+{
+	if (entity == 0)
+		return false;
+
+	const Player *owner = entity->GetOwner();
+
+	// TODO: in the future this will need to be changed so that teammates can build
+	// eachothers buildings
+	if (!owner || owner->GetID() != player->GetID())
+		return false;
+
+	const BuildingExt *building = QIExt<BuildingExt>(entity);
+
+	if (!building)
+		return false;
+
+	if (building->IsBuilt())
+		return false;
 
 	if (RDNQuery::CanBeSeen(entity, player, bCheckFOW) == 0)
 		return false;

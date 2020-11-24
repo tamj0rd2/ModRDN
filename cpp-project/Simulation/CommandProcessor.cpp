@@ -24,6 +24,7 @@
 #include "ExtInfo/MovingExtInfo.h"
 #include "ExtInfo/HealthExtInfo.h"
 
+#include "States/StateBuild.h"
 #include "States/StateDead.h"
 #include "States/StateGather.h"
 #include "States/StateMove.h"
@@ -278,22 +279,30 @@ bool CommandProcessor::ValidateCommand(const EntityCommand *pEntCmd)
 //
 bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 {
-	dbTracef("CommandProcessor::CommandDoProcessNow");
+	std::string logPrefix = "CommandProcessor::CommandDoProcessNow";
+	dbTracef("%s", logPrefix);
 
 	// grab the current state
 	State *pCurState = m_pMC->QIActiveState();
-	dbAssert(pCurState);
+	if (!pCurState)
+		dbFatalf("%s no current state", logPrefix);
 
 	// make sure the given command is valid
 	if (pEntCmd && !ValidateCommand(pEntCmd))
 	{
 		// command is invalid
+		dbFatalf("%s no current state", logPrefix);
 		return true;
 	}
 
 	// If the current state rejects these commands, then we eat the command
 	if (pEntCmd && pCurState->AcceptCommand(pEntCmd->GetCommand()) == false)
+	{
+		dbFatalf("%s state does not accept the command", logPrefix);
 		return true;
+	}
+
+	dbTracef("%s Got this far", logPrefix);
 
 	// early out for queued commands
 	if (pEntCmd->GetFlags() & CMDF_Queue)
@@ -450,6 +459,14 @@ bool CommandProcessor::CommandDoProcessNow(const EntityCommand *pEntCmd)
 		case CMD_Gather:
 		{
 			if (HasState(State::SID_Gather))
+			{
+				processed = false;
+			}
+			break;
+		}
+		case CMD_BuildBuilding:
+		{
+			if (HasState(State::SID_Build))
 			{
 				processed = false;
 			}
@@ -658,6 +675,12 @@ bool CommandProcessor::Update(const EntityCommand *pEntCmd)
 				if (HasState(State::SID_Gather))
 				{
 					ToStateGather(const_cast<Entity *>(pEntCmd_EE->GetTargets().front()));
+				}
+				break;
+			case CMD_BuildBuilding:
+				if (HasState(State::SID_Build))
+				{
+					ToStateBuild(const_cast<Entity *>(pEntCmd_EE->GetTargets().front()));
 				}
 				break;
 			}
@@ -987,6 +1010,17 @@ void CommandProcessor::ToStateGather(const Entity *pResourceEntity)
 	m_pMC->SetActiveState(StateGather::StateID);
 }
 
+// BuildBuilding state
+void CommandProcessor::ToStateBuild(const Entity *pBuildingEntity)
+{
+	StateBuild *pStateBuild = GETSTATE(StateBuild);
+	if (!pStateBuild)
+		dbFatalf("No build state for the building entity %s", pBuildingEntity->GetControllerBP()->GetFileName());
+
+	pStateBuild->Enter(pBuildingEntity);
+	m_pMC->SetActiveState(StateBuild::StateID);
+}
+
 /////////////////////////////////////////////////////////////////////
 // Desc.     :
 // Result    :
@@ -1016,6 +1050,12 @@ unsigned long CommandProcessor::GetDefaultEntityEntityCommand(const Entity *pMe,
 	{
 		dbTracef("Can gather :D");
 		return CMD_Gather;
+	}
+
+	if (RDNQuery::CanBuild(pMe, pTe))
+	{
+		dbTracef("Can build :D");
+		return CMD_BuildBuilding;
 	}
 
 	// Fallback if all cases above fail
@@ -1076,6 +1116,12 @@ bool CommandProcessor::CanDoCommand(const Entity *pMe, unsigned long command, un
 		break;
 	case CMD_Gather:
 		if (GETSTATEENTITY(pMe, StateGather))
+		{
+			return true;
+		}
+		break;
+	case CMD_BuildBuilding:
+		if (GETSTATEENTITY(pMe, StateBuild))
 		{
 			return true;
 		}
