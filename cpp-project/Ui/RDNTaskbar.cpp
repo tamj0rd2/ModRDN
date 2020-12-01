@@ -490,8 +490,7 @@ static bool IsControllerTypeUnit(unsigned long ctype)
 
 static void DetermineModalCursor(char *cursor, size_t len, int &ttStrId, unsigned long mode, const RDNPlayer *player, const Entity *mouseOverEntity, const EntityGroup &selection)
 {
-	UNREF_P(len);
-	UNREF_P(selection);
+	dbTracef("RDNTaskbar::DetermineModalCursor is probably not implemented properly");
 
 	// init out parms
 	strcpy(cursor, "default");
@@ -1188,10 +1187,7 @@ void RDNTaskbar::BindHudToTooltip(const char *hud, const char *tooltipcb, int pa
 
 void RDNTaskbar::CommandQueueEnable(const char *hotkeyLuaName, const char *releaseCallback)
 {
-	dbTracef("RDNTaskbar::CommandQueueEnable");
-
-	// we ignore the hotkeyLuaname for now
-	UNREF_P(hotkeyLuaName);
+	dbTracef("RDNTaskbar::CommandQueueEnable is probably not implemented properly");
 
 	m_pimpl->m_commandQueueEnable = true;
 	m_pimpl->m_commandQueueReleaseCB = releaseCallback;
@@ -2873,8 +2869,7 @@ void RDNTaskbar::ShowHud(const char *hud)
 
 void RDNTaskbar::GetCursorInfoOverride(char *cursor, size_t len, int &ttStrId, const Entity *mouseOverEntity)
 {
-	UNREF_P(len);
-	UNREF_P(mouseOverEntity);
+	// TODO: RDNTaskbar::GetCursorInfoOverride is probably not implemented properly
 
 	// check if we are in modal mode - false means 'no we are not'
 	if (m_pimpl->m_cursorOverride == false)
@@ -2891,7 +2886,7 @@ void RDNTaskbar::GetCursorInfoOverride(char *cursor, size_t len, int &ttStrId, c
 
 void RDNTaskbar::OnIngameTooltip(int ttStrId)
 {
-	UNREF_P(ttStrId);
+	// TODO: RDNTaskbar::OnIngameTooltip not implemented
 }
 
 void RDNTaskbar::BindLabelToResource(const char *label, int resource)
@@ -3121,7 +3116,7 @@ void RDNTaskbar::BindButtonToGroup(const char *button, const char *callback_left
 
 void RDNTaskbar::ButtonUpdateBuilding(const char *button, int parm0, int parm1)
 {
-	UNREF_P(parm1);
+	dbTracef("RDNTaskbar::ButtonUpdateBuilding probably not implemented properly");
 
 	//
 	const bool enabled =
@@ -3454,8 +3449,7 @@ void RDNTaskbar::BindButtonToChat(const char *button, const char *hotkeyLuaName,
 //
 void RDNTaskbar::ButtonUpdateChat(const char *button, int parm0, int parm1)
 {
-	UNREF_P(parm0);
-	UNREF_P(parm1);
+	dbTracef("RDNTaskbar::ButtonUpdateChat possibly not implemented properly");
 
 	//
 	const int r =

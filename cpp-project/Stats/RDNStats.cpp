@@ -147,7 +147,8 @@ void RDNStats::RecordFrame(const RDNWorld *pWorld)
 
 void RDNStats::RecordStop(const RDNWorld *pWorld)
 {
-	UNREF_P(pWorld);
+	// TODO: implement this
+	dbTracef("RDNStats::RecordStop implementation probably needs a second look");
 
 	// unregister self from game events
 	GameEventSys::Instance()->UnregisterClient(this);
@@ -233,7 +234,8 @@ void RDNStats::Load(IFF &iff)
 
 unsigned long RDNStats::HandleSLOG(IFF &iff, ChunkNode *node, void *ctx1, void *ctx2)
 {
-	UNREF_P(node);
+	// TODO: implement this
+	dbTracef("RDNStats::HandleSLOG implementation probably needs a second look");
 
 	// player stats
 	iff.AddParseHandler(&HandleSLGS, Type_NormalVers, 'SLGS', ctx1, ctx2);
@@ -244,8 +246,8 @@ unsigned long RDNStats::HandleSLOG(IFF &iff, ChunkNode *node, void *ctx1, void *
 
 unsigned long RDNStats::HandleSLGS(IFF &iff, ChunkNode *node, void *ctx1, void *ctx2)
 {
-	UNREF_P(node);
-	UNREF_P(ctx2);
+	// TODO: implement this
+	dbTracef("RDNStats::HandleSLGS implementation probably needs a second look");
 
 	RDNStats *pThis = static_cast<RDNStats *>(ctx1);
 	dbAssert(pThis);
@@ -257,8 +259,7 @@ unsigned long RDNStats::HandleSLGS(IFF &iff, ChunkNode *node, void *ctx1, void *
 
 unsigned long RDNStats::HandleSLPS(IFF &iff, ChunkNode *node, void *ctx1, void *ctx2)
 {
-	UNREF_P(node);
-	UNREF_P(ctx2);
+	dbTracef("RDNStats::HandleSLPS implementation probably needs a second look");
 
 	//
 	RDNStats *pThis = static_cast<RDNStats *>(ctx1);

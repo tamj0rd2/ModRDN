@@ -56,24 +56,22 @@ namespace
 
 		virtual size_t UnitsTypeCount(unsigned long idplayer) const
 		{
-			UNREF_P(idplayer);
-
+			// TODO: implement this
+			dbTracef("RDNDLLScore::UnitsTypeCount not implemented");
 			return 0;
 		}
 
 		virtual long UnitsTypeAt(unsigned long idplayer, size_t index) const
 		{
-			UNREF_P(idplayer);
-			UNREF_P(index);
-
+			// TODO: implement this
+			dbTracef("RDNDLLScore::UnitsTypeAt not implemented");
 			return 0;
 		}
 
 		virtual int UnitTotal(unsigned long idplayer, long ebpid) const
 		{
-			UNREF_P(idplayer);
-			UNREF_P(ebpid);
-
+			// TODO: implement this
+			dbTracef("RDNDLLScore::UnitTotal not implemented");
 			return 0;
 		}
 
@@ -84,35 +82,39 @@ namespace
 
 		virtual void StatListAt(size_t idx, wchar_t *out, size_t outlen) const
 		{
-			UNREF_P(idx);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::StatListAt not implemented");
 
 			wcsncpy(out, L"StatListAt", outlen);
 		}
 
 		virtual void StatListTooltipAt(size_t idx, wchar_t *out, size_t outlen) const
 		{
-			UNREF_P(idx);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::StatListTooltipAt not implemented");
 
 			wcsncpy(out, L"StatListTooltipAt", outlen);
 		}
 
 		virtual TabType StatListTabTypeAt(size_t idx) const
 		{
-			UNREF_P(idx);
-
+			// TODO: implement this
+			dbTracef("RDNDLLScore::StatListTabTypeAt not implemented");
 			return TT_ByPlayer;
 		}
 
 		virtual ValueType StatListTypeAt(size_t idx) const
 		{
-			UNREF_P(idx);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::StatListTypeAt not implemented");
 
 			return VT_Number;
 		}
 
 		virtual DecoratorFunc StatListDecoratorFuncAt(size_t idx) const
 		{
-			UNREF_P(idx);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::StatListDecoratorFuncAt not implemented");
 
 			return DF_None;
 		}
@@ -120,8 +122,8 @@ namespace
 		// value for that column on that tab
 		virtual void StatListValue(size_t idx, unsigned long idplayer, int &out) const
 		{
-			UNREF_P(idx);
-			UNREF_P(idplayer);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::StatListValue not implemented");
 
 			out = 0;
 
@@ -130,9 +132,8 @@ namespace
 
 		virtual void StatListValue(size_t idx, unsigned long idplayer, long ebpnetid, int &out) const
 		{
-			UNREF_P(idx);
-			UNREF_P(idplayer);
-			UNREF_P(ebpnetid);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::StatListValue not implemented");
 
 			out = 0;
 
@@ -188,23 +189,23 @@ namespace
 
 		virtual ValueType ScoresTabColumnType(size_t tabIndex, size_t columnIndex) const
 		{
-			UNREF_P(tabIndex);
-			UNREF_P(columnIndex);
-
+			// TODO: implement this
+			dbTracef("RDNDLLScore::ScoresTabColumnType not implemented");
 			return VT_Number;
 		}
 
 		virtual DecoratorFunc ScoresTabColumnDecoratorFunc(size_t tabIndex, size_t columnIndex) const
 		{
-			UNREF_P(tabIndex);
-			UNREF_P(columnIndex);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::ScoresTabColumnDecoratorFunc not implemented");
 
 			return DF_None;
 		}
 
 		virtual TabType ScoresTabType(size_t tabIndex) const
 		{
-			UNREF_P(tabIndex);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::ScoresTabType not implemented");
 
 			return TT_Custom;
 		}
@@ -215,7 +216,8 @@ namespace
 				unsigned long arg0,
 				int &out) const
 		{
-			UNREF_P(arg0);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::ScoresTabColumnValue not implemented");
 
 			// validate parm
 			dbAssert(tabIndex < DLLScoreInterface::NUMTABS);
@@ -233,8 +235,8 @@ namespace
 				long arg1,
 				int &out) const
 		{
-			UNREF_P(arg0);
-			UNREF_P(arg1);
+			// TODO: implement this
+			dbTracef("RDNDLLScore::ScoresTabColumnValue not implemented");
 
 			// validate parm
 			dbAssert(tabIndex < DLLScoreInterface::NUMTABS);
@@ -253,20 +255,8 @@ namespace
 				wchar_t *out,
 				size_t outlen) const
 		{
-			// validate parm
-			dbAssert(tabIndex < DLLScoreInterface::NUMTABS);
-			dbAssert(columnIndex < DLLScoreInterface::NUMCOLUMNS);
-
-			// init out parm
-			out[0] = L'\0';
-
-			// this function should never be called
-			UNREF_P(idplayer);
-			UNREF_P(out);
-			UNREF_P(outlen);
-
-			dbFatalf("ScoresTabColumn value badness");
-
+			// TODO: implement this
+			dbFatalf("RDNDLLScore::ScoresTabColumnValue apparently this function should never be called... facepalm");
 			return;
 		}
 	};

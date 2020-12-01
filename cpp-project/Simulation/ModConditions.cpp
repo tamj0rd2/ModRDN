@@ -868,8 +868,6 @@ bool IsEntityDeadCondition::Evaluate(TExpression::EvaluateParms &ep)
 
 bool GroupCashCondition::Evaluate(TExpression::EvaluateParms &ep)
 {
-	UNREF_P(ep);
-
 	long groupID = GetArg(0).GetGroupID();
 	TArgument::CompareType compare = GetArg(1).GetCompare();
 	float amount = GetArg(2).GetFloat();

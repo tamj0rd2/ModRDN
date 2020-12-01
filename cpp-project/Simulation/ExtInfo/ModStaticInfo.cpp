@@ -15,7 +15,8 @@
 
 const ModStaticInfo::ExtInfo *ModStaticInfo::QInfo(unsigned char id) const
 {
-	UNREF_P(id);
+	// TODO: implement this
+	dbTracef("ModStaticInfo::QInfo not implemented");
 
 	return 0;
 }

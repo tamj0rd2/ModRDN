@@ -311,6 +311,7 @@ void RDNSimProxy::Notify_Insertion(Entity *e)
 	UNREF_P(e);
 
 	// flag
+	// TODO: figure out what this m_dirty and m_newSelection business actually does
 	m_pimpl->m_dirty = true;
 	m_pimpl->m_newSelection = true;
 

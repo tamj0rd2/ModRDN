@@ -244,10 +244,9 @@ void HenchmenController::NotifyHealthGone()
 //	Param.	:
 //	Author	:
 //
+// TODO: implement this
 void HenchmenController::OnApplyDamage(const float amountdone, const DamageType type)
 {
-	UNREF_P(type);
-
 	if (amountdone > 0.0f)
 	{
 		// start attack effect
@@ -440,10 +439,9 @@ void HenchmenController::Load(IFF &iff)
 // Param.    :
 // Author    :
 //
+// TODO: implement this
 unsigned long HenchmenController::HandleGYEC(IFF &iff, ChunkNode *, void *pContext1, void *)
 {
-	UNREF_P(iff);
-
 	HenchmenController *pHenchmenController = static_cast<HenchmenController *>(pContext1);
 	dbAssert(pHenchmenController);
 

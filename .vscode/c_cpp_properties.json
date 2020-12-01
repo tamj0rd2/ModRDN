@@ -11,8 +11,8 @@
       ],
       "defines": [
         "RELIC_PC",
+        "RELIC_DEBUG",
         "WIN32",
-        // "NDEBUG",
         "_WINDOWS",
         "_USRDLL",
         "_MBCS",

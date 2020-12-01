@@ -145,10 +145,10 @@ inline bool ControllerBlueprint::IsBuilding() const
 	case RemoteChamber_EC:
 	case WaterChamber_EC:
 	case Aviary_EC:
-	case ElectricGenerator_EC:
 	case BrambleFence_EC:
 	case Foundry_EC:
 	case SoundBeamTower_EC:
+	case ElectricGenerator_EC:
 		return true;
 	default:
 		return false;

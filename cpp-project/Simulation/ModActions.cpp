@@ -720,8 +720,6 @@ public:
 
 bool OrderGroupToLocationAction::Evaluate(TExpression::EvaluateParms &ep)
 {
-	UNREF_P(ep);
-
 	long groupID = GetArg(0).GetGroupID();
 	long entId = GetArg(1).GetEntity();
 
@@ -763,8 +761,6 @@ bool OrderGroupToLocationAction::Evaluate(TExpression::EvaluateParms &ep)
 
 bool OrderGroupToStopAction::Evaluate(TExpression::EvaluateParms &ep)
 {
-	UNREF_P(ep);
-
 	long groupID = GetArg(ARG_GROUP).GetGroupID();
 
 	ESimGroup *egroup = ModObj::i()->GetTriggerFactory()->GetEGroup(groupID);
@@ -854,8 +850,6 @@ bool OrderGroupToMoveRandomlyAction::Evaluate(TExpression::EvaluateParms &ep)
 
 bool Group2GroupAction::Evaluate(TExpression::EvaluateParms &ep)
 {
-	UNREF_P(ep);
-
 	long groupID0 = GetArg(0).GetGroupID();
 	long groupID1 = GetArg(1).GetGroupID();
 
@@ -906,8 +900,6 @@ bool Group2GroupAction::Evaluate(TExpression::EvaluateParms &ep)
 
 bool OrderGroupToDoCommandAction::Evaluate(TExpression::EvaluateParms &ep)
 {
-	UNREF_P(ep);
-
 	long groupID = GetArg(ARG_GROUP).GetGroupID();
 	long entityCmd = GetArg(ARG_ENTITYCMD).GetEnum();
 	long entId = GetArg(ARG_ENTITY).GetEntity();

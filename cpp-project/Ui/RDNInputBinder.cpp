@@ -843,10 +843,9 @@ void RDNInputBinder::UpdateKeyCombo(size_t group, size_t key, const char *keyCom
 // Param.    :
 // Author    :
 //
+// TODO: implement this
 RDNInputBinder::SetKeyResult RDNInputBinder::IsKeyChangeValid(size_t group, size_t key, const char *keyCombo)
 {
-	UNREF_P(key);
-
 	// early out if key group is locked
 	if ((m_pimpl->m_groups[group]->GetKeyGroup().type == KGT_GlobalLocked) ||
 			(m_pimpl->m_groups[group]->GetKeyGroup().type == KGT_GlobalLockedAndHidden))

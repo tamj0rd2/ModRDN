@@ -171,8 +171,6 @@ void RDNMiniMap::RegisterCallbacksToButtons()
 //
 void RDNMiniMap::UpdatePoints(float elapsedSeconds)
 {
-	UNREF_P(elapsedSeconds);
-
 	// let the hud know we are going to be adding points
 	m_pimpl->m_miniMap->BeginMarkingPoints();
 
@@ -402,8 +400,6 @@ void RDNMiniMap::UpdateBlips(float elapsedSeconds)
 //
 void RDNMiniMap::UpdateFog(float elapsedSeconds)
 {
-	UNREF_P(elapsedSeconds);
-
 	if (m_pimpl->m_pPlayer != 0 &&
 			m_pimpl->m_pPlayer->IsPlayerDead() == 0 &&
 			m_pimpl->m_fowRevealAll == 0)

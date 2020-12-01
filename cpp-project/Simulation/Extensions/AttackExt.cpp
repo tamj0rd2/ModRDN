@@ -105,11 +105,10 @@ void AttackExt::DoDamageToTimeBased(const AttackPackage &attack, const float num
 //	Result	:
 //	Param.	:
 //
+// TODO: implement this
 void AttackExt::AttackDamageModifiers(const AttackPackage &attack, const Entity *pTarget,
 																			float &multiplier, float &bonus) const
 {
-	UNREF_P(pTarget);
-
 	multiplier = m_Multiplier;
 	bonus = 0;
 

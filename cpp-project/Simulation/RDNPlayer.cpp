@@ -513,6 +513,7 @@ void RDNPlayer::FoWUpdate(const RDNWorld *)
 // Param.    :
 // Author    :
 //
+// TODO: implement this
 void RDNPlayer::CommandDoProcess(
 		const unsigned int cmd,
 		const unsigned long param,
@@ -520,8 +521,6 @@ void RDNPlayer::CommandDoProcess(
 		Player *sender)
 {
 	dbTracef("RDNPlayer::CommandDoProcess");
-
-	UNREF_P(flags);
 
 	switch (cmd)
 	{
@@ -541,6 +540,7 @@ void RDNPlayer::CommandDoProcess(
 // Param.    :
 // Author    :
 //
+// TODO: implement this
 void RDNPlayer::CommandDoProcess(
 		const unsigned int cmd,
 		const unsigned long param,
@@ -550,15 +550,6 @@ void RDNPlayer::CommandDoProcess(
 		const Vec3f *pos,
 		const size_t posCount)
 {
-	// no commands
-	UNREF_P(cmd);
-	UNREF_P(param);
-	UNREF_P(flags);
-	UNREF_P(sender);
-	UNREF_P(entities);
-	UNREF_P(pos);
-	UNREF_P(posCount);
-
 	switch (cmd)
 	{
 	case CMD_BuildBuilding:
@@ -734,8 +725,6 @@ int RDNPlayer::PopulationTotal() const
 //
 void RDNPlayer::SpawnEntity(Entity *pEntity)
 {
-	UNREF_P(pEntity);
-
 	// observers
 	PlayerObserverList::iterator oi = m_observers.begin();
 	PlayerObserverList::iterator oe = m_observers.end();
@@ -838,10 +827,9 @@ void RDNPlayer::RemoveTaggedEntity(Entity *e)
 //	Param.	:
 //	Author	:
 //
+// TODO: implement this
 void RDNPlayer::CmdCheatCash(Player *sender, unsigned long n)
 {
-	UNREF_P(sender);
-
 	// validate cheat
 	if (RDNDllSetup::Instance()->GetCheats() != RDNDllSetup::CHT_Yes)
 		return;

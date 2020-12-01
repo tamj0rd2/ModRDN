@@ -259,27 +259,31 @@ namespace
 
 		virtual void InitLuaAI(LuaConfig *lc)
 		{
-			UNREF_P(lc);
-			//	lc->RegisterLibrary( LUALIB_RDNAI );
+			// TODO: implement this
+			dbTracef("RDNDLL::InitLuaAI not implemented");
+			// lc->RegisterLibrary( LUALIB_RDNAI );
 		}
 
 		virtual void ShutLuaAI(LuaConfig *lc)
 		{
-			UNREF_P(lc);
-			//	lc->DeRegisterLibrary( LUALIB_RDNAI );
+			// TODO: implement this
+			dbTracef("RDNDLL::ShutLuaAI not implemented");
+			// lc->DeRegisterLibrary( LUALIB_RDNAI );
 		}
 
 		// inherited -- DLLSimInterface
 	private:
 		virtual bool InitLuaSim(LuaConfig *lc)
 		{
-			UNREF_P(lc);
+			// TODO: implement this
+			dbTracef("RDNDLL::InitLuaSim not implemented");
 			return true;
 		}
 
 		virtual void ShutLuaSim(LuaConfig *lc)
 		{
-			UNREF_P(lc);
+			// TODO: implement this
+			dbTracef("RDNDLL::ShutLuaSim not implemented");
 		}
 
 		virtual void InitTriggers()
@@ -486,12 +490,14 @@ namespace
 	private:
 		virtual void InitLuaGui(LuaConfig *lc)
 		{
-			UNREF_P(lc);
+			// TODO: implement this
+			dbTracef("RDNDLL::InitLuaGui not implemented");
 		}
 
 		virtual void ShutLuaGui(LuaConfig *lc)
 		{
-			UNREF_P(lc);
+			// TODO: implement this
+			dbTracef("RDNDLL::ShutLuaGui not implemented");
 		}
 
 		virtual void OnEntityCreate(const Entity *e)

@@ -189,10 +189,7 @@ void RDNWorld::CreateWorld(SimEngineInterface *p, bool missionEd)
 	dbAssert(RDNWorld::Data::s_instance == 0);
 
 	// create it
-	RDNWorld *dummy = new RDNWorld(p, missionEd);
-
-	// ignore return value
-	UNREF_P(dummy);
+	new RDNWorld(p, missionEd);
 
 	// make sure it got created correctly
 	dbAssert(RDNWorld::Data::s_instance != 0);

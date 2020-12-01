@@ -247,7 +247,7 @@ bool RDNHUD::EntityVisible(const Entity *e) const
 
 void RDNHUD::EntityVisUpdate(const Entity *pEntity, const Vec3f &interpPos, bool bSelected)
 {
-	UNREF_P(bSelected);
+	// TODO: RDNHUD::EntityVisUpdate implementation probs needs a look. Unused bSelected arg
 
 	// fow stuff
 	m_pimpl->m_taskbar->UpdateEntityFow(pEntity);
@@ -323,7 +323,8 @@ void RDNHUD::DoCommand(const Vec3f *v, unsigned long num)
 
 void RDNHUD::UIPause(bool bPause)
 {
-	UNREF_P(bPause);
+	// TODO: implement this
+	dbTracef("RDNHUD::UIPause not implemented");
 }
 
 void RDNHUD::ShowModOptions(void)
@@ -363,7 +364,8 @@ void RDNHUD::OnCinematicMode(bool bCinematic)
 
 void RDNHUD::OnShowTeamColour(bool bShow)
 {
-	UNREF_P(bShow);
+	// TODO: implement this
+	dbTracef("RDNHUD::OnShowTeamColour not impelemented");
 }
 
 void RDNHUD::OnResetSM()

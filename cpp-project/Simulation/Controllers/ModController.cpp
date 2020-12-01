@@ -149,8 +149,8 @@ State *ModController::QIStateAll(unsigned char)
 //
 void ModController::SetActiveState(unsigned char stateid)
 {
-	UNREF_P(stateid);
-
+	// TODO: implement this
+	dbTracef("ModController::SetActiveState not implemented");
 	dbAssert(stateid != State::SID_Current);
 
 	dbBreak();

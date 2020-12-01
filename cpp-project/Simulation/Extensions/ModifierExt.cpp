@@ -23,7 +23,8 @@ namespace
 {
 	Modifier *CreateModifier(long ModID)
 	{
-		UNREF_P(ModID);
+		// TODO: implement this
+		dbTracef("ModifierExt::CreateModifier not implemented");
 		/***
 		switch ( ModID )
 		{
@@ -41,7 +42,8 @@ namespace
 
 	unsigned long GetModifierVersion(long ModID)
 	{
-		UNREF_P(ModID);
+		// TODO: implement this
+		dbTracef("ModifierExt::GetModifierVersion not impelemented");
 		/***
 		switch ( ModID )
 		{

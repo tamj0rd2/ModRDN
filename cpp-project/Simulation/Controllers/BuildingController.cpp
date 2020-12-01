@@ -128,8 +128,18 @@ bool BuildingController::CommandDoProcessNow(const EntityCommand *ec)
 	return ModController::CommandDoProcessNow(ec);
 }
 
+// TODO: implement this
+bool BuildingController::Update(const EntityCommand *pEC)
+{
+	dbTracef("BuildingController::Update");
+	return ModController::Update(pEC);
+}
+
+// TODO: implement this
 void BuildingController::Execute()
 {
+	dbTracef("BuildingController::Execute");
+
 	// forward to base class
 	ModController::Execute();
 

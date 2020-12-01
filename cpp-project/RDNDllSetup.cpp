@@ -680,8 +680,8 @@ void RDNDllSetup::OptionChoiceName(wchar_t *out, size_t outlen, unsigned long op
 
 bool RDNDllSetup::OptionChoiceAISupport(unsigned long optionID, size_t choice) const
 {
-	UNREF_P(optionID);
-	UNREF_P(choice);
+	// TODO: implement this
+	dbTracef("RDNDllSetup::OptionChoiceAISupport not implemented");
 
 	//	No AI yet
 	return false;

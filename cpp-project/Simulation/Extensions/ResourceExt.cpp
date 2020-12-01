@@ -153,10 +153,10 @@ unsigned long ResourceExt::HandleERCE(IFF &iff, ChunkNode *, void *pContext1, vo
 // Result    :
 // Param.    :
 // Author    :
-//
 void ResourceExt::BurnInCantBuild(TerrainCellMap *pTCMap)
 {
-	UNREF_P(pTCMap);
+	// TODO: implement this
+	dbTracef("ResourceExt::BurnInCantBuild not implemented and REALLY needs implementing");
 	/***
 	// Burn in an extra perimmeter around myself so that no structures can be built close to me
 	long cellx, cellz;
@@ -181,7 +181,8 @@ void ResourceExt::BurnInCantBuild(TerrainCellMap *pTCMap)
 //
 void ResourceExt::UnBurnCantBuild(TerrainCellMap *pTCMap)
 {
-	UNREF_P(pTCMap);
+	// TODO: implement this
+	dbTracef("ResourceExt::UnBurnCantBuild not implemented and REALLY needs implementing");
 	/***
 	// Un-Burn in the extra perimmeter around myself so that no structures can be built close to me
 	long cellx, cellz;

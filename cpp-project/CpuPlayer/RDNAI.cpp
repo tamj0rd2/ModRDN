@@ -67,7 +67,8 @@ RDNAI::~RDNAI()
 
 void RDNAI::AIInit(unsigned long PlayerID, const char *script)
 {
-	UNREF_P(script);
+	// TODO: implement this
+	dbTracef("RDNAI::AIInit not implemented");
 
 	dbAssert(m_player == NULL);
 	m_player = static_cast<RDNPlayer *>(ModObj::i()->GetWorld()->GetPlayerFromID(PlayerID));

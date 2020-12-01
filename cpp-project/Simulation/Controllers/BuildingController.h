@@ -72,6 +72,7 @@ public:
 	virtual void OnDeSpawnEntity();
 
 	virtual void Execute();
+	virtual bool Update(const EntityCommand *);
 
 	virtual Extension *QI(unsigned char InterfaceID);
 

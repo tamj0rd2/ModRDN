@@ -166,12 +166,10 @@ bool HealthExt::ImmuneTo(DamageType) const
 // Param.    :
 // Author    :
 //
+// TODO: implement this
 bool HealthExt::ReceivesNoDamageFrom(const DamageType damagetype, const AttackType attacktype, const Entity *pAttacker) const
 {
-	UNREF_P(damagetype);
-	UNREF_P(pAttacker);
-	UNREF_P(attacktype);
-
+	dbTracef("HealthExt::ReceivesNoDamageFrom not implemented");
 	return false;
 }
 
@@ -280,8 +278,6 @@ float HealthExt::ApplyRepair(const float amount)
 //
 float HealthExt::ApplyDamage(const float amount, const float damageBonus, const DamageType type, const AttackType attacktype, Entity *pAttacker)
 {
-	UNREF_P(attacktype);
-
 	// Always remember the last attacker
 	m_lastAttacker.clear();
 	if (pAttacker)
@@ -328,8 +324,7 @@ void HealthExt::ApplyFullDamage(const float amount, const DamageType type, const
 //
 void HealthExt::OnApplyDamage(const float amountdone, const DamageType type)
 {
-	UNREF_P(amountdone);
-	UNREF_P(type);
+	dbTracef("HealthExt::OnApplyDamage not implemented");
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -526,8 +521,7 @@ void HealthExt::ClearHealthAttributeBit(const HealthAttribute mask)
 //
 bool HealthExt::UpdateDamageState(DamageType type, AttackType attacktype, Entity *attacker)
 {
-	UNREF_P(attacker);
-	UNREF_P(attacktype);
+	dbTracef("HealthExt::OnApplyDamage not implemented properly");
 
 	if (ImmuneTo(type))
 	{

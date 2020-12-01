@@ -1075,7 +1075,6 @@ unsigned long CommandProcessor::GetDefaultEntityEntityCommand(const Entity *pMe,
 //
 bool CommandProcessor::CanDoCommand(const Entity *pMe, unsigned long command, unsigned long param)
 {
-	UNREF_P(param);
 	dbTracef("CommandProcessor::CanDoCommand");
 
 	// grab the current state
@@ -1140,7 +1139,6 @@ bool CommandProcessor::CanDoCommand(const Entity *pMe, unsigned long command, un
 bool CommandProcessor::CanDoCommand(const Entity *pMe, const Entity *pTarget, unsigned long command, unsigned long param)
 {
 	dbTracef("CommandProcessor::CanDoCommand overload");
-	UNREF_P(param);
 
 	// grab the current state
 	if (!pMe->GetController())

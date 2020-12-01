@@ -315,6 +315,14 @@ namespace
 	ControllerPriority CONTROLLER_PRIORITY[] =
 			{
 					{Lab_EC, 100},
+					{ResourceRenew_EC, 100},
+					{RemoteChamber_EC, 100},
+					{WaterChamber_EC, 100},
+					{Aviary_EC, 100},
+					{BrambleFence_EC, 100},
+					{Foundry_EC, 100},
+					{SoundBeamTower_EC, 100},
+					{ElectricGenerator_EC, 100},
 					{Henchmen_EC, 100},
 					{Coal_EC, 0},
 	};
@@ -667,10 +675,9 @@ bool RDNQuery::IsEnemy(const Entity *e, const Player *p)
 //			  p - the Player wanting to attack
 //			  bCheckRelationship - will be true if we want to check alliances, etc.
 //
+// TODO: implement this
 bool RDNQuery::CanBeAttacked(const Entity *e, const Player *p, bool bCheckRelationship, bool bCheckFOW, bool bCheckVis)
 {
-	UNREF_P(bCheckRelationship); //	used for alliance system
-
 	// validate parm
 	if (e == 0)
 		return false;
@@ -704,10 +711,9 @@ bool RDNQuery::CanBeAttacked(const Entity *e, const Player *p, bool bCheckRelati
 //	Result	:
 //	Param.	:
 //
+// TODO: implement this
 bool RDNQuery::CanRallyTo(const Entity *e, const Player *p)
 {
-	UNREF_P(p);
-
 	if (!e)
 	{ // rally at a point
 		return (true);
@@ -805,11 +811,9 @@ bool RDNQuery::CanAttack(const Entity *self, const Entity *target, bool bCheckRe
 //	Param.	:
 //	Author	: dswinerd
 //
+// TODO: implement this
 bool RDNQuery::CanDoCommand(const EntityGroup &selection, const EntityGroup &targets, unsigned char command, unsigned long param)
 {
-	UNREF_P(command);
-	UNREF_P(param);
-
 	if (selection.empty() || targets.empty())
 	{
 		// nothing can't do anything
