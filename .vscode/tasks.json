@@ -50,6 +50,7 @@
     },
     {
       "label": "build",
+      "type": "shell",
       "command": "python ./scripts/build.py --install",
       "group": {
         "kind": "build",

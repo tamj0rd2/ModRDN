@@ -1,13 +1,13 @@
 /////////////////////////////////////////////////////////////////////
 // $Id: //ICXP/Src/Shared/Cross/Debug/db.h#9 $
 //     (c) Relic Entertainment 2002
-// 
+//
 //! \file
 //! \brief		Main header of the debug system
 //! \ingroup	Debug
-//! 
+//!
 //! System: \ref Debug
-//! 
+//!
 //! >
 
 #pragma once
@@ -29,7 +29,7 @@
 #endif
 
 /////////////////////////////////////////////////////////////////////
-// 
+//
 
 #ifndef RELIC_LIB
     #ifdef DEBUG_DLL
@@ -52,19 +52,19 @@ DEBUG_API void dbWarningfAux( unsigned long id, const char* format, ... );
 #if !defined( RELIC_DEBUG )
 	extern DEBUG_API const char*	g_dbFilename;
 	extern DEBUG_API unsigned long	g_dbLineNum;
-	
+
 	inline void dbTraceInfoAux( const char* filename, int line )
 	{
 		g_dbFilename = filename;
 		g_dbLineNum = line;
 	}
-	
+
 	inline bool dbAlwaysReallyTrueAux()
 	{
 		static bool t = true;
 		return t;
 	}
-	
+
 #else
 	DEBUG_API void dbAssertAux ( const char* file, int line, const char* expr );
 	DEBUG_API void dbPrintfAux ( const char* format, ... );
@@ -79,7 +79,7 @@ DEBUG_API void dbWarningfAux( unsigned long id, const char* format, ... );
 /////////////////////////////////////////////////////////////////////
 // structured exception handling (WIN32)
 
-extern "C" 
+extern "C"
 {
 	//lint -e{761}
 	typedef struct _EXCEPTION_POINTERS EXCEPTION_POINTERS, *PEXCEPTION_POINTERS;
@@ -91,20 +91,20 @@ extern "C"
 //! use this in a macro to generate a unique variable name
 #define UNIQUE_VAR(V) V##__FILE__##__LINE__
 
-//! use this to eliminate compiler warning generated when formal parameters or 
+//! use this to eliminate compiler warning generated when formal parameters or
 //! local variables are not declared
-#define UNREF_P(P) (P) 
+#define UNREF_P(P) (P)
 
 /////////////////////////////////////////////////////////////////////
 // debug output
 
 typedef void (*dbStringOutputCB)( const char* lines[], size_t count, unsigned long id );
 
-//! register a dbPrintf output handler, 
+//! register a dbPrintf output handler,
 //! doesn't do anything when NDEBUG is defined
 DEBUG_API void dbOutputHandlerAdd( dbStringOutputCB outputCB );
 
-//! remove a previously registered dbPrintf output handler, 
+//! remove a previously registered dbPrintf output handler,
 //! doesn't do anything when NDEBUG is defined
 DEBUG_API void dbOutputHandlerRmv( dbStringOutputCB outputCB );
 
@@ -120,7 +120,7 @@ DEBUG_API void dbWarningHandlerAdd( unsigned long id, dbStringOutputCB outputCB 
 //! remove a previously registered dbWarningf output handler
 DEBUG_API void dbWarningHandlerRmv( unsigned long id, dbStringOutputCB outputCB );
 
-//! outputs a string to all registered handlers, 
+//! outputs a string to all registered handlers,
 //! compiled out when NDEBUG is defined,
 //! NOT THREAD-SAFE: use dbPrintf# if you need THREAD-SAFE
 #if defined( RELIC_DEBUG )
@@ -159,16 +159,16 @@ DEBUG_API void dbWarningHandlerRmv( unsigned long id, dbStringOutputCB outputCB 
 			break;														   \
 		}                                                                  \
 		while( dbAlwaysReallyTrueAux() ) /* this is never evaluated because of the break on the previous line */
-		
+
 #else
 	#define dbPrintfOnce(F)		//
 #endif
 
-//! outputs a string to all registered handlers, 
+//! outputs a string to all registered handlers,
 //! works in RELEASE & DEBUG mode
 #define dbTracef	dbTracefAux
 
-//! outputs a string through dbTracef, then halts the application, 
+//! outputs a string through dbTracef, then halts the application,
 //! works in RELEASE & DEBUG mode
 #define dbFatalf	dbTraceInfoAux(__FILE__,__LINE__),dbFatalfAux
 
@@ -177,22 +177,18 @@ DEBUG_API void dbWarningHandlerRmv( unsigned long id, dbStringOutputCB outputCB 
 #define dbWarningf dbWarningfAux
 
 //! validate an assertion, halts the application if false,
-//! compiled out when NDEBUG is defined
-#if defined( RELIC_DEBUG )
-	#define dbAssert(expr)	\
-		do                                                                 \
-		{                                                                  \
-			if( !(expr) )                                                  \
-			{                                                              \
-				dbAssertAux( __FILE__, __LINE__, #expr ); __asm { int 3 }; \
-			}                                                              \
-																		   \
-			break;                                                         \
-		}                                                                  \
-		while( dbAlwaysReallyTrueAux() ) /* this is never evaluated because of the break on the previous line */
-#else
-	#define dbAssert(A)
-#endif
+#define dbAssert(expr)                        \
+	do                                          \
+	{                                           \
+		if (!(expr))                              \
+		{                                         \
+			dbFatalf("Bad assertion: %s", #expr);   \
+			__asm { int 3};                         \
+		}                                         \
+                                              \
+		break;                                    \
+	} while (dbAlwaysReallyTrueAux()) /* this is never evaluated because of the break on the previous line */
+
 
 //! always halts the application,
 //! compiled out when NDEBUG is defined
@@ -210,7 +206,7 @@ DEBUG_API void dbWarningHandlerRmv( unsigned long id, dbStringOutputCB outputCB 
 
 //! convert a code address to a source location, as a string
 DEBUG_API bool	dbConvertAddress
-	( 
+	(
 	const long	codeAddress,
 	char*		buf,
 	size_t		buflen
@@ -218,7 +214,7 @@ DEBUG_API bool	dbConvertAddress
 
 //! convert a code address to a source location
 DEBUG_API bool	dbConvertAddress
-	( 
+	(
 	const long		codeAddress,
 	char			codeModl[ 256 ],
 	char			codeFunc[ 256 ],
@@ -233,44 +229,44 @@ DEBUG_API bool	dbConvertAddress
 //        : THREAD-SAFE
 //
 //		  : NOTE: 'fast' only works in debug
-//	Result: 
+//	Result:
 //	Params: FuncAddrArray - out parm, must be able to hold ( maxDepth - numSkip ) elements
 //	Author: Dom
 //
-DEBUG_API bool	dbDoStackTrace   
-	( 
+DEBUG_API bool	dbDoStackTrace
+	(
 	long*	FuncAddrArray,
-	size_t	maxDepth, 
+	size_t	maxDepth,
 	size_t	numSkip,
 	bool	fast
 	);
 
 /////////////////////////////////////////////////////////////////////
 //	Desc  : similar to the standard stack trace,
-//        : it should only be used when you have trapped an exception and 
+//        : it should only be used when you have trapped an exception and
 //        : would like the call stack at the point where the exception was thrown
-//	Result: 
+//	Result:
 //	Params: FuncAddrArray - out parm, must be able to hold ( maxDepth - numSkip ) elements
 //	Author: Dom
 //
-DEBUG_API bool	dbDoStackTrace    
-	( 
+DEBUG_API bool	dbDoStackTrace
+	(
 	long*	FuncAddrArray,
-	size_t	maxDepth, 
-	size_t	numSkip, 
-	const EXCEPTION_POINTERS* data 
+	size_t	maxDepth,
+	size_t	numSkip,
+	const EXCEPTION_POINTERS* data
 	);
 
 /////////////////////////////////////////////////////////////////////
 //	Desc  : This will write out a mini-dump file that can be loaded in a debugger
-//        : it should only be used when you have trapped an exception and 
+//        : it should only be used when you have trapped an exception and
 //        : would like the program context at that point
-//	Result: 
+//	Result:
 //	Params: Exception information
 //	Author: Drew
 //
 DEBUG_API bool	dbSaveMiniDump
-	( 
+	(
 	const char* filename,
 	const EXCEPTION_POINTERS* data
 	);
@@ -317,19 +313,19 @@ private:
 };
 
 /////////////////////////////////////////////////////////////////////
-//	Desc  : 
+//	Desc  :
 //        : THREAD-SAFE
-//	Result: 
-//	Params: 
+//	Result:
+//	Params:
 //	Author: Dom
 //
 DEBUG_API void	dbPrintStackTrace( const dbTraceObj& traceObj, const char* header );
 
 /////////////////////////////////////////////////////////////////////
-//	Desc  : check whether the current process is run under a debugger 
+//	Desc  : check whether the current process is run under a debugger
 //        : THREAD-SAFE
-//	Result: 
-//	Params: 
+//	Result:
+//	Params:
 //	Author: Dom
 //
 DEBUG_API bool	dbIsDebuggerPresent();

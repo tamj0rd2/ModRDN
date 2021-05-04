@@ -182,6 +182,7 @@ void RDNPlayer::AddEntity(Entity *e)
 		++m_population;
 		return;
 
+	case NULL_EC:
 	case ResourceRenew_EC:
 	case RemoteChamber_EC:
 	case WaterChamber_EC:
