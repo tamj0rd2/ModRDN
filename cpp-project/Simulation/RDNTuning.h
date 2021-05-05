@@ -86,22 +86,16 @@ public:
 public:
 	unsigned long GetSyncToken() const;
 
-//
-#define ADDTUNINGSET(x)                     \
-public:                                     \
-	const x &Get##x() const { return m_##x; } \
-                                            \
-private:                                    \
-	x m_##x;
+	const PlayerInfo GetPlayerInfo() const { return m_PlayerInfo; }
+	const LabInfo GetLabInfo() const { return m_LabInfo; }
+	const EffectInfo GetEffectInfo() const { return m_EffectInfo; }
+	const FogOfWarInfo GetFogOfWarInfo() const { return m_FogOfWarInfo; }
 
-	// fields
-	ADDTUNINGSET(PlayerInfo);
-	ADDTUNINGSET(LabInfo)
-	ADDTUNINGSET(EffectInfo)
-	ADDTUNINGSET(FogOfWarInfo)
-
-//
-#undef ADDTUNINGSET
+private:
+	PlayerInfo m_PlayerInfo;
+	LabInfo m_LabInfo;
+	EffectInfo m_EffectInfo;
+	FogOfWarInfo m_FogOfWarInfo;
 
 	// implementation
 private:
