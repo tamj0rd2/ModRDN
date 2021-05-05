@@ -682,13 +682,18 @@ namespace
 
 		virtual bool IsScenarioCompatible(const char *modname) const
 		{
+			dbTracef(">>>DEBUG checking is scenario is compatible");
 			bool isCompatible = (strcmp("RDNMod", modname) == 0);
+
 			return isCompatible;
 		}
 
 		virtual bool Initialize(const char *version)
 		{
+			//
 			dbAssert(!m_init);
+
+			//
 			m_init = true;
 
 			//
