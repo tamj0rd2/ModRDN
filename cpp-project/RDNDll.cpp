@@ -618,6 +618,9 @@ namespace
 		}
 	};
 
+#define LOGIT(x) \
+	dbTracef("RDNDllInterface: " #x)
+
 	class RDNDllInterface : public DLLInterface
 	{
 		// fields
@@ -646,6 +649,7 @@ namespace
 					m_setup(0)
 		{
 			//
+			LOGIT(Constructor);
 			m_version[0] = '\0';
 
 			// retrieve mod name
@@ -653,8 +657,6 @@ namespace
 			{
 				wcscpy(m_name, L"Impossible Creatures");
 			}
-
-			dbTracef("Hello world!");
 		}
 
 		~RDNDllInterface()
@@ -669,6 +671,7 @@ namespace
 	public:
 		const char *GetVersion() const
 		{
+			LOGIT(GetVersion);
 			dbAssert(m_init);
 			return m_version;
 		}
@@ -677,12 +680,13 @@ namespace
 	public:
 		virtual const wchar_t *GetName()
 		{
+			LOGIT(GetName);
 			return m_name;
 		}
 
 		virtual bool IsScenarioCompatible(const char *modname) const
 		{
-			dbTracef(">>>DEBUG checking is scenario is compatible");
+			LOGIT(IsScenarioCompatible);
 			bool isCompatible = (strcmp("RDNMod", modname) == 0);
 
 			return isCompatible;
@@ -690,6 +694,7 @@ namespace
 
 		virtual bool Initialize(const char *version)
 		{
+			LOGIT(Initialize);
 			//
 			dbAssert(!m_init);
 
@@ -714,6 +719,7 @@ namespace
 
 		virtual void Shutdown()
 		{
+			LOGIT(Shutdown);
 			//
 			dbAssert(m_score == 0);
 			dbAssert(m_setup == 0);
@@ -738,6 +744,7 @@ namespace
 
 		virtual DLLSetupInterface *SetupCreate()
 		{
+			LOGIT(SetupCreate);
 			dbAssert(m_init);
 			dbAssert(m_setup == 0);
 			dbAssert(m_game == 0);	// shouldn't create a scores while a game is being played
@@ -751,6 +758,7 @@ namespace
 
 		virtual void SetupDestroy(DLLSetupInterface *p)
 		{
+			LOGIT(SetupDestroy);
 			//
 			dbAssert(p != 0);
 			dbAssert(p == m_setup);
@@ -764,7 +772,7 @@ namespace
 
 		virtual DLLGameInterface *GameCreate(SimEngineInterface *sim)
 		{
-			dbTracef(">>>DEBUG creating a game");
+			LOGIT(GameCreate);
 			dbAssert(m_init);
 			dbAssert(m_game == 0);
 			dbAssert(m_score == 0); // shouldn't create a game until score is released
@@ -777,6 +785,7 @@ namespace
 
 		virtual void GameDestroy(DLLGameInterface *p)
 		{
+			LOGIT(GameDestroy);
 			//
 			dbAssert(p != 0);
 			dbAssert(p == m_game);
@@ -789,6 +798,7 @@ namespace
 
 		virtual DLLScoreInterface *ScoreCreate()
 		{
+			LOGIT(ScoreCreate);
 			dbAssert(m_init);
 			dbAssert(m_score == 0);
 			dbAssert(m_game == 0);	// shouldn't create a scores while a game is being played
@@ -802,6 +812,7 @@ namespace
 		virtual void ScoreDestroy(DLLScoreInterface *p)
 		{
 			//
+			LOGIT(ScoreDestroy);
 			dbAssert(p != 0);
 			dbAssert(p == m_score);
 
@@ -814,20 +825,24 @@ namespace
 
 		virtual DLLInterface::ZsProgress ZsPublish()
 		{
+			LOGIT(ZsPublish);
 			return ZSP_Done;
 		}
 
 		virtual DLLInterface::ZsProgress ZsUpdate()
 		{
+			LOGIT(ZsUpdate);
 			return ZSP_Done;
 		}
 
 		virtual DLLInterface::ZsProgress ZsAbort()
 		{
+			LOGIT(ZsAbort);
 			return ZSP_Done;
 		}
 	};
 } // namespace
+#undef LOGIT
 
 /////////////////////////////////////////////////////////////////////
 //
