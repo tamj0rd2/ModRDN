@@ -286,6 +286,13 @@
 				</File>
 			</Filter>
 			<Filter
+				Name="Dll"
+				Filter="">
+				<File
+					RelativePath="Dll\ModGuiInterface.cpp">
+				</File>
+			</Filter>
+			<Filter
 				Name="Simulation"
 				Filter="">
 				<File

@@ -11,6 +11,7 @@
 #include "RDNDll.h"
 #include "RDNDllScore.h"
 
+#include "Dll/ModGuiInterface.h"
 #include "ModObj.h"
 #include "RDNDllSetup.h"
 #include "UI/RDNText.h"
@@ -211,16 +212,17 @@ namespace
 {
 	class RDNDllGameInterface : private DLLCpuInterface,
 															private DLLSimInterface,
-															private DLLGuiInterface,
 															public DLLGameInterface
 	{
 	public:
-		RDNDllGameInterface(SimEngineInterface *sim)
+		ModGuiInterface *m_pDllGuiInterface;
+
+		RDNDllGameInterface(SimEngineInterface *sim) : m_pDllGuiInterface(NULL)
 		{
+			m_pDllGuiInterface = new ModGuiInterface();
+
 			RegisterControllers(sim);
-
 			ModObj::Initialize(sim);
-
 			RDNUIState::Startup();
 
 			return;
@@ -242,7 +244,9 @@ namespace
 
 		virtual DLLGuiInterface *GetGuiInterface()
 		{
-			return static_cast<DLLGuiInterface *>(this);
+			dbTracef("Getting DllGuiInterface...");
+			dbAssert(m_pDllGuiInterface != NULL);
+			return m_pDllGuiInterface;
 		}
 
 		virtual DLLSimInterface *GetSimInterface()
@@ -484,137 +488,6 @@ namespace
 
 		virtual void StatsZSSave()
 		{
-		}
-
-		// inherited -- DLLGuiInterface
-	private:
-		virtual void InitLuaGui(LuaConfig *lc)
-		{
-			// TODO: implement this
-			dbTracef("RDNDLL::InitLuaGui not implemented");
-		}
-
-		virtual void ShutLuaGui(LuaConfig *lc)
-		{
-			// TODO: implement this
-			dbTracef("RDNDLL::ShutLuaGui not implemented");
-		}
-
-		virtual void OnEntityCreate(const Entity *e)
-		{
-			EntityCreate(e);
-		}
-
-		virtual void ChangePlayerArmy(unsigned long, const std::vector<long> &)
-		{
-			dbFatalf("Sample mod doesn't use armies.");
-		}
-
-		virtual EntityFilter *GetEntityFilter()
-		{
-			return RDNEntityFilter::Instance();
-		}
-
-		virtual ModSimVis *GetModSimVis()
-		{
-			if (RDNHUD::IsInitialized())
-				return RDNHUD::instance();
-
-			return NULL;
-		}
-
-		virtual ModUIEvent *GetModUIEvent()
-		{
-			return RDNHUD::instance();
-		}
-
-		virtual NISletInterface *GetNISletInterface()
-		{
-			return RDNNISletInterface::Instance();
-		}
-
-		virtual void DoCommand(const EntityGroup &g)
-		{
-			dbTracef("RDNDll::DoCommand for group");
-			RDNHUD::instance()->DoCommand(g);
-		}
-
-		virtual void DoCommand(const Vec3f *v, unsigned long n)
-		{
-			dbTracef("RDNDll::DoCommand for vec3f");
-			RDNHUD::instance()->DoCommand(v, n);
-		}
-
-		virtual bool ProcessInput(const Plat::InputEvent &ie)
-		{
-			return RDNHUD::instance()->Input(ie);
-		}
-
-		virtual const char *GetCursor(const Entity *mouseOverEntity)
-		{
-			return RDNHUD::instance()->GetCursor(mouseOverEntity);
-		}
-
-		virtual void CreateHUD(
-				const Player *localplayer,
-				RTSHud *hud,
-				CommandInterface *command,
-				UIInterface *ui,
-				MessageInterface *message,
-				SelectionInterface *sel,
-				CameraInterface *cam,
-				SoundInterface *sound,
-				FXInterface *fx)
-		{
-			// these shouldn't be passed here
-			ModObj::i()->SetSoundInterface(sound);
-			ModObj::i()->SetFxInterface(fx);
-
-			// these should be sent directly to the trigger system, NOT the ModObj
-			ModObj::i()->SetCameraInterface(cam);
-			ModObj::i()->SetSelectionInterface(sel);
-			ModObj::i()->SetUIInterface(ui);
-
-			RDNHUD::Initialize(
-					static_cast<const RDNPlayer *>(localplayer),
-					hud,
-					command,
-					ModObj::i()->GetSelectionInterface(),
-					ModObj::i()->GetCameraInterface(),
-					ui,
-					ModObj::i()->GetSoundInterface(),
-					ModObj::i()->GetFxInterface(),
-					message);
-		}
-
-		virtual void ShutdownHUD()
-		{
-			RDNHUD::Shutdown();
-		}
-
-		virtual void UpdateHUD(float elapsedSeconds)
-		{
-			RDNHUD::instance()->Update(elapsedSeconds);
-		}
-
-		virtual void UIPause(bool bPause)
-		{
-			RDNHUD::instance()->UIPause(bPause);
-		}
-
-		virtual void Save(IFF &iff)
-		{
-			RDNUIState::i()->Save(iff);
-		}
-
-		virtual void Load(IFF &iff)
-		{
-			RDNUIState::i()->Load(iff);
-		}
-
-		virtual void ShowModOptions(void)
-		{
-			RDNHUD::instance()->ShowModOptions();
 		}
 	};
 
