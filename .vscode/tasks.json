@@ -6,7 +6,7 @@
     {
       "label": "buildAndInstallMod",
       "type": "shell",
-      "command": "python ./scripts/build.py --install --targets mod --launch",
+      "command": "python ./scripts/build.py --install --targets mod",
       "group": "build",
       "problemMatcher": [],
       "presentation": {

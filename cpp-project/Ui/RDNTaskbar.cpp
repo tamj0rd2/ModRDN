@@ -964,6 +964,7 @@ void RDNTaskbar::Clear()
 }
 
 // when "hotkeyLuaName" is pressed it calls the callback for the left mouse button
+// the params correspond to the parameters that the LUA callback function take
 void RDNTaskbar::ButtonInternal(
 		const char *button,
 		const char *hotkeyLuaName,
@@ -2162,8 +2163,21 @@ void RDNTaskbar::ModalUiCBTwoClick(Vec3f v1, Vec3f v2, int ebpid)
 //			  cbp - the entity we are placing
 //	Author	: dswinerd
 //
+static int RoundToNearestNum(float num, int multiple)
+{
+	long result = abs(num) + multiple / 2;
+	result -= result % multiple;
+	result *= num > 0 ? 1 : -1;
+	return result;
+}
+
 void RDNTaskbar::ModalUiCBPlaceEntity(Matrix43f &position, bool &bCanPlace, const ControllerBlueprint *cbp, bool bRender) const
 {
+	// TODO: this snap to grid implementation could use some work. The snaps in real ic are bigger.
+	position.T.x = RoundToNearestNum(position.T.x, 3);
+	position.T.z = RoundToNearestNum(position.T.z, 3);
+	dbTracef("Adjusted cursor position: x: %g, z: %g", position.T.x, position.T.z);
+
 	const ECStaticInfo *si = ModObj::i()->GetWorld()->GetEntityFactory()->GetECStaticInfo(cbp);
 	if (!si)
 		dbFatalf("RDNTaskbar::ModalUiCBPlaceEntity no static info for cbp %s", cbp->GetFileName());

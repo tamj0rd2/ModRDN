@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////
 // File    : Player.h
-// Desc    : 
+// Desc    :
 // Created : Monday, May 28, 2001
-// Author  : 
-// 
+// Author  :
+//
 // (c) 2001 Relic Entertainment Inc.
 //
 
@@ -32,7 +32,7 @@ public:
 
 // fields
 private:
-	const PlayerID	m_id;	
+	const PlayerID	m_id;
 
 	EntityGroup*	m_entities;
 
@@ -49,15 +49,15 @@ public:
 public:
 	PlayerID				GetID() const;
 	void					SetID(PlayerID id );
-							
+
 	const wchar_t*			GetName() const;
 	virtual void			SetName( const wchar_t* name );
-							
+
 	bool					IsPlayerDead() const;
 
 	// entity access functions.
 	const EntityGroup&		GetEntities() const;
-							
+
 	virtual void			AddEntity   (Entity* e);
 	virtual void			RemoveEntity(Entity* e);
 
@@ -74,11 +74,12 @@ public:
 							GetArmy( ) const;
 
 	// commands
-		// NOTE: these have empty implementation, they should be redefined
-		// in the mod player
+	// NOTE: these have empty implementation, they should be redefined
+	// in the mod player.
+	// command types are in CommandTypes.h
 	virtual void			CommandDoProcess
 								(
-								const unsigned int		cmd, 
+								const unsigned int		cmd,
 								const unsigned long		param,
 								const unsigned int		flags,
 								Player*					sender
@@ -86,7 +87,7 @@ public:
 
 	virtual void			CommandDoProcess
 								(
-								const unsigned int		cmd, 
+								const unsigned int		cmd,
 								const unsigned long		param,
 								const unsigned int		flags,
 								Player*					sender,

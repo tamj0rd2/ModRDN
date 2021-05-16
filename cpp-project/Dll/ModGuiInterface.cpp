@@ -45,20 +45,20 @@ void ModGuiInterface::OnEntityCreate(const Entity *)
 
 void ModGuiInterface::ChangePlayerArmy(unsigned long PlayerID, const std::vector<long> &soldiers)
 {
+  // not used by the mod atm
   TODO(ChangePlayerArmy);
 }
 
-// can be NULL
 ModSimVis *ModGuiInterface::GetModSimVis()
 {
   REVISIT(GetModSimVis);
+
   if (RDNHUD::IsInitialized())
     return RDNHUD::instance();
 
   return NULL;
 }
 
-// can be NULL
 ModUIEvent *ModGuiInterface::GetModUIEvent()
 {
   REVISIT(GetModUIEvent);

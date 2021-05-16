@@ -263,8 +263,6 @@ void RDNSimProxy::LuaSetup()
 	BINDFUNC(BuildQueueLength);
 	BINDFUNC(BuildingEBPFromType);
 
-	// TODO: what the fuck do the bindings in this file even do?! I suppose their for luas
-	// other than taskbar.lua
 	BINDFUNC(TypeFromEBP);
 
 	BINDFUNC(LocalPlayerLabId);

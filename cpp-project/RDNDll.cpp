@@ -244,7 +244,6 @@ namespace
 
 		virtual DLLGuiInterface *GetGuiInterface()
 		{
-			dbTracef("Getting DllGuiInterface...");
 			dbAssert(m_pDllGuiInterface != NULL);
 			return m_pDllGuiInterface;
 		}
